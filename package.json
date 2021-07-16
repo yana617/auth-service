@@ -1,0 +1,27 @@
+{
+  "name": "node-express-preset",
+  "version": "1.0.0",
+  "description": "NodeJS pre-configured project",
+  "main": "index.js",
+  "scripts": {
+    "start": "NODE_ENV=production node index.js",
+    "dev": "NODE_ENV=development nodemon index.js",
+    "dev:docker": "docker compose up --build",
+    "test": "jest"
+  },
+  "keywords": [
+    "docker"
+  ],
+  "author": "Yana Sidorova",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "js-yaml": "^4.1.0",
+    "morgan": "^1.10.0",
+    "swagger-ui-express": "^4.1.6"
+  },
+  "devDependencies": {
+    "jest": "^27.0.6",
+    "nodemon": "^2.0.12"
+  }
+}

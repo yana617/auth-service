@@ -1,0 +1,56 @@
+openapi: 3.0.0
+info:
+  title: API
+  version: 0.0.1
+servers:
+  - url: http://localhost:xxxx/
+    description: Dev server
+paths:
+  /test:
+    post:
+      summary: Test summary
+      description: Test description
+      parameters:
+        - in: query
+          name: test_query
+          description: Test description
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/test'
+      responses:
+        '201':
+          description: Test description
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  test:
+                    $ref: '#/components/schemas/test'
+        '400':
+          description: Client error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/test'
+              example:
+                success: false
+                error: 'test error'
+components:
+  schemas:
+    test:
+      type: object
+      properties:
+        success:
+          type: boolean
+          default: false
+        error:
+          type: string

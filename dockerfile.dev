@@ -1,0 +1,14 @@
+FROM node:14.17.0
+LABEL maintainer="jana.ru.sidorova@yandex.ru"
+ENV NODE_ENV=development PORT=7799
+
+WORKDIR /usr/src/app
+
+COPY ["package.json", "package-lock.json*", "./"]
+
+RUN npm install
+
+COPY . .
+
+EXPOSE 7799
+CMD ["./node_modules/.bin/nodemon", "index.js"]
