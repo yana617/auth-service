@@ -5,7 +5,7 @@ services:
       context: .
       dockerfile: dockerfile.dev
     volumes:
-      - ./:/usr/src/auth-serive
-      - /usr/src/auth-serive/node_modules
+      - ./:/usr/src/auth-service
+      - /usr/src/auth-service/node_modules
     ports:
       - "1081:1081"
