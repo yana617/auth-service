@@ -1,8 +1,8 @@
 FROM node:14.17.0
 LABEL maintainer="jana.ru.sidorova@yandex.ru"
-ENV NODE_ENV=development PORT=7799
+ENV NODE_ENV=development PORT=1081
 
-WORKDIR /usr/src/app
+WORKDIR /usr/src/auth-service
 
 COPY ["package.json", "package-lock.json*", "./"]
 
@@ -10,5 +10,5 @@ RUN npm install
 
 COPY . .
 
-EXPOSE 7799
+EXPOSE 1081
 CMD ["./node_modules/.bin/nodemon", "index.js"]
