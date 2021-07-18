@@ -4,7 +4,7 @@ ENV NODE_ENV=production PORT=1081
 
 WORKDIR /usr/src/auth-service
 
-COPY package*.json ./
+COPY package*.json .
 
 RUN npm install --production
 
