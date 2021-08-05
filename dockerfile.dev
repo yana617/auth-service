@@ -2,6 +2,7 @@ FROM node:14.17.0
 LABEL maintainer="jana.ru.sidorova@yandex.ru"
 ENV NODE_ENV=development PORT=1081
 
+RUN mkdir -p /usr/src/auth-service
 WORKDIR /usr/src/auth-service
 
 COPY ["package.json", "package-lock.json*", "./"]
@@ -11,4 +12,9 @@ RUN npm install
 COPY . .
 
 EXPOSE 1081
-CMD ["./node_modules/.bin/nodemon", "index.js"]
+
+COPY ./docker-entrypoint.sh /docker-entrypoint.sh
+
+RUN chmod +x /docker-entrypoint.sh
+
+ENTRYPOINT ["/docker-entrypoint.sh"]

@@ -1,0 +1,42 @@
+{
+  "env": {
+    "node": true,
+    "es6": true
+  },
+  "extends": "airbnb-base",
+  "globals": {
+    "describe": true,
+    "it": true,
+    "expect": true,
+    "beforeAll": true,
+    "afterAll": true,
+    "test": true,
+    "beforeEach": true,
+    "afterEach": true,
+    "jest": true
+  },
+  "ignorePatterns": ["src/migrations"],
+  "rules": {
+    "linebreak-style": 0,
+    "semi": [
+      "error",
+      "always"
+    ],
+    "no-plusplus": "off",
+    "func-names": "off",
+    "no-console": "off",
+    "no-underscore-dangle": "off",
+    "consistent-return": "off",
+    "no-loop-func": "off",
+    "eqeqeq": [
+      "error",
+      "always",
+      {
+        "null": "ignore"
+      }
+    ],
+    "no-use-before-define": "warn",
+    "prefer-destructuring": "warn",
+    "camelcase": "off"
+  }
+}

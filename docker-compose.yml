@@ -9,3 +9,39 @@ services:
       - /usr/src/auth-service/node_modules
     ports:
       - "1081:1081"
+    depends_on: 
+      - postgres-db
+      # - postgres-test-db
+    environment:
+      POSTGRES_USERNAME: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: auth-service-db
+      POSTGRES_TEST_DB: auth-service-test-db
+      POSTGRES_HOST: postgres-db
+      POSTGRES_TEST_HOST: postgres-test-db
+      TOKEN_KEY: 64bc62bd-c429-46cd-8090-634386ab8c57
+    
+  postgres-db:
+    image: postgres:12.3-alpine
+    volumes:
+      - postgres-app-data:/data
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USERNAME: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: auth-service-db
+
+  # postgres-test-db:
+  #   image: postgres
+  #   environment:
+  #     POSTGRES_HOST_AUTH_METHOD: trust
+  #     POSTGRES_DB: auth-service-test-db
+  #   volumes:
+  #     - postgres-app-test-data:/data
+  #   ports:
+  #     - 5430:5432
+
+volumes:
+  postgres-app-data:
+  # postgres-app-test-data:

@@ -10,6 +10,16 @@ on:
 jobs:
   build_test:
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USERNAME: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+
     strategy:
       matrix:
         node-version: [14.x]
@@ -23,5 +33,10 @@ jobs:
         run: |
           npm install
           npm ci 
-      - name: test
+      - name: Connect to PostgreSQL and run tests
         run: npm run test
+        env:
+          POSTGRES_USERNAME: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_TEST_HOST: localhost
+          POSTGRES_PORT: 5432
