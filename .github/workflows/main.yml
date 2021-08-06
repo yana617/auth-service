@@ -34,7 +34,14 @@ jobs:
         run: |
           npm install
           npm ci 
-      - name: Connect to PostgreSQL and run tests
+      - name: Connect to PostgreSQL and run migrations
+        run: npm run db:migrate
+        env:
+          POSTGRES_USERNAME: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_TEST_HOST: localhost
+          POSTGRES_PORT: 5432
+      - name: Run tests
         run: npm run test
         env:
           POSTGRES_USERNAME: postgres
