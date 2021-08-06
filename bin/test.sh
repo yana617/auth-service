@@ -9,6 +9,4 @@ echo "start running tests"
 jest --coverage
 echo "tearing down all containers"
 
-docker-compose exec postgres-db \
-  su - postgres -c "psql -c '' || removedb test-db"
 docker-compose stop
