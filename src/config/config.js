@@ -1,10 +1,9 @@
 const {
   POSTGRES_DB: database,
-  POSTGRES_TEST_DB: testDatabase,
   POSTGRES_USERNAME: username,
   POSTGRES_PASSWORD: password,
   POSTGRES_HOST: host,
-  POSTGRES_TEST_HOST: testHost,
+  POSTGRES_PORT: port,
 } = process.env;
 
 const common = {
@@ -21,8 +20,9 @@ module.exports = {
   },
   test: {
     ...common,
-    database: testDatabase,
-    host: testHost,
+    database: 'test-db',
+    host: 'localhost',
+    port,
   },
   production: {
     ...common,

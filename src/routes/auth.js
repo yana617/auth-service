@@ -6,6 +6,7 @@ const { validationResult } = require('express-validator');
 
 const models = require('../database');
 const validateUser = require('../middlewares/validateUser');
+const { ERRORS } = require('../translations');
 
 route.post('/register', validateUser, async (req, res) => {
   const errors = validationResult(req);
@@ -31,7 +32,7 @@ route.post('/register', validateUser, async (req, res) => {
       },
     });
     if (user.length > 0) {
-      return res.status(400).json({ success: false, error: 'User with this phone or email already exists' });
+      return res.status(400).json({ success: false, error: ERRORS.USER_ALREADY_EXISTS });
     }
 
     const salt = await bcrypt.genSalt(10);
@@ -60,15 +61,15 @@ route.post('/register', validateUser, async (req, res) => {
 route.post('/login', async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) {
-    return res.status(400).json({ success: false, error: 'Email and password fields are required' });
+    return res.status(400).json({ success: false, error: ERRORS.EMAIL_PASSWORD_REQUIRED });
   }
   try {
     const user = await models.User.findOne({ where: { email }, raw: true });
     if (!user) {
-      return res.status(401).json({ success: false, error: 'No user with such email' });
+      return res.status(400).json({ success: false, error: ERRORS.USER_EMAIL_NOT_FOUND });
     }
     if (user.hash !== bcrypt.hashSync(password, user.salt)) {
-      return res.status(401).json({ success: false, error: 'Auth error' });
+      return res.status(400).json({ success: false, error: ERRORS.AUTH_ERROR });
     }
     const token = jwt.sign(
       { id: user.id, email },
