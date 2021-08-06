@@ -39,7 +39,6 @@ jobs:
           npm install -g sequelize-cli
           npm run db:migrate
         env:
-          TOKEN_KEY: test
           NODE_ENV: test
           POSTGRES_USERNAME: postgres
           POSTGRES_PASSWORD: postgres
@@ -48,6 +47,8 @@ jobs:
       - name: Run tests
         run: npm run test
         env:
+          NODE_ENV: test
+          TOKEN_KEY: test
           POSTGRES_USERNAME: postgres
           POSTGRES_PASSWORD: postgres
           POSTGRES_TEST_HOST: localhost
