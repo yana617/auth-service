@@ -35,7 +35,9 @@ jobs:
           npm install
           npm ci 
       - name: Connect to PostgreSQL and run migrations
-        run: npm run db:migrate
+        run: |
+          npm install -g sequelize-cli
+          npm run db:migrate
         env:
           POSTGRES_USERNAME: postgres
           POSTGRES_PASSWORD: postgres
