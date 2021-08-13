@@ -7,6 +7,7 @@ const { validationResult } = require('express-validator');
 const models = require('../database');
 const validateUser = require('../middlewares/validateUser');
 const { ERRORS } = require('../translations');
+const { DEFAULT_ROLE } = require('../database/constants');
 
 route.post('/register', validateUser, async (req, res) => {
   const errors = validationResult(req);
@@ -38,6 +39,11 @@ route.post('/register', validateUser, async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(password, salt);
 
+    const role = await models.Role.findOne({ where: { name: DEFAULT_ROLE } });
+    if (!role) {
+      return res.status(500).json({ success: false, error: 'Default role not found' });
+    }
+
     const newUser = models.User.build({
       name,
       surname,
@@ -45,6 +51,7 @@ route.post('/register', validateUser, async (req, res) => {
       email,
       salt,
       hash,
+      role_id: role.id,
     });
     await newUser.save();
 
@@ -72,7 +79,7 @@ route.post('/login', async (req, res) => {
       return res.status(400).json({ success: false, error: ERRORS.AUTH_ERROR });
     }
     const token = jwt.sign(
-      { id: user.id, email },
+      { id: user.id, role_id: user.role_id },
       process.env.TOKEN_KEY,
       {
         expiresIn: '2d',

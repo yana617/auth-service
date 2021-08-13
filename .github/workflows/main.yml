@@ -38,6 +38,7 @@ jobs:
         run: |
           npm install -g sequelize-cli
           npm run db:migrate
+          npm run db:seed:all
         env:
           NODE_ENV: test
           POSTGRES_USERNAME: postgres

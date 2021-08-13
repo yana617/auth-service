@@ -15,7 +15,10 @@
     "afterEach": true,
     "jest": true
   },
-  "ignorePatterns": ["src/migrations"],
+  "ignorePatterns": [
+    "src/migrations",
+    "src/seeders"
+  ],
   "rules": {
     "linebreak-style": 0,
     "semi": [
@@ -37,6 +40,12 @@
     ],
     "no-use-before-define": "warn",
     "prefer-destructuring": "warn",
-    "camelcase": "off"
+    "camelcase": "off",
+    "import/no-extraneous-dependencies": [
+      "error",
+      {
+        "devDependencies": true
+      }
+    ]
   }
 }

@@ -1,12 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
   const UserAdditionalField = sequelize.define('UserAdditionalField', {
-    id: {
-      type: DataTypes.UUID,
-      primaryKey: true,
-      defaultValue: DataTypes.UUIDV4,
-      allowNull: false,
-      autoIncrement: false,
-    },
     value: DataTypes.BOOLEAN,
   }, {
     tableName: 'user_additional_fields',

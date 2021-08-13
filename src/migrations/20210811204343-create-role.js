@@ -1,7 +1,9 @@
 'use strict';
+const { roles } = require('../database/constants');
+
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('users', {
+    await queryInterface.createTable('roles', {
       id: {
         type: Sequelize.UUID,
         primaryKey: true,
@@ -9,24 +11,7 @@ module.exports = {
         allowNull: false,
       },
       name: {
-        type: Sequelize.STRING
-      },
-      surname: {
-        type: Sequelize.STRING
-      },
-      email: {
-        type: Sequelize.STRING,
-        unique: true,
-      },
-      phone: {
-        type: Sequelize.STRING,
-        unique: true,
-      },
-      hash: {
-        type: Sequelize.STRING
-      },
-      salt: {
-        type: Sequelize.STRING
+        type: Sequelize.ENUM(roles)
       },
       createdAt: {
         allowNull: false,
@@ -39,6 +24,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('users');
+    await queryInterface.dropTable('roles');
   }
 };

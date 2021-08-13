@@ -2,7 +2,7 @@ const request = require('supertest');
 
 const app = require('../../app');
 const db = require('../database');
-const { userOne, createUser } = require('./fixtures/db');
+const { generateUser, createUser } = require('./fixtures/db');
 const { ERRORS } = require('../translations');
 
 beforeEach(async () => {
@@ -10,30 +10,30 @@ beforeEach(async () => {
 });
 
 describe('POST /register', () => {
-  test('Should register new admin', async () => {
+  test('Should register new user', async () => {
+    const userToSave = generateUser();
     const response = await request(app)
       .post('/auth/register')
-      .send(userOne)
+      .send(userToSave)
       .expect(201);
 
     const { data: user } = response.body;
-    expect(user.name).toEqual(userOne.name);
-    const [userInDb] = await db.User.findAll({
-      where: { phone: userOne.phone },
-    }, { raw: true });
-    expect(userInDb).not.toBeNull();
-    expect(userInDb.name).toEqual(userOne.name);
+    expect(user.name).toEqual(userToSave.name);
+    const userInDb = await db.User.findOne({ where: { phone: userToSave.phone } });
+    expect(userInDb).toBeDefined();
+    expect(userInDb.name).toEqual(userToSave.name);
   });
 
   test('Should fail because user already exist', async () => {
+    const userToSave = generateUser();
     await request(app)
       .post('/auth/register')
-      .send(userOne)
+      .send(userToSave)
       .expect(201);
 
     const response = await request(app)
       .post('/auth/register')
-      .send(userOne)
+      .send(userToSave)
       .expect(400);
 
     const { error } = response.body;
@@ -53,19 +53,20 @@ describe('POST /register', () => {
 
 describe('POST /login', () => {
   test('Should login existing user', async () => {
+    const userToSave = generateUser();
     await request(app)
       .post('/auth/register')
-      .send(userOne)
+      .send(userToSave)
       .expect(201);
 
     const response = await request(app)
       .post('/auth/login')
-      .send(userOne)
+      .send(userToSave)
       .expect(200);
 
     const { data: user } = response.body;
 
-    expect(user.name).toEqual(userOne.name);
+    expect(user.name).toEqual(userToSave.name);
     expect(user.token).not.toBeNull();
   });
 
@@ -93,11 +94,12 @@ describe('POST /login', () => {
   });
 
   test('Should fail because of wrong credentials', async () => {
-    await createUser(userOne);
+    const userToSave = generateUser();
+    await createUser(userToSave);
     const response = await request(app)
       .post('/auth/login')
       .send({
-        email: userOne.email,
+        email: userToSave.email,
         password: 'no',
       })
       .expect(400);

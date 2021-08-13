@@ -10,7 +10,8 @@
     "test": "NODE_ENV=test jest --coverage",
     "test:docker": "chmod +x ./bin/test.sh && NODE_ENV=test ./bin/test.sh",
     "lint": "node_modules/.bin/eslint .",
-    "db:migrate": "sequelize-cli db:migrate"
+    "db:migrate": "sequelize-cli db:migrate",
+    "db:seed:all": "sequelize-cli db:seed:all"
   },
   "keywords": [
     "docker"
@@ -42,12 +43,14 @@
     "pg": "^8.6.0",
     "pg-hstore": "^2.3.4",
     "sequelize": "^6.6.5",
-    "swagger-ui-express": "^4.1.6"
+    "swagger-ui-express": "^4.1.6",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "eslint": "^7.31.0",
     "eslint-config-airbnb": "^18.2.1",
     "eslint-plugin-import": "^2.23.4",
+    "faker": "^5.5.3",
     "jest": "^27.0.0",
     "nodemon": "^2.0.12",
     "supertest": "^6.1.3"

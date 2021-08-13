@@ -2,12 +2,7 @@ const request = require('supertest');
 
 const app = require('../../app');
 const db = require('../database');
-const {
-  userOne,
-  userTwo,
-  createUser,
-  createUserAndGetToken,
-} = require('./fixtures/db');
+const { generateUser, createUser, createUserAndGetToken } = require('./fixtures/db');
 const { ERRORS } = require('../translations');
 
 beforeEach(async () => {
@@ -16,19 +11,22 @@ beforeEach(async () => {
 
 describe('GET /user/:id', () => {
   test('Should return user', async () => {
-    const token = await createUserAndGetToken(userOne);
+    const userToSave = generateUser();
+    const token = await createUserAndGetToken(userToSave, 'VOLUNTEER');
 
     const response = await request(app)
-      .get(`/users/${userOne.id}`)
+      .get(`/users/${userToSave.id}`)
       .set('x-access-token', token)
       .expect(200);
 
     const { data: user } = response.body;
     expect(user).not.toBeNull();
-    expect(user.name).toEqual(userOne.name);
+    expect(user.name).toEqual(userToSave.name);
   });
 
   test('Should fail because you request not yours information', async () => {
+    const userOne = generateUser();
+    const userTwo = generateUser();
     await createUser(userOne);
     const token = await createUserAndGetToken(userTwo);
 
