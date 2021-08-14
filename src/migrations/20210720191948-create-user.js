@@ -5,9 +5,8 @@ module.exports = {
       id: {
         type: Sequelize.UUID,
         primaryKey: true,
-        defaultValue: Sequelize.UUIDV4,
+        defaultValue: Sequelize.literal('uuid_generate_v4()'),
         allowNull: false,
-        autoIncrement: false,
       },
       name: {
         type: Sequelize.STRING
