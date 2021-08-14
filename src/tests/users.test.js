@@ -11,13 +11,13 @@ beforeEach(async () => {
   await db.User.destroy({ where: {} });
 });
 
-describe('GET /users/:id', () => {
+describe('GET /users/me', () => {
   test('Should return user', async () => {
     const userToSave = generateUser();
     const token = await createUserAndGetToken(userToSave, 'VOLUNTEER');
 
     const response = await request(app)
-      .get(`/users/${userToSave.id}`)
+      .get('/users/me')
       .set('x-access-token', token)
       .expect(200);
 
@@ -26,19 +26,14 @@ describe('GET /users/:id', () => {
     expect(user.name).toEqual(userToSave.name);
   });
 
-  test('Should fail because you request not yours information', async () => {
-    const userOne = generateUser();
-    const userTwo = generateUser();
-    await createUser(userOne);
-    const token = await createUserAndGetToken(userTwo);
-
+  test('Should fail because you send invalid token', async () => {
     const response = await request(app)
-      .get(`/users/${userOne.id}`)
-      .set('x-access-token', token)
-      .expect(403);
+      .get('/users/me')
+      .set('x-access-token', 'invalid')
+      .expect(401);
 
     const { error } = response.body;
-    expect(error).toEqual(ERRORS.FORBIDDEN);
+    expect(error).toEqual(ERRORS.INVALID_TOKEN);
   });
 });
 
@@ -55,7 +50,7 @@ describe('GET /users/:id/permissions', () => {
     const { data: permissions } = response.body;
     expect(permissions).not.toBeNull();
     expect(permissions.rolePermissions).toEqual(rolePermissions.USER);
-    expect(permissions.additionalPermissions.length).toBe(0);
+    expect(permissions.userPermissions.length).toBe(0);
   });
 
   test('Should return user\'s permission', async () => {
@@ -70,7 +65,7 @@ describe('GET /users/:id/permissions', () => {
     const { data: permissions } = response.body;
     expect(permissions).not.toBeNull();
     expect(permissions.rolePermissions).toEqual(rolePermissions.VOLUNTEER);
-    expect(permissions.additionalPermissions.length).toBe(0);
+    expect(permissions.userPermissions.length).toBe(0);
   });
 
   test('Should fail because of not enough permissions', async () => {

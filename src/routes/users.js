@@ -5,14 +5,26 @@ const verifyToken = require('../middlewares/authRequired');
 const models = require('../database');
 const { ERRORS } = require('../translations');
 const checkPermissions = require('../middlewares/checkPermissions');
-const updateOnlyOwnData = require('../middlewares/updateOnlyOwnData');
+const onlyOwnData = require('../middlewares/onlyOwnData');
 const validateUser = require('../middlewares/validateUser');
 
-// TO-DO-v2 users access
-route.get('/:id', verifyToken, updateOnlyOwnData, checkPermissions(['VIEW_USERS']), async (req, res) => {
+route.get('/me', verifyToken, async (req, res) => {
   try {
     const { id: userId } = req.user;
     const user = await models.User.findByPk(userId, { attributes: { exclude: ['hash', 'salt'] }, raw: true });
+    res.json({ success: true, data: user });
+  } catch (e) {
+    res.status(500).json({ success: false, error: e.message });
+  }
+});
+
+route.get('/:id', verifyToken, checkPermissions(['VIEW_USERS']), async (req, res) => {
+  try {
+    const { id: userId } = req.params;
+    const user = await models.User.findByPk(userId, { attributes: { exclude: ['hash', 'salt'] }, raw: true });
+    if (!user) {
+      return res.status(404).json({ success: false, error: ERRORS.USER_NOT_FOUND });
+    }
     res.json({ success: true, data: user });
   } catch (e) {
     res.status(500).json({ success: false, error: e.message });
@@ -27,20 +39,15 @@ route.get('/:id/permissions', verifyToken, checkPermissions(['EDIT_PERMISSIONS']
       return res.status(404).json({ success: false, error: ERRORS.USER_NOT_FOUND });
     }
 
-    let rolePermissionsIds = await models.RolePermission
-      .findAll({ where: { role_id: user.role_id } });
-    rolePermissionsIds = rolePermissionsIds.map((rolePermission) => rolePermission.permission_id);
-    let additionalPermissions = await models.UserPermission.findAll({ where: { user_id } });
-    additionalPermissions = additionalPermissions.map((p) => p.permission_id);
-    const allPermissionsIds = rolePermissionsIds.concat(additionalPermissions);
-    const allPermissions = await models.Permission.findAll({ where: { id: allPermissionsIds } });
+    const rolePermissions = await models.RolePermission
+      .findAll({ where: { role_id: user.role_id }, include: ['permission'] });
+    const userPermissions = await models.UserPermission
+      .findAll({ where: { user_id: user.id }, include: ['permission'] });
     res.json({
       success: true,
       data: {
-        rolePermissions: allPermissions.filter((p) => rolePermissionsIds.includes(p.id))
-          .map((p) => p.name),
-        additionalPermissions: allPermissions.filter((p) => additionalPermissions.includes(p.id))
-          .map((p) => p.name),
+        userPermissions: userPermissions.map((up) => up.permission.name),
+        rolePermissions: rolePermissions.map((rp) => rp.permission.name),
       },
     });
   } catch (e) {
@@ -48,7 +55,7 @@ route.get('/:id/permissions', verifyToken, checkPermissions(['EDIT_PERMISSIONS']
   }
 });
 
-route.put('/:id', verifyToken, updateOnlyOwnData, validateUser, async (req, res) => {
+route.put('/:id', verifyToken, onlyOwnData, validateUser, async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ success: false, errors: errors.array() });
@@ -102,7 +109,7 @@ route.put('/:id/role', verifyToken, checkPermissions(['EDIT_PERMISSIONS']), asyn
     });
   }
   try {
-    const roleToSet = await models.Role.findOne({ where: { name: role } });
+    const roleToSet = await models.Role.findOne({ where: { name: role }, include: ['role_permissions'] });
     if (!roleToSet) {
       return res.status(403).json({
         success: false,
@@ -114,6 +121,10 @@ route.put('/:id/role', verifyToken, checkPermissions(['EDIT_PERMISSIONS']), asyn
     if (!user) {
       return res.status(404).json({ success: false, error: ERRORS.USER_NOT_FOUND });
     }
+
+    const newRolePermsIds = roleToSet.role_permissions.map((rp) => rp.permission_id);
+    await models.UserPermission
+      .destroy({ where: { user_id: user.id, permission_id: newRolePermsIds } });
 
     await models.User.update({ role_id: roleToSet.id }, { where: { id: userToUpdateId } });
     res.json({ success: true });

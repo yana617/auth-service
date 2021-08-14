@@ -10,6 +10,7 @@ module.exports = (sequelize) => {
     });
     UserPermission.belongsTo(models.Permission, {
       foreignKey: 'permission_id',
+      as: 'permission',
       onDelete: 'CASCADE',
     });
   };

@@ -5,17 +5,13 @@ module.exports = (permissions) => async (req, res, next) => {
   try {
     const { id: userId, role_id } = req.user;
 
-    let permissionsIdsToCheck = await db.Permission.findAll({ where: { name: permissions } });
-    permissionsIdsToCheck = permissionsIdsToCheck.map((permission) => permission.id);
+    const userPermissions = await db.UserPermission.findAll({ where: { user_id: userId }, include: ['permission'] });
+    const userPermissionsNames = userPermissions.map((up) => up.permission.name);
+    const rolePermissions = await db.RolePermission.findAll({ where: { role_id }, include: ['permission'] });
+    const rolePermissionsNames = rolePermissions.map((up) => up.permission.name);
 
-    let rolePermissions = await db.RolePermission.findAll({ where: { role_id } });
-    rolePermissions = rolePermissions.map((rolePermission) => rolePermission.permission_id);
-
-    let userPermissions = await db.UserPermission.findAll({ where: { user_id: userId } });
-    userPermissions = userPermissions.map((uap) => uap.permission_id);
-
-    const allPermissions = rolePermissions.concat(userPermissions);
-    if (permissionsIdsToCheck.every((p) => allPermissions.includes(p))) {
+    const allPermissions = userPermissionsNames.concat(rolePermissionsNames);
+    if (permissions.every((p) => allPermissions.includes(p))) {
       return next();
     }
     res.status(403).json({

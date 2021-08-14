@@ -1,4 +1,4 @@
-const updateOnlyOwnData = require('../../middlewares/updateOnlyOwnData');
+const onlyOwnData = require('../../middlewares/onlyOwnData');
 const { createUser } = require('../fixtures/db');
 const { ERRORS } = require('../../translations');
 
@@ -14,7 +14,7 @@ test('Should pass if I update own data', async () => {
   };
   const response = {};
   const next = jest.fn();
-  updateOnlyOwnData(request, response, next);
+  onlyOwnData(request, response, next);
   expect(next).toHaveBeenCalledTimes(1);
 });
 
@@ -33,7 +33,7 @@ test('Should fail if I try update someone elses data', async () => {
     json: jest.fn(),
   };
   const next = jest.fn();
-  updateOnlyOwnData(request, response, next);
+  onlyOwnData(request, response, next);
 
   expect(response.status).toHaveBeenCalledTimes(1);
   expect(response.status).toHaveBeenCalledWith(403);
