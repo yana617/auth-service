@@ -6,6 +6,11 @@ module.exports = {
     USER_ALREADY_EXISTS: 'User with this phone or email already exists',
     USER_EMAIL_NOT_FOUND: 'No user with such email',
     USER_NOT_FOUND: 'User not found',
+    INVALID_TOKEN: 'Invalid token',
+    TOKEN_REQUIRED: 'A token is required for authentication',
+    UPDATE_OWN_ROLE_FORBIDDEN: 'You can not change your own role',
+    ROLE_REQUIRED: 'Role field is required',
+    PERMISSIONS_REQUIRED: 'Permissions field is required',
   },
   RU: {
     FORBIDDEN: 'Недостаточно прав',
@@ -14,5 +19,10 @@ module.exports = {
     USER_ALREADY_EXISTS: 'Пользователь с такой почтой или телефоном уже зарегистрирован',
     USER_EMAIL_NOT_FOUND: 'Нет пользователя с такой почтой',
     USER_NOT_FOUND: 'Пользователь не найден',
+    INVALID_TOKEN: 'Неверный код доступа',
+    TOKEN_REQUIRED: 'Для аутентификации требуется токен доступа',
+    UPDATE_OWN_ROLE_FORBIDDEN: 'Вы не можете обновить собственную роль',
+    ROLE_REQUIRED: 'Поле роль обязательно для заполнения',
+    PERMISSIONS_REQUIRED: 'Поле права обязательно для заполнения',
   },
 };

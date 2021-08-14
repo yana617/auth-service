@@ -11,10 +11,10 @@ module.exports = (permissions) => async (req, res, next) => {
     let rolePermissions = await db.RolePermission.findAll({ where: { role_id } });
     rolePermissions = rolePermissions.map((rolePermission) => rolePermission.permission_id);
 
-    let userAdditionalPermissions = await db.UserPermission.findAll({ where: { user_id: userId } });
-    userAdditionalPermissions = userAdditionalPermissions.map((uap) => uap.permission_id);
+    let userPermissions = await db.UserPermission.findAll({ where: { user_id: userId } });
+    userPermissions = userPermissions.map((uap) => uap.permission_id);
 
-    const allPermissions = rolePermissions.concat(userAdditionalPermissions);
+    const allPermissions = rolePermissions.concat(userPermissions);
     if (permissionsIdsToCheck.every((p) => allPermissions.includes(p))) {
       return next();
     }

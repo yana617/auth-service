@@ -18,20 +18,6 @@
   ],
   "author": "Yana Sidorova",
   "license": "ISC",
-  "jest": {
-    "testEnvironment": "node",
-    "setupFilesAfterEnv": [
-      "<rootDir>/src/tests/fixtures/setup.js"
-    ],
-    "coverageThreshold": {
-      "global": {
-        "branches": 80,
-        "functions": 80,
-        "lines": 80,
-        "statements": 80
-      }
-    }
-  },
   "dependencies": {
     "bcrypt": "^5.0.1",
     "dotenv": "^10.0.0",

@@ -1,10 +1,12 @@
 const route = require('express').Router();
+const { validationResult } = require('express-validator');
 
-const verifyToken = require('../middlewares/auth');
+const verifyToken = require('../middlewares/authRequired');
 const models = require('../database');
 const { ERRORS } = require('../translations');
 const checkPermissions = require('../middlewares/checkPermissions');
 const updateOnlyOwnData = require('../middlewares/updateOnlyOwnData');
+const validateUser = require('../middlewares/validateUser');
 
 // TO-DO-v2 users access
 route.get('/:id', verifyToken, updateOnlyOwnData, checkPermissions(['VIEW_USERS']), async (req, res) => {
@@ -46,7 +48,12 @@ route.get('/:id/permissions', verifyToken, checkPermissions(['EDIT_PERMISSIONS']
   }
 });
 
-route.put('/:id', verifyToken, updateOnlyOwnData, async (req, res) => {
+route.put('/:id', verifyToken, updateOnlyOwnData, validateUser, async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ success: false, errors: errors.array() });
+  }
+
   const { id: userId } = req.params;
   const {
     email,
@@ -56,26 +63,34 @@ route.put('/:id', verifyToken, updateOnlyOwnData, async (req, res) => {
   } = req.body;
 
   try {
-    const updatedUser = await models.User.update({
+    const updatesInfo = await models.User.update({
       email,
       phone,
       name,
       surname,
-    }, { where: { id: userId } });
-    return res.json({ success: true, data: updatedUser });
+    }, {
+      where: { id: userId },
+      returning: true,
+      plain: true,
+      raw: true,
+    });
+    const user = updatesInfo[1];
+    delete user.hash;
+    delete user.salt;
+    return res.json({ success: true, data: user });
   } catch (e) {
     res.status(500).json({ success: false, error: e.message });
   }
 });
 
-route.put('/:id/roles', verifyToken, checkPermissions(['EDIT_PERMISSIONS']), async (req, res) => {
+route.put('/:id/role', verifyToken, checkPermissions(['EDIT_PERMISSIONS']), async (req, res) => {
   const { id: userToUpdateId } = req.params;
   const { id: userId } = req.user;
 
   if (userId === userToUpdateId) {
-    return res.status(400).json({
+    return res.status(403).json({
       success: false,
-      error: 'You can not change your own role',
+      error: ERRORS.UPDATE_OWN_ROLE_FORBIDDEN,
     });
   }
 
@@ -83,7 +98,7 @@ route.put('/:id/roles', verifyToken, checkPermissions(['EDIT_PERMISSIONS']), asy
   if (!role) {
     return res.status(400).json({
       success: false,
-      error: 'Role field must be provided',
+      error: ERRORS.ROLE_REQUIRED,
     });
   }
   try {

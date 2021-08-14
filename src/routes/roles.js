@@ -1,6 +1,6 @@
 const route = require('express').Router();
 
-const verifyToken = require('../middlewares/auth');
+const verifyToken = require('../middlewares/authRequired');
 const models = require('../database');
 const checkPermissions = require('../middlewares/checkPermissions');
 

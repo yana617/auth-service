@@ -1,6 +1,6 @@
 const route = require('express').Router();
 
-const verifyToken = require('../middlewares/auth');
+const verifyToken = require('../middlewares/authRequired');
 const models = require('../database');
 const { ERRORS } = require('../translations');
 const checkPermissions = require('../middlewares/checkPermissions');
@@ -9,20 +9,7 @@ const { permissionsForbiddenToBeAdditional } = require('../database/constants');
 route.get('/', verifyToken, checkPermissions(['EDIT_PERMISSIONS']), async (req, res) => {
   try {
     const permissions = await models.Permission.findAll();
-    const permissionsNames = await permissions.map((p) => p.name);
-    res.json({
-      success: true,
-      data: permissionsNames.filter((p) => !permissionsForbiddenToBeAdditional.includes(p)),
-    });
-  } catch (e) {
-    res.status(500).json({ success: false, error: e.message });
-  }
-});
-
-route.get('/:user_id', verifyToken, checkPermissions(['EDIT_PERMISSIONS']), async (req, res) => {
-  try {
-    const permissions = await models.Permission.findAll();
-    const permissionsNames = await permissions.map((p) => p.name);
+    const permissionsNames = permissions.map((p) => p.name);
     res.json({
       success: true,
       data: permissionsNames.filter((p) => !permissionsForbiddenToBeAdditional.includes(p)),
@@ -37,7 +24,7 @@ route.put('/', verifyToken, checkPermissions(['EDIT_PERMISSIONS']), async (req, 
   if (!permissions) {
     return res.status(400).json({
       success: false,
-      error: 'Permissions field must be provided',
+      error: ERRORS.PERMISSIONS_REQUIRED,
     });
   }
   try {

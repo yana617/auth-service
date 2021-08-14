@@ -16,7 +16,7 @@ const generateUser = () => ({
   additional_fields: [],
 });
 
-const createUser = async (userToSave, role = DEFAULT_ROLE) => {
+const createUser = async (userToSave = generateUser(), role = DEFAULT_ROLE) => {
   const user = { ...userToSave };
   const salt = await bcrypt.genSalt(10);
   const hash = await bcrypt.hash(user.password, salt);
@@ -28,7 +28,7 @@ const createUser = async (userToSave, role = DEFAULT_ROLE) => {
   return user;
 };
 
-const createUserAndGetToken = async (userToSave, role = DEFAULT_ROLE) => {
+const createUserAndGetToken = async (userToSave = generateUser(), role = DEFAULT_ROLE) => {
   const user = await createUser(userToSave, role);
   const token = jwt.sign(
     { id: user.id, role_id: user.role_id },

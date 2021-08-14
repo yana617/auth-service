@@ -1,0 +1,135 @@
+const request = require('supertest');
+const { v4 } = require('uuid');
+
+const app = require('../../app');
+const db = require('../database');
+const { generateUser, createUser, createUserAndGetToken } = require('./fixtures/db');
+const { ERRORS } = require('../translations');
+const { permissions, permissionsForbiddenToBeAdditional } = require('../database/constants');
+
+beforeEach(async () => {
+  await db.User.destroy({ where: {} });
+});
+
+describe('GET /permissions', () => {
+  test('Should return all permissions', async () => {
+    const token = await createUserAndGetToken(generateUser(), 'ADMIN');
+
+    const response = await request(app)
+      .get('/permissions')
+      .set('x-access-token', token)
+      .expect(200);
+
+    const { data: permissionsResponse } = response.body;
+    const expected = permissions.filter((p) => !permissionsForbiddenToBeAdditional.includes(p));
+    expect(permissionsResponse).not.toBeNull();
+    expect(permissionsResponse).toEqual(expected);
+  });
+
+  test('Should fail because you do not have enough permissions', async () => {
+    const token = await createUserAndGetToken(generateUser(), 'VOLUNTEER');
+
+    const response = await request(app)
+      .get('/permissions')
+      .set('x-access-token', token)
+      .expect(403);
+
+    const { error } = response.body;
+    expect(error).toEqual(ERRORS.FORBIDDEN);
+  });
+});
+
+describe('PUT /permissions', () => {
+  test('Should update permissions correctly (add)', async () => {
+    const userOne = await createUser();
+    const token = await createUserAndGetToken(generateUser(), 'ADMIN');
+    const permissionToAdd = 'EDIT_NOTICE';
+
+    await request(app)
+      .put('/permissions')
+      .send({
+        userId: userOne.id,
+        permissions: {
+          [permissionToAdd]: true,
+        },
+      })
+      .set('x-access-token', token)
+      .expect(200);
+
+    const permission = await db.Permission.findOne({ where: { name: permissionToAdd } });
+    let userPermissionsIds = await db.UserPermission.findAll({ where: { user_id: userOne.id } });
+    userPermissionsIds = userPermissionsIds.map((p) => p.permission_id);
+    expect(userPermissionsIds.length).toBe(1);
+    expect(userPermissionsIds.includes(permission.id)).toBe(true);
+  });
+
+  test('Should update permissions correctly (remove)', async () => {
+    const userOne = await createUser();
+    const token = await createUserAndGetToken(generateUser(), 'ADMIN');
+    const permissionToRemove = 'EDIT_NOTICE';
+
+    const permission = await db.Permission.findOne({ where: { name: permissionToRemove } });
+    await db.UserPermission.create({ user_id: userOne.id, permission_id: permission.id });
+
+    let userPermissionsIds = await db.UserPermission.findAll({ where: { user_id: userOne.id } });
+    userPermissionsIds = userPermissionsIds.map((p) => p.permission_id);
+    expect(userPermissionsIds.length).toBe(1);
+    expect(userPermissionsIds.includes(permission.id)).toBe(true);
+
+    await request(app)
+      .put('/permissions')
+      .send({
+        userId: userOne.id,
+        permissions: {
+          [permissionToRemove]: false,
+        },
+      })
+      .set('x-access-token', token)
+      .expect(200);
+
+    userPermissionsIds = await db.UserPermission.findAll({ where: { user_id: userOne.id } });
+    userPermissionsIds = userPermissionsIds.map((p) => p.permission_id);
+    expect(userPermissionsIds.length).toBe(0);
+  });
+
+  test('Should fail because you do not have enough permissions', async () => {
+    const token = await createUserAndGetToken(generateUser(), 'VOLUNTEER');
+
+    const response = await request(app)
+      .put('/permissions')
+      .set('x-access-token', token)
+      .expect(403);
+
+    const { error } = response.body;
+    expect(error).toEqual(ERRORS.FORBIDDEN);
+  });
+
+  test('Should fail because permissions field is missing', async () => {
+    const token = await createUserAndGetToken(generateUser(), 'ADMIN');
+
+    const response = await request(app)
+      .put('/permissions')
+      .send({})
+      .set('x-access-token', token)
+      .expect(400);
+
+    const { error } = response.body;
+    expect(error).toEqual(ERRORS.PERMISSIONS_REQUIRED);
+  });
+
+  test('Should fail because user not found', async () => {
+    const token = await createUserAndGetToken(generateUser(), 'ADMIN');
+
+    const response = await request(app)
+      .put('/permissions')
+      .send({
+        userId: v4(),
+        permissions: {},
+      })
+      .set('x-access-token', token)
+      .expect(404);
+
+    const { error } = response.body;
+    expect(error).toEqual(ERRORS.USER_NOT_FOUND);
+  });
+});

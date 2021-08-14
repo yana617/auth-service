@@ -5,11 +5,11 @@ const jwt = require('jsonwebtoken');
 const { validationResult } = require('express-validator');
 
 const models = require('../database');
-const validateUser = require('../middlewares/validateUser');
+const validateRegisterUser = require('../middlewares/validateRegisterUser');
 const { ERRORS } = require('../translations');
 const { DEFAULT_ROLE } = require('../database/constants');
 
-route.post('/register', validateUser, async (req, res) => {
+route.post('/register', validateRegisterUser, async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ success: false, errors: errors.array() });
