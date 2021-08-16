@@ -2,7 +2,7 @@ const request = require('supertest');
 
 const app = require('../../app');
 const db = require('../database');
-const { userOne, createUser } = require('./fixtures/db');
+const { createUser, generateUser } = require('./fixtures/db');
 const { ERRORS } = require('../translations');
 
 beforeEach(async () => {
@@ -11,6 +11,7 @@ beforeEach(async () => {
 
 describe('POST /register', () => {
   test('Should register new admin', async () => {
+    const userOne = generateUser();
     const response = await request(app)
       .post('/auth/register')
       .send(userOne)
@@ -26,6 +27,7 @@ describe('POST /register', () => {
   });
 
   test('Should fail because user already exist', async () => {
+    const userOne = generateUser();
     await request(app)
       .post('/auth/register')
       .send(userOne)
@@ -53,6 +55,7 @@ describe('POST /register', () => {
 
 describe('POST /login', () => {
   test('Should login existing user', async () => {
+    const userOne = generateUser();
     await request(app)
       .post('/auth/register')
       .send(userOne)
@@ -93,7 +96,7 @@ describe('POST /login', () => {
   });
 
   test('Should fail because of wrong credentials', async () => {
-    await createUser(userOne);
+    const userOne = await createUser();
     const response = await request(app)
       .post('/auth/login')
       .send({

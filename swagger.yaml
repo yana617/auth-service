@@ -8,10 +8,10 @@ servers:
   - url: https://auth-service.dogcatbmpz.by/
     description: Production
 tags:
-- name: "Auth"
-  description: "Authorization"
-- name: "Users"
-  description: "All about users"
+- name: Auth
+  description: Authorization
+- name: Users
+  description: All about users
 paths:
   /auth/register:
     post:
@@ -111,6 +111,62 @@ paths:
               example:
                 success: false
                 error: 'Forbidden'
+  /users:
+    get:
+      summary: Get users
+      tags:
+      - "Users"
+      parameters:
+      - name: search
+        in: query
+        description: text to search
+        required: false
+        type: string
+      - name: order
+        in: query
+        description: Sort order
+        required: false
+        schema:
+          type: string
+          enum: [asc, desc]
+      - name: sortBy
+        in: query
+        description: sort by which field
+        required: false
+        schema:
+          type: string
+          enum: [name, surname, phone]
+      - name: limit
+        in: query
+        description: count of users to return
+        required: false
+        type: number
+      - name: skip
+        in: query
+        description: records to skip
+        required: false
+        type: number
+      responses:
+        '200':
+          description: Returns users
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
+        '400':
+          description: Validation errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
 components:
   schemas:
     Error:
@@ -121,9 +177,30 @@ components:
           default: false
         error:
           type: string
+    ValidationError:
+      type: object
+      properties:
+        success:
+          type: boolean
+          default: false
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              value:
+                type: string
+              msg:
+                type: string
+              param:
+                type: string
+              location: 
+                type: string
     User:
       type: object
       properties:
+        id:
+          type: string
         name:
           type: string
         surname:
