@@ -4,6 +4,8 @@ const { validationResult } = require('express-validator');
 
 const { ERRORS } = require('../translations');
 const userRepository = require('../repositories/UserRepository');
+const uafRepository = require('../repositories/UserAdditionalFieldRepository');
+const aftRepository = require('../repositories/AdditionalFieldTemplateRepository');
 
 const registerUser = async (req, res) => {
   const errors = validationResult(req);
@@ -18,6 +20,7 @@ const registerUser = async (req, res) => {
       phone,
       email,
       password,
+      additionalFields,
     } = req.body;
 
     const user = await userRepository.getByEmailOrPhone(email, phone);
@@ -36,6 +39,20 @@ const registerUser = async (req, res) => {
       salt,
       hash,
     });
+
+    const allAft = await aftRepository.getAll();
+    const userAftIds = additionalFields.map((uaf) => uaf.additionalFieldTemplateId);
+
+    if (additionalFields.length !== allAft.length
+      || !allAft.every(({ id }) => userAftIds.includes(id))) {
+      return res.status(400).json({ success: false, error: ERRORS.AFT_FILL_REQUIRED });
+    }
+
+    await Promise.all(additionalFields.map((af) => uafRepository.create({
+      user_id: newUser.id,
+      additional_field_template_id: af.additionalFieldTemplateId,
+      value: af.value,
+    })));
 
     const result = newUser.get({ plain: true });
     delete result.hash;

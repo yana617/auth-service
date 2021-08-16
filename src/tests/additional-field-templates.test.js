@@ -9,6 +9,7 @@ const { generateUser, createUserAndGetToken, generateAft } = require('./fixtures
 beforeEach(async () => {
   await db.User.destroy({ where: {} });
   await db.AdditionalFieldTemplate.destroy({ where: {} });
+  await db.UserAdditionalField.destroy({ where: {} });
 });
 
 describe('GET /additional-field-templates', () => {
@@ -31,8 +32,9 @@ describe('GET /additional-field-templates', () => {
 
 describe('POST /additional-field-templates', () => {
   test('Should save and return new additional field template', async () => {
+    const userOne = generateUser();
     const aftOne = generateAft();
-    const token = await createUserAndGetToken(generateUser());
+    const token = await createUserAndGetToken(userOne);
     const response = await request(app)
       .post('/additional-field-templates')
       .send(aftOne)
@@ -44,6 +46,11 @@ describe('POST /additional-field-templates', () => {
     const aftInDb = await db.AdditionalFieldTemplate.findByPk(aft.id);
     expect(aftInDb).toBeDefined();
     expect(aftInDb.label).toEqual(aftOne.label);
+
+    // expect uaf was created
+    const uafInDb = await db.UserAdditionalField.findAll({ where: { user_id: userOne.id } });
+    expect(uafInDb).toBeDefined();
+    expect(uafInDb.length).toBe(1);
   });
 
   test('Should save without icon and return new additional field template', async () => {

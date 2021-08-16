@@ -12,7 +12,7 @@ const generateUser = () => ({
   phone: `37529${faker.datatype.number({ min: 1111111, max: 9999999 })}`,
   email: faker.internet.email(),
   password: faker.internet.password(),
-  additional_fields: [],
+  additionalFields: [],
 });
 
 const generateAft = () => ({
@@ -20,6 +20,13 @@ const generateAft = () => ({
   label: faker.lorem.words(2),
   description: faker.lorem.words(15),
   icon: faker.image.imageUrl(),
+});
+
+const generateUaf = (user_id, additional_field_template_id) => ({
+  id: v4(),
+  user_id,
+  additional_field_template_id,
+  value: faker.datatype.boolean(),
 });
 
 const createUser = async (userToSave = generateUser()) => {
@@ -47,4 +54,5 @@ module.exports = {
   createUserAndGetToken,
   createUser,
   generateAft,
+  generateUaf,
 };
