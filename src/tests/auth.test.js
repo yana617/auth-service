@@ -1,9 +1,20 @@
 const request = require('supertest');
+const crypto = require('crypto');
+const bcrypt = require('bcrypt');
+const { v4 } = require('uuid');
 
 const app = require('../../app');
 const db = require('../database');
 const { createUser, generateUser } = require('./fixtures/db');
 const { ERRORS } = require('../translations');
+
+const { BCRYPT_SALT: bcryptSalt } = process.env;
+
+jest.mock('nodemailer', () => ({
+  createTransport: jest.fn().mockReturnValue({
+    sendMail: jest.fn(),
+  }),
+}));
 
 beforeEach(async () => {
   await db.User.destroy({ where: {} });
@@ -107,5 +118,133 @@ describe('POST /login', () => {
 
     const { error } = response.body;
     expect(error).toEqual(ERRORS.AUTH_ERROR);
+  });
+});
+
+describe('POST /forgot-password', () => {
+  test('Should successfully send email to user', async () => {
+    const userOne = await createUser();
+    await request(app)
+      .post('/auth/forgot-password')
+      .send({
+        email: userOne.email,
+      })
+      .expect(200);
+
+    const token = await db.Token.findOne({ where: { user_id: userOne.id } });
+    expect(token).toBeDefined();
+  });
+
+  test('Should fail with user not found error', async () => {
+    const userOne = generateUser();
+    const response = await request(app)
+      .post('/auth/forgot-password')
+      .send({
+        email: userOne.email,
+      })
+      .expect(404);
+
+    const { error } = response.body;
+    expect(error).toBe(ERRORS.USER_EMAIL_NOT_FOUND);
+  });
+
+  test('Should fail with validation error', async () => {
+    const response = await request(app)
+      .post('/auth/forgot-password')
+      .send({
+        email: 'invalid',
+      })
+      .expect(400);
+
+    const { errors } = response.body;
+    expect(errors).toBeDefined();
+  });
+});
+
+describe('POST /reset-password', () => {
+  test('Should successfully update password', async () => {
+    const userOne = await createUser();
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const hash = await bcrypt.hash(resetToken, Number(bcryptSalt));
+    await db.Token.create({ user_id: userOne.id, token: hash });
+    const newPassword = 'testTest';
+
+    const token = await db.Token.findOne({ where: { user_id: userOne.id } });
+    expect(token).toBeDefined();
+
+    await request(app)
+      .post('/auth/login')
+      .send({
+        email: userOne.email,
+        password: newPassword,
+      })
+      .expect(400);
+
+    await request(app)
+      .post('/auth/reset-password')
+      .send({
+        token: resetToken,
+        userId: userOne.id,
+        password: newPassword,
+      })
+      .expect(200);
+
+    await request(app)
+      .post('/auth/login')
+      .send({
+        email: userOne.email,
+        password: newPassword,
+      })
+      .expect(200);
+
+    const tokenAfterUpdate = await db.Token.findOne({ where: { user_id: userOne.id } });
+    expect(tokenAfterUpdate).toBeNull();
+  });
+
+  test('Should fail with validation errors', async () => {
+    const response = await request(app)
+      .post('/auth/reset-password')
+      .send({
+        token: 'invalid',
+        userId: 'invalid',
+        password: '-',
+      })
+      .expect(400);
+
+    const { errors } = response.body;
+    expect(errors).toBeDefined();
+    expect(errors.length).toBe(3);
+  });
+
+  test('Should fail because token is not found', async () => {
+    const response = await request(app)
+      .post('/auth/reset-password')
+      .send({
+        token: v4(),
+        userId: v4(),
+        password: 'validPassword',
+      })
+      .expect(400);
+
+    const { error } = response.body;
+    expect(error).toBe(ERRORS.INVALID_RESET_TOKEN);
+  });
+
+  test('Should fail because token is invalid', async () => {
+    const userOne = await createUser();
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const hash = await bcrypt.hash(resetToken, Number(bcryptSalt));
+    await db.Token.create({ user_id: userOne.id, token: hash });
+    const response = await request(app)
+      .post('/auth/reset-password')
+      .send({
+        token: v4(),
+        userId: userOne.id,
+        password: 'validPassword',
+      })
+      .expect(400);
+
+    const { error } = response.body;
+    expect(error).toBe(ERRORS.INVALID_RESET_TOKEN);
   });
 });

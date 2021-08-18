@@ -78,6 +78,79 @@ paths:
               example:
                 success: false
                 error: 'Fields are required'
+  /auth/forgot-password:
+    post:
+      summary: Sends link to email to reset password
+      tags:
+      - "Auth"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: test@example.com
+      responses:
+        '200':
+          description: Success request, link was send to provided email
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '400':
+          description: Validation errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /auth/reset-password:
+    post:
+      summary: Updates password
+      tags:
+      - "Auth"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+                userId:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Success request, password was updated
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '400':
+          description: Validation errors or token errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
   /users/{userId}:
     get:
       summary: Get user information

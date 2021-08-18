@@ -20,6 +20,7 @@ class BaseRepository {
       where: { id },
       returning: true,
       plain: true,
+      raw: true,
     });
   }
 

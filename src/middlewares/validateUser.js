@@ -1,5 +1,7 @@
 const { checkSchema } = require('express-validator');
 
+const { password } = require('../utils/validationOptions');
+
 module.exports = checkSchema({
   name: {
     in: ['body'],
@@ -33,15 +35,7 @@ module.exports = checkSchema({
     },
     exists: true,
   },
-  password: {
-    in: ['body'],
-    isString: true,
-    isLength: {
-      errorMessage: 'Password should be at least 6 chars long',
-      options: { min: 6 },
-    },
-    exists: true,
-  },
+  password,
   additional_fields: {
     exists: true,
     isArray: true,
