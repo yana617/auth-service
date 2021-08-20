@@ -2,7 +2,7 @@ const request = require('supertest');
 
 const app = require('../../app');
 const db = require('../database');
-const { createUser, generateUser } = require('./fixtures/db');
+const { generateUser, createUser } = require('./fixtures/db');
 const { ERRORS } = require('../translations');
 
 beforeEach(async () => {

@@ -12,6 +12,8 @@ tags:
   description: Authorization
 - name: Users
   description: All about users
+- name: Additional fields templates
+  description: CRUD for additional fields templates
 paths:
   /auth/register:
     post:
@@ -167,6 +169,138 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ValidationError'
+  /additional-field-templates:
+    get:
+      summary: Get all additional field templates
+      tags:
+      - "Additional fields templates"
+      responses:
+        '200':
+          description: Returns all additional field templates
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AdditionalFieldTemplate'
+    post:
+      summary: Create new additional field template
+      tags:
+      - "Additional fields templates"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                label:
+                  type: string
+                  required: true
+                description:
+                  type: string
+                  required: true
+                icon:
+                  type: string
+                  required: false
+      responses:
+        '200':
+          description: Returns created additional field template and set false to all users
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/AdditionalFieldTemplate'
+        '400':
+          description: Validation errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+  /additional-field-templates/{aftId}:
+    put:
+      summary: Update existing additional field template
+      tags:
+      - "Additional fields templates"
+      parameters:
+      - name: "aftId"
+        in: "path"
+        description: "ID of additional field template to update"
+        required: true
+        type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                label:
+                  type: string
+                  required: true
+                description:
+                  type: string
+                  required: true
+                icon:
+                  type: string
+                  required: false
+      responses:
+        '200':
+          description: Returns updated additional field template
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/AdditionalFieldTemplate'
+        '400':
+          description: Validation errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '404':
+          description: Additional field template is not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      summary: Delete existing additional field template
+      tags:
+      - "Additional fields templates"
+      parameters:
+      - name: "aftId"
+        in: "path"
+        description: "ID of additional field template to delete"
+        required: true
+        type: string
+      responses:
+        '200':
+          description: Successfully deleted
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
 components:
   schemas:
     Error:
@@ -253,4 +387,15 @@ components:
         email:
           type: string
         token:
+          type: string
+    AdditionalFieldTemplate:
+      type: object
+      properties:
+        id:
+          type: string
+        label:
+          type: string
+        description:
+          type: string
+        icon:
           type: string

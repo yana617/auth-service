@@ -12,6 +12,8 @@ module.exports = {
     ORDER_QUERY_ERROR: `Invalid order, allowed: ${availableOrder.join(', ')}`,
     SORT_BY_QUERY_ERROR: `Invalid sortBy, allowed: ${availableSortByNames.join(', ')}`,
     SEARCH_QUERY_ERROR: 'Search should be from 1 to 30',
+    USER_NOT_FOUND: 'User not found',
+    AFT_NOT_FOUND: 'Additional field template not found',
   },
   RU: {
     FORBIDDEN: 'Недостаточно прав',
@@ -24,5 +26,7 @@ module.exports = {
     ORDER_QUERY_ERROR: `Неверный порядок сортировки, доступные: ${availableOrder.join(', ')}`,
     SORT_BY_QUERY_ERROR: `Неверное поле сортировки, доступные: ${availableSortByNames.join(', ')}`,
     SEARCH_QUERY_ERROR: 'Строка поиска должна быть от 1 до 30',
+    USER_NOT_FOUND: 'Пользователь не найден',
+    AFT_NOT_FOUND: 'Шаблон дополнительного поля не найден',
   },
 };
