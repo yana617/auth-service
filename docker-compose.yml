@@ -9,3 +9,19 @@ services:
       - /usr/src/auth-service/node_modules
     ports:
       - "1081:1081"
+    depends_on: 
+      - postgres-db
+    env_file:
+     - .env
+    
+  postgres-db:
+    image: postgres:12.3-alpine
+    volumes:
+      - postgres-app-data:/data
+    ports:
+      - "5432:5432"
+    env_file:
+     - .env
+
+volumes:
+  postgres-app-data:

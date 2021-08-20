@@ -10,6 +10,17 @@ on:
 jobs:
   build_test:
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USERNAME: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test-db
+        ports:
+          - 5432:5432
+
     strategy:
       matrix:
         node-version: [14.x]
@@ -23,5 +34,24 @@ jobs:
         run: |
           npm install
           npm ci 
-      - name: test
-        run: npm run test
+      - name: Connect to PostgreSQL and run migrations
+        run: |
+          npm install -g sequelize-cli
+          npm run db:migrate
+        env:
+          NODE_ENV: test
+          POSTGRES_USERNAME: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_TEST_HOST: localhost
+          POSTGRES_PORT: 5432
+      - name: Run linter and tests
+        run: |
+          npm run lint
+          npm run test
+        env:
+          NODE_ENV: test
+          TOKEN_KEY: test
+          POSTGRES_USERNAME: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_TEST_HOST: localhost
+          POSTGRES_PORT: 5432

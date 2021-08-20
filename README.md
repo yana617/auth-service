@@ -1,12 +1,16 @@
-# NodeJS Express Boilerplate
+# Auth service for house-of-souls-ui
 
-### To run in development mode
+### To run tests
+```
+npm run test:docker
+```
+
+### To run
 ```
 docker compose up --build
 ```
 
-### To run in production mode
+### Create new db model
 ```
-docker build . -t boileplate-nodejs-image
-docker run --name boileplate-nodejs -d -p 7799:7799 boileplate-nodejs-image
+sequelize model:generate --name User --attributes name:string,surname:string
 ```

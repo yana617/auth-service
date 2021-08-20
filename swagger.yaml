@@ -3,26 +3,27 @@ info:
   title: API
   version: 0.0.1
 servers:
-  - url: http://localhost:xxxx/
-    description: Dev server
+  - url: http://localhost:1081/
+    description: Development
+  - url: https://auth-service.dogcatbmpz.by/
+    description: Production
+tags:
+- name: "Auth"
+  description: "Authorization"
+- name: "Users"
+  description: "All about users"
 paths:
-  /test:
+  /auth/register:
     post:
-      summary: Test summary
-      description: Test description
-      parameters:
-        - in: query
-          name: test_query
-          description: Test description
-          required: true
-          schema:
-            type: string
+      summary: Register a new user
+      tags:
+      - "Auth"
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/test'
+              $ref: '#/components/schemas/RegisterBody'
       responses:
         '201':
           description: Test description
@@ -33,24 +34,146 @@ paths:
                 properties:
                   success:
                     type: boolean
-                  test:
-                    $ref: '#/components/schemas/test'
+                  data:
+                    $ref: '#/components/schemas/RegisterBody'
         '400':
           description: Client error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/test'
+                $ref: '#/components/schemas/Error'
               example:
                 success: false
-                error: 'test error'
+                error: 'Fields are required'
+  /auth/login:
+    post:
+      summary: Login with existing user
+      tags:
+      - "Auth"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCredentials'
+      responses:
+        '200':
+          description: You are successfully logged in
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/LoginResponse'
+        '400':
+          description: Client error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                success: false
+                error: 'Fields are required'
+  /users/{userId}:
+    get:
+      summary: Get user information
+      tags:
+      - "Users"
+      parameters:
+      - name: "userId"
+        in: "path"
+        description: "ID of user to return [ONLY YOURS]"
+        required: true
+        type: string
+      responses:
+        '200':
+          description: Returns user info
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/User'
+        '403':
+          description: Forbidden error while trying to get someone else's profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                success: false
+                error: 'Forbidden'
 components:
   schemas:
-    test:
+    Error:
       type: object
       properties:
         success:
           type: boolean
           default: false
         error:
+          type: string
+    User:
+      type: object
+      properties:
+        name:
+          type: string
+        surname:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+    RegisterUserAdditionalField:
+      type: object
+      properties:
+        additional_field_template_id:
+          type: string
+        value:
+          type: boolean
+    RegisterBody:
+      type: object
+      properties:
+        name:
+          type: string
+        surname:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        additional_fields:
+          type: array
+          items:
+            $ref: '#/components/schemas/RegisterUserAdditionalField'
+    UserCredentials:
+      type: object
+      properties:
+        email:
+          type: string
+          example: test@test.com
+        password:
+          type: string
+    LoginResponse:
+      type: object
+      properties:
+        name:
+          type: string
+        surname:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+        token:
           type: string

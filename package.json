@@ -1,27 +1,55 @@
 {
-  "name": "node-express-preset",
+  "name": "auth-service",
   "version": "1.0.0",
-  "description": "NodeJS pre-configured project",
+  "description": "NodeJS auth microservice",
   "main": "index.js",
   "scripts": {
     "start": "NODE_ENV=production node index.js",
     "dev": "NODE_ENV=development nodemon index.js",
     "dev:docker": "docker compose up --build",
-    "test": "jest"
+    "test": "NODE_ENV=test jest --coverage",
+    "test:docker": "chmod +x ./bin/test.sh && NODE_ENV=test ./bin/test.sh",
+    "lint": "node_modules/.bin/eslint .",
+    "db:migrate": "sequelize-cli db:migrate"
   },
   "keywords": [
     "docker"
   ],
   "author": "Yana Sidorova",
   "license": "ISC",
+  "jest": {
+    "testEnvironment": "node",
+    "setupFilesAfterEnv": [
+      "<rootDir>/src/tests/fixtures/setup.js"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 80,
+        "functions": 80,
+        "lines": 80,
+        "statements": 80
+      }
+    }
+  },
   "dependencies": {
+    "bcrypt": "^5.0.1",
+    "dotenv": "^10.0.0",
     "express": "^4.17.1",
+    "express-validator": "^6.12.0",
     "js-yaml": "^4.1.0",
+    "jsonwebtoken": "^8.5.1",
     "morgan": "^1.10.0",
+    "pg": "^8.6.0",
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.6.5",
     "swagger-ui-express": "^4.1.6"
   },
   "devDependencies": {
-    "jest": "^27.0.6",
-    "nodemon": "^2.0.12"
+    "eslint": "^7.31.0",
+    "eslint-config-airbnb": "^18.2.1",
+    "eslint-plugin-import": "^2.23.4",
+    "jest": "^27.0.0",
+    "nodemon": "^2.0.12",
+    "supertest": "^6.1.3"
   }
 }

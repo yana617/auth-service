@@ -19,10 +19,8 @@ app.use('/static', express.static('img'));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(express.json({ limit: '10mb' }));
 
-app.use(require('./src/routes'));
+require('./src/database');
 
-app.get('/', (req, res) => {
-  res.send('HELLO FROM AUTH SERVICE');
-});
+app.use(require('./src/routes'));
 
 module.exports = app;
