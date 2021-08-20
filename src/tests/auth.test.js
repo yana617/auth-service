@@ -127,8 +127,7 @@ describe('POST /login', () => {
   });
 
   test('Should fail because of wrong credentials', async () => {
-    const userOne = generateUser();
-    await createUser(userOne);
+    const userOne = await createUser();
     const response = await request(app)
       .post('/auth/login')
       .send({
