@@ -144,12 +144,19 @@ describe('PUT /additional-field-templates', () => {
 
 describe('DELETE /additional-field-templates', () => {
   test('Should delete additional field template', async () => {
+    const userOne = generateUser();
     const aftOne = generateAft();
     await db.AdditionalFieldTemplate.create(aftOne);
-    const token = await createUserAndGetToken(generateUser());
+    const token = await createUserAndGetToken(userOne);
+    await db.UserAdditionalField
+      .create({ user_id: userOne.id, additional_field_template_id: aftOne.id, value: false });
 
     const aftInDb = await db.AdditionalFieldTemplate.findByPk(aftOne.id);
     expect(aftInDb).toBeDefined();
+
+    const uafInDb = await db.UserAdditionalField
+      .findOne({ where: { additional_field_template_id: aftOne.id } });
+    expect(uafInDb).toBeDefined();
 
     await request(app)
       .delete(`/additional-field-templates/${aftOne.id}`)
@@ -158,5 +165,9 @@ describe('DELETE /additional-field-templates', () => {
 
     const aftInDbAfterDelete = await db.AdditionalFieldTemplate.findByPk(aftOne.id);
     expect(aftInDbAfterDelete).toBeNull();
+
+    const uafInDbAfterDelete = await db.UserAdditionalField
+      .findOne({ where: { additional_field_template_id: aftOne.id } });
+    expect(uafInDbAfterDelete).toBeNull();
   });
 });

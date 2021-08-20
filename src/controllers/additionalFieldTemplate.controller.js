@@ -61,9 +61,6 @@ const deleteAft = async (req, res) => {
   try {
     const { id } = req.params;
     await aftRepository.deleteById(id);
-
-    // DELETE ALL UAF ?? DB DOES?
-
     res.json({ success: true });
   } catch (e) {
     res.status(500).json({ success: false, error: e.message });
