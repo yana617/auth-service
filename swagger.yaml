@@ -113,6 +113,62 @@ paths:
               example:
                 success: false
                 error: 'Forbidden'
+  /users:
+    get:
+      summary: Get users
+      tags:
+      - "Users"
+      parameters:
+      - name: search
+        in: query
+        description: text to search
+        required: false
+        type: string
+      - name: order
+        in: query
+        description: Sort order
+        required: false
+        schema:
+          type: string
+          enum: [asc, desc]
+      - name: sortBy
+        in: query
+        description: sort by which field
+        required: false
+        schema:
+          type: string
+          enum: [name, surname, phone]
+      - name: limit
+        in: query
+        description: count of users to return
+        required: false
+        type: number
+      - name: skip
+        in: query
+        description: records to skip
+        required: false
+        type: number
+      responses:
+        '200':
+          description: Returns users
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
+        '400':
+          description: Validation errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
   /additional-field-templates:
     get:
       summary: Get all additional field templates
@@ -277,6 +333,8 @@ components:
     User:
       type: object
       properties:
+        id:
+          type: string
         name:
           type: string
         surname:

@@ -1,4 +1,4 @@
-const { Op } = require('sequelize');
+const { Op, Sequelize } = require('sequelize');
 
 const { User } = require('../database');
 const BaseRepository = require('./BaseRepository');
@@ -24,6 +24,27 @@ class UserRepository extends BaseRepository {
 
   async getByIdWithoutSaltHash(id) {
     return this.model.findByPk(id, { attributes: { exclude: ['hash', 'salt'] }, raw: true });
+  }
+
+  async getAllWithFilters({
+    skip,
+    limit,
+    order,
+    sortBy,
+    search,
+  }) {
+    return this.model.findAll({
+      where: Sequelize.where(Sequelize.fn('concat', Sequelize.col('name'), ' ', Sequelize.col('surname')), {
+        [Op.iLike]: `%${search}%`,
+      }),
+      order: [
+        [sortBy, order],
+      ],
+      offset: skip,
+      limit,
+      attributes: { exclude: ['hash', 'salt'] },
+      raw: true,
+    });
   }
 }
 
