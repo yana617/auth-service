@@ -2,7 +2,7 @@ const request = require('supertest');
 
 const app = require('../../app');
 const db = require('../database');
-const { userOne, createUserAndGetToken } = require('./fixtures/db');
+const { generateUser, createUserAndGetToken } = require('./fixtures/db');
 
 beforeEach(async () => {
   await db.User.destroy({ where: {} });
@@ -10,6 +10,7 @@ beforeEach(async () => {
 
 describe('GET /user/:id', () => {
   test('Should return user', async () => {
+    const userOne = generateUser();
     const token = await createUserAndGetToken(userOne);
 
     const response = await request(app)
