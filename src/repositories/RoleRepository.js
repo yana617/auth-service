@@ -2,8 +2,9 @@ const { Role } = require('../database');
 const BaseRepository = require('./BaseRepository');
 
 class RoleRepository extends BaseRepository {
-  getByName(name) {
-    return this.model.findOne({ where: { name } });
+  getByName(name, withRolePermissions = false) {
+    const query = withRolePermissions ? { include: ['role_permissions'] } : {};
+    return this.model.findOne({ where: { name }, ...query });
   }
 }
 

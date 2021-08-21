@@ -1,11 +1,11 @@
 const request = require('supertest');
-const uuid = require('uuid');
+const { v4 } = require('uuid');
 
 const app = require('../../app');
 const db = require('../database');
 const { generateUser, createUser, createUserAndGetToken } = require('./fixtures/db');
 const { ERRORS } = require('../translations');
-const { rolePermissions } = require('../database/constants');
+const { rolePermissions, DEFAULT_ROLE } = require('../database/constants');
 
 beforeEach(async () => {
   await db.User.destroy({ where: {} });
@@ -85,7 +85,7 @@ describe('GET /users/:id/permissions', () => {
     const token = await createUserAndGetToken(generateUser(), 'ADMIN');
 
     const response = await request(app)
-      .get(`/users/${uuid.v4()}/permissions`)
+      .get(`/users/${v4()}/permissions`)
       .set('x-access-token', token)
       .expect(404);
 
@@ -243,7 +243,7 @@ describe('GET /users', () => {
   });
 
   test('Should return all users without queries', async () => {
-    const token = await createUserAndGetToken();
+    const token = await createUserAndGetToken(generateUser(), 'VOLUNTEER');
 
     const response = await request(app)
       .get('/users')
@@ -255,7 +255,7 @@ describe('GET /users', () => {
   });
 
   test('Should return limited users', async () => {
-    const token = await createUserAndGetToken();
+    const token = await createUserAndGetToken(generateUser(), 'VOLUNTEER');
 
     const response = await request(app)
       .get('/users?limit=1')
@@ -267,7 +267,7 @@ describe('GET /users', () => {
   });
 
   test('Should return users after skip', async () => {
-    const token = await createUserAndGetToken();
+    const token = await createUserAndGetToken(generateUser(), 'VOLUNTEER');
 
     const response = await request(app)
       .get('/users?skip=1')
@@ -279,7 +279,7 @@ describe('GET /users', () => {
   });
 
   test('Should return sorted users', async () => {
-    const token = await createUserAndGetToken();
+    const token = await createUserAndGetToken(generateUser(), 'VOLUNTEER');
 
     const usersInDb = await db.User.findAll({ raw: true });
     const sortedByNameUsers = usersInDb.sort((user1, user2) => user1.surname
@@ -298,7 +298,7 @@ describe('GET /users', () => {
   });
 
   test('Should return ordered users', async () => {
-    const token = await createUserAndGetToken();
+    const token = await createUserAndGetToken(generateUser(), 'VOLUNTEER');
 
     const usersInDb = await db.User.findAll({ raw: true });
     const sortedByNameUsers = usersInDb.sort((user1, user2) => user2.name
@@ -317,7 +317,7 @@ describe('GET /users', () => {
   });
 
   test('Should search correctly', async () => {
-    const token = await createUserAndGetToken();
+    const token = await createUserAndGetToken(generateUser(), 'VOLUNTEER');
     const user = { ...generateUser(), name: 'test', surname: 'user' };
     await createUser(user);
 
@@ -332,7 +332,7 @@ describe('GET /users', () => {
   });
 
   test('Should fail because of incorrect limit query', async () => {
-    const token = await createUserAndGetToken();
+    const token = await createUserAndGetToken(generateUser(), 'VOLUNTEER');
 
     const response = await request(app)
       .get('/users?limit=55')
@@ -344,7 +344,7 @@ describe('GET /users', () => {
   });
 
   test('Should fail because of incorrect skip query', async () => {
-    const token = await createUserAndGetToken();
+    const token = await createUserAndGetToken(generateUser(), 'VOLUNTEER');
 
     const response = await request(app)
       .get('/users?skip=abc')
@@ -356,7 +356,7 @@ describe('GET /users', () => {
   });
 
   test('Should fail because of incorrect search query', async () => {
-    const token = await createUserAndGetToken();
+    const token = await createUserAndGetToken(generateUser(), 'VOLUNTEER');
 
     const response = await request(app)
       .get('/users?search=invalidInvalidLongInvalidInvalidLong')
@@ -368,7 +368,7 @@ describe('GET /users', () => {
   });
 
   test('Should fail because of incorrect order query', async () => {
-    const token = await createUserAndGetToken();
+    const token = await createUserAndGetToken(generateUser(), 'VOLUNTEER');
 
     const response = await request(app)
       .get('/users?order=invalid')
@@ -380,7 +380,7 @@ describe('GET /users', () => {
   });
 
   test('Should fail because of incorrect sortBy query', async () => {
-    const token = await createUserAndGetToken();
+    const token = await createUserAndGetToken(generateUser(), 'VOLUNTEER');
 
     const response = await request(app)
       .get('/users?sortBy=invalid')
@@ -389,5 +389,47 @@ describe('GET /users', () => {
 
     const { errors } = response.body;
     expect(errors).toBeDefined();
+  });
+});
+
+describe('GET /users/:id', () => {
+  test('Should return user correctly', async () => {
+    const userOne = await createUser();
+    const token = await createUserAndGetToken(generateUser(), 'VOLUNTEER');
+
+    const response = await request(app)
+      .get(`/users/${userOne.id}`)
+      .set('x-access-token', token)
+      .expect(200);
+
+    const { data: user } = response.body;
+    expect(user).toBeDefined();
+    expect(user.name).toEqual(userOne.name);
+    expect(user.role).toBe(DEFAULT_ROLE);
+  });
+
+  test('Should fail with forbidden error', async () => {
+    const userOne = createUser();
+    const token = await createUserAndGetToken(generateUser());
+
+    const response = await request(app)
+      .get(`/users/${userOne.id}`)
+      .set('x-access-token', token)
+      .expect(403);
+
+    const { error } = response.body;
+    expect(error).toEqual(ERRORS.FORBIDDEN);
+  });
+
+  test('Should fail with user not found error', async () => {
+    const token = await createUserAndGetToken(generateUser(), 'VOLUNTEER');
+
+    const response = await request(app)
+      .get(`/users/${v4()}`)
+      .set('x-access-token', token)
+      .expect(404);
+
+    const { error } = response.body;
+    expect(error).toEqual(ERRORS.USER_NOT_FOUND);
   });
 });

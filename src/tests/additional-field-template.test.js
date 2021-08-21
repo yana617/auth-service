@@ -13,10 +13,9 @@ beforeEach(async () => {
 
 describe('GET /additional-field-templates', () => {
   test('Should return additional field templates', async () => {
-    const userOne = generateUser();
     await db.AdditionalFieldTemplate.create(generateAft());
     await db.AdditionalFieldTemplate.create(generateAft());
-    const token = await createUserAndGetToken(userOne);
+    const token = await createUserAndGetToken(generateUser());
 
     const response = await request(app)
       .get('/additional-field-templates')
@@ -32,7 +31,7 @@ describe('GET /additional-field-templates', () => {
 describe('POST /additional-field-templates', () => {
   test('Should save and return new additional field template', async () => {
     const aftOne = generateAft();
-    const token = await createUserAndGetToken(generateUser());
+    const token = await createUserAndGetToken(generateUser(), 'ADMIN');
     const response = await request(app)
       .post('/additional-field-templates')
       .send(aftOne)
@@ -48,7 +47,7 @@ describe('POST /additional-field-templates', () => {
 
   test('Should save without icon and return new additional field template', async () => {
     const aftOne = generateAft();
-    const token = await createUserAndGetToken(generateUser());
+    const token = await createUserAndGetToken(generateUser(), 'ADMIN');
     const response = await request(app)
       .post('/additional-field-templates')
       .send({ ...aftOne, icon: undefined })
@@ -64,7 +63,7 @@ describe('POST /additional-field-templates', () => {
 
   test('Should fail with validation errors', async () => {
     const aftOne = generateAft();
-    const token = await createUserAndGetToken(generateUser());
+    const token = await createUserAndGetToken(generateUser(), 'ADMIN');
     const response = await request(app)
       .post('/additional-field-templates')
       .send({ ...aftOne, label: '' })
@@ -77,7 +76,7 @@ describe('POST /additional-field-templates', () => {
 
   test('Should fail with validation errors', async () => {
     const aftOne = generateAft();
-    const token = await createUserAndGetToken(generateUser());
+    const token = await createUserAndGetToken(generateUser(), 'ADMIN');
     const response = await request(app)
       .post('/additional-field-templates')
       .send({ ...aftOne, description: '' })
@@ -93,7 +92,7 @@ describe('PUT /additional-field-templates', () => {
   test('Should update and return edited additional field template', async () => {
     const aftOne = generateAft();
     await db.AdditionalFieldTemplate.create(aftOne);
-    const token = await createUserAndGetToken(generateUser());
+    const token = await createUserAndGetToken(generateUser(), 'ADMIN');
     const editedLabel = 'edited';
     const response = await request(app)
       .put(`/additional-field-templates/${aftOne.id}`)
@@ -110,7 +109,7 @@ describe('PUT /additional-field-templates', () => {
 
   test('Should fail with validation errors', async () => {
     const aftOne = generateAft();
-    const token = await createUserAndGetToken(generateUser());
+    const token = await createUserAndGetToken(generateUser(), 'ADMIN');
     const response = await request(app)
       .put(`/additional-field-templates/${aftOne.id}`)
       .send({ ...aftOne, label: '' })
@@ -123,7 +122,7 @@ describe('PUT /additional-field-templates', () => {
 
   test('Should fail with not found error', async () => {
     const aftOne = generateAft();
-    const token = await createUserAndGetToken(generateUser());
+    const token = await createUserAndGetToken(generateUser(), 'ADMIN');
     const response = await request(app)
       .put(`/additional-field-templates/${v4()}`)
       .send(aftOne)
@@ -139,7 +138,7 @@ describe('DELETE /additional-field-templates', () => {
   test('Should delete additional field template', async () => {
     const aftOne = generateAft();
     await db.AdditionalFieldTemplate.create(aftOne);
-    const token = await createUserAndGetToken(generateUser());
+    const token = await createUserAndGetToken(generateUser(), 'ADMIN');
 
     const aftInDb = await db.AdditionalFieldTemplate.findByPk(aftOne.id);
     expect(aftInDb).toBeDefined();
