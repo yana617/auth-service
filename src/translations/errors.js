@@ -1,3 +1,5 @@
+const { availableOrder, availableSortByNames } = require('../database/constants');
+
 module.exports = {
   EN: {
     FORBIDDEN: 'Forbidden',
@@ -11,6 +13,12 @@ module.exports = {
     UPDATE_OWN_ROLE_FORBIDDEN: 'You can not change your own role',
     ROLE_REQUIRED: 'Role field is required',
     PERMISSIONS_REQUIRED: 'Permissions field is required',
+    LIMIT_QUERY_ERROR: 'Limit should be from 1 to 50',
+    SKIP_QUERY_ERROR: 'Skip should be from 1',
+    ORDER_QUERY_ERROR: `Invalid order, allowed: ${availableOrder.join(', ')}`,
+    SORT_BY_QUERY_ERROR: `Invalid sortBy, allowed: ${availableSortByNames.join(', ')}`,
+    SEARCH_QUERY_ERROR: 'Search should be from 1 to 30',
+    AFT_NOT_FOUND: 'Additional field template not found',
   },
   RU: {
     FORBIDDEN: 'Недостаточно прав',
@@ -24,5 +32,11 @@ module.exports = {
     UPDATE_OWN_ROLE_FORBIDDEN: 'Вы не можете обновить собственную роль',
     ROLE_REQUIRED: 'Поле роль обязательно для заполнения',
     PERMISSIONS_REQUIRED: 'Поле права обязательно для заполнения',
+    LIMIT_QUERY_ERROR: 'Лимит должен быть от 1 до 50',
+    SKIP_QUERY_ERROR: 'Пропускать можно от 1 записи',
+    ORDER_QUERY_ERROR: `Неверный порядок сортировки, доступные: ${availableOrder.join(', ')}`,
+    SORT_BY_QUERY_ERROR: `Неверное поле сортировки, доступные: ${availableSortByNames.join(', ')}`,
+    SEARCH_QUERY_ERROR: 'Строка поиска должна быть от 1 до 30',
+    AFT_NOT_FOUND: 'Шаблон дополнительного поля не найден',
   },
 };

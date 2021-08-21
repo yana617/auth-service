@@ -43,10 +43,18 @@ const permissionsForbiddenToBeAdditional = [
 
 const DEFAULT_ROLE = 'USER';
 
+const DEFAULT_LIMIT = 15;
+
+const availableSortByNames = ['name', 'surname', 'phone'];
+const availableOrder = ['asc', 'desc'];
+
 module.exports = {
   roles,
   permissions,
   rolePermissions,
   permissionsForbiddenToBeAdditional,
   DEFAULT_ROLE,
+  DEFAULT_LIMIT,
+  availableSortByNames,
+  availableOrder,
 };

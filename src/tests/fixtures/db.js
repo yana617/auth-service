@@ -16,6 +16,13 @@ const generateUser = () => ({
   additional_fields: [],
 });
 
+const generateAft = () => ({
+  id: v4(),
+  label: faker.lorem.words(2),
+  description: faker.lorem.words(15),
+  icon: faker.image.imageUrl(),
+});
+
 const createUser = async (userToSave = generateUser(), role = DEFAULT_ROLE) => {
   const user = { ...userToSave };
   const salt = await bcrypt.genSalt(10);
@@ -42,4 +49,5 @@ module.exports = {
   generateUser,
   createUserAndGetToken,
   createUser,
+  generateAft,
 };

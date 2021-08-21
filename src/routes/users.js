@@ -7,16 +7,10 @@ const { ERRORS } = require('../translations');
 const checkPermissions = require('../middlewares/checkPermissions');
 const onlyOwnData = require('../middlewares/onlyOwnData');
 const validateUser = require('../middlewares/validateUser');
+const userController = require('../controllers/user.controller');
+const validateUserSearchQuery = require('../middlewares/validateUserSearchQuery');
 
-route.get('/me', verifyToken, async (req, res) => {
-  try {
-    const { id: userId } = req.user;
-    const user = await models.User.findByPk(userId, { attributes: { exclude: ['hash', 'salt'] }, raw: true });
-    res.json({ success: true, data: user });
-  } catch (e) {
-    res.status(500).json({ success: false, error: e.message });
-  }
-});
+route.get('/me', verifyToken, userController.getMe);
 
 route.get('/:id', verifyToken, checkPermissions(['VIEW_USERS']), async (req, res) => {
   try {
@@ -30,6 +24,8 @@ route.get('/:id', verifyToken, checkPermissions(['VIEW_USERS']), async (req, res
     res.status(500).json({ success: false, error: e.message });
   }
 });
+
+route.get('/', verifyToken, validateUserSearchQuery, userController.getUsers);
 
 route.get('/:id/permissions', verifyToken, checkPermissions(['EDIT_PERMISSIONS']), async (req, res) => {
   try {
