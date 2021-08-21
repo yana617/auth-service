@@ -5,7 +5,7 @@ const { v4 } = require('uuid');
 
 const app = require('../../app');
 const db = require('../database');
-const { createUser, generateUser } = require('./fixtures/db');
+const { generateUser, createUser } = require('./fixtures/db');
 const { ERRORS } = require('../translations');
 
 const { BCRYPT_SALT: bcryptSalt } = process.env;

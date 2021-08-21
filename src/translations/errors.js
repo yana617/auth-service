@@ -13,6 +13,8 @@ module.exports = {
     SORT_BY_QUERY_ERROR: `Invalid sortBy, allowed: ${availableSortByNames.join(', ')}`,
     SEARCH_QUERY_ERROR: 'Search should be from 1 to 30',
     INVALID_RESET_TOKEN: 'Invalid or expired password reset token',
+    USER_NOT_FOUND: 'User not found',
+    AFT_NOT_FOUND: 'Additional field template not found',
   },
   RU: {
     FORBIDDEN: 'Недостаточно прав',
@@ -26,5 +28,7 @@ module.exports = {
     SORT_BY_QUERY_ERROR: `Неверное поле сортировки, доступные: ${availableSortByNames.join(', ')}`,
     SEARCH_QUERY_ERROR: 'Строка поиска должна быть от 1 до 30',
     INVALID_RESET_TOKEN: 'Неверный токен для изменения пароля',
+    USER_NOT_FOUND: 'Пользователь не найден',
+    AFT_NOT_FOUND: 'Шаблон дополнительного поля не найден',
   },
 };
