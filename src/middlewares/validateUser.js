@@ -42,14 +42,14 @@ module.exports = checkSchema({
     },
     exists: true,
   },
-  additional_fields: {
+  additionalFields: {
     exists: true,
     isArray: true,
   },
-  'additional_fields.*.additional_field_template_id': {
+  'additionalFields.*.additionalFieldTemplateId': {
     exists: true,
   },
-  'additional_fields.*.value': {
+  'additionalFields.*.value': {
     exists: true,
     isBoolean: true,
   },
