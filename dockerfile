@@ -11,4 +11,9 @@ RUN npm install --production
 COPY . .
 
 EXPOSE 1081
-CMD [ "npm", "start" ]
+
+COPY ./bin/prod-docker-entrypoint.sh /bin/prod-docker-entrypoint.sh
+
+RUN chmod +x /bin/prod-docker-entrypoint.sh
+
+ENTRYPOINT ["/bin/prod-docker-entrypoint.sh"]
