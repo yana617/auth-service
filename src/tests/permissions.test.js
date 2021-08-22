@@ -23,7 +23,7 @@ describe('GET /permissions', () => {
     const { data: permissionsResponse } = response.body;
     const expected = permissions.filter((p) => !permissionsForbiddenToBeAdditional.includes(p));
     expect(permissionsResponse).not.toBeNull();
-    expect(permissionsResponse).toEqual(expected);
+    expect(permissionsResponse.length).toBe(expected.length);
   });
 
   test('Should fail because you do not have enough permissions', async () => {
@@ -90,6 +90,29 @@ describe('PUT /permissions', () => {
     userPermissionsIds = await db.UserPermission.findAll({ where: { user_id: userOne.id } });
     userPermissionsIds = userPermissionsIds.map((p) => p.permission_id);
     expect(userPermissionsIds.length).toBe(0);
+  });
+
+  test('Should fail because role with same permissions exist', async () => {
+    const userOne = await createUser();
+    const token = await createUserAndGetToken(generateUser(), 'ADMIN');
+    const permissionsToAdd = {
+      CREATE_CLAIM: true,
+      EDIT_CLAIM: true,
+      DELETE_CLAIM: true,
+      VIEW_USERS: true,
+    };
+
+    const response = await request(app)
+      .put('/permissions')
+      .send({
+        userId: userOne.id,
+        permissions: permissionsToAdd,
+      })
+      .set('x-access-token', token)
+      .expect(400);
+
+    const { error } = response.body;
+    expect(error).toEqual(ERRORS.ROLE_WITH_SAME_PERMISSIONS_EXIST);
   });
 
   test('Should fail because you do not have enough permissions', async () => {

@@ -13,6 +13,9 @@ module.exports = {
       name: {
         type: Sequelize.ENUM(roles)
       },
+      translate: {
+        type: Sequelize.STRING,
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

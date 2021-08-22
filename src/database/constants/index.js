@@ -3,6 +3,11 @@ const roles = [
   'VOLUNTEER',
   'ADMIN',
 ];
+const rolesTranslates = {
+  USER: 'Пользователь',
+  VOLUNTEER: 'Волонтер',
+  ADMIN: 'Администратор',
+};
 
 const permissions = [
   'VIEW_PROFILE',
@@ -42,9 +47,7 @@ const permissionsForbiddenToBeAdditional = [
 ];
 
 const DEFAULT_ROLE = 'USER';
-
 const DEFAULT_LIMIT = 15;
-
 const availableSortByNames = ['name', 'surname', 'phone'];
 const availableOrder = ['asc', 'desc'];
 
@@ -57,4 +60,5 @@ module.exports = {
   DEFAULT_LIMIT,
   availableSortByNames,
   availableOrder,
+  rolesTranslates,
 };

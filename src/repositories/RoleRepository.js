@@ -6,6 +6,10 @@ class RoleRepository extends BaseRepository {
     const query = withRolePermissions ? { include: ['role_permissions'] } : {};
     return this.model.findOne({ where: { name }, ...query });
   }
+
+  getAllWithPermissions() {
+    return this.model.findAll({ include: ['role_permissions'], nest: true });
+  }
 }
 
 module.exports = new RoleRepository(Role);

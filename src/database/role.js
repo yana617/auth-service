@@ -6,6 +6,9 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.ENUM(roles),
       unique: true,
     },
+    translate: {
+      type: DataTypes.STRING,
+    },
   }, {
     tableName: 'roles',
   });

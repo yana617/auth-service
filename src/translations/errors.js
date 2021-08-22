@@ -19,6 +19,7 @@ module.exports = {
     SORT_BY_QUERY_ERROR: `Invalid sortBy, allowed: ${availableSortByNames.join(', ')}`,
     SEARCH_QUERY_ERROR: 'Search should be from 1 to 30',
     AFT_NOT_FOUND: 'Additional field template not found',
+    ROLE_WITH_SAME_PERMISSIONS_EXIST: 'Role with same permissions exist, try to change role',
   },
   RU: {
     FORBIDDEN: 'Недостаточно прав',
@@ -38,5 +39,6 @@ module.exports = {
     SORT_BY_QUERY_ERROR: `Неверное поле сортировки, доступные: ${availableSortByNames.join(', ')}`,
     SEARCH_QUERY_ERROR: 'Строка поиска должна быть от 1 до 30',
     AFT_NOT_FOUND: 'Шаблон дополнительного поля не найден',
+    ROLE_WITH_SAME_PERMISSIONS_EXIST: 'Существует роль с такими же правами, попробуйте обновить роль',
   },
 };

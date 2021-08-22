@@ -1,7 +1,7 @@
 const { v4 } = require('uuid');
 const bcrypt = require('bcrypt');
 
-const { roles, permissions, rolePermissions } = require('../database/constants');
+const { roles, permissions, rolePermissions, rolesTranslates } = require('../database/constants');
 
 const { NODE_ENV } = process.env;
 
@@ -11,6 +11,7 @@ const rolesToInsert = roles.map((role) => {
   return {
     id: rolesInDb[role],
     name: role,
+    translate: rolesTranslates[role],
     createdAt: new Date(),
     updatedAt: new Date(),
   };

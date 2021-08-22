@@ -21,7 +21,7 @@ describe('GET /roles', () => {
 
     const { data: rolesResponse } = response.body;
     expect(rolesResponse).not.toBeNull();
-    expect(rolesResponse).toEqual(roles);
+    expect(rolesResponse.length).toEqual(roles.length);
   });
 
   test('Should fail because you do not have enough permissions', async () => {
