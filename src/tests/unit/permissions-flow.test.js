@@ -8,6 +8,8 @@ const { rolePermissions } = require('../../database/constants');
 beforeEach(async () => {
   await db.User.destroy({ where: {} });
   await db.UserPermission.destroy({ where: {} });
+  await db.AdditionalFieldTemplate.destroy({ where: {} });
+  await db.UserAdditionalField.destroy({ where: {} });
 });
 
 test('I can register, update permissions and change role successfully', async () => {
