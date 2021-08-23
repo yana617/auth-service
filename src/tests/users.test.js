@@ -9,6 +9,8 @@ const { rolePermissions, DEFAULT_ROLE } = require('../database/constants');
 
 beforeEach(async () => {
   await db.User.destroy({ where: {} });
+  await db.AdditionalFieldTemplate.destroy({ where: {} });
+  await db.UserAdditionalField.destroy({ where: {} });
 });
 
 describe('GET /users/me', () => {
