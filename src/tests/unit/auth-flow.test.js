@@ -6,6 +6,8 @@ const { generateUser } = require('../fixtures/db');
 
 beforeEach(async () => {
   await db.User.destroy({ where: {} });
+  await db.AdditionalFieldTemplate.destroy({ where: {} });
+  await db.UserAdditionalField.destroy({ where: {} });
 });
 
 test('I can register, login and get own info successfully', async () => {

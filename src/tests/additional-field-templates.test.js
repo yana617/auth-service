@@ -4,11 +4,17 @@ const { v4 } = require('uuid');
 const app = require('../../app');
 const db = require('../database');
 const { ERRORS } = require('../translations');
-const { generateUser, createUserAndGetToken, generateAft } = require('./fixtures/db');
+const {
+  generateUser,
+  createUserAndGetToken,
+  generateAft,
+  createUser,
+} = require('./fixtures/db');
 
 beforeEach(async () => {
   await db.User.destroy({ where: {} });
   await db.AdditionalFieldTemplate.destroy({ where: {} });
+  await db.UserAdditionalField.destroy({ where: {} });
 });
 
 describe('GET /additional-field-templates', () => {
@@ -30,6 +36,7 @@ describe('GET /additional-field-templates', () => {
 
 describe('POST /additional-field-templates', () => {
   test('Should save and return new additional field template', async () => {
+    const userOne = await createUser();
     const aftOne = generateAft();
     const token = await createUserAndGetToken(generateUser(), 'ADMIN');
     const response = await request(app)
@@ -43,6 +50,11 @@ describe('POST /additional-field-templates', () => {
     const aftInDb = await db.AdditionalFieldTemplate.findByPk(aft.id);
     expect(aftInDb).toBeDefined();
     expect(aftInDb.label).toEqual(aftOne.label);
+
+    // expect uaf was created
+    const uafInDb = await db.UserAdditionalField.findAll({ where: { user_id: userOne.id } });
+    expect(uafInDb).toBeDefined();
+    expect(uafInDb.length).toBe(1);
   });
 
   test('Should save without icon and return new additional field template', async () => {
@@ -136,12 +148,19 @@ describe('PUT /additional-field-templates', () => {
 
 describe('DELETE /additional-field-templates', () => {
   test('Should delete additional field template', async () => {
+    const userOne = createUser();
     const aftOne = generateAft();
     await db.AdditionalFieldTemplate.create(aftOne);
     const token = await createUserAndGetToken(generateUser(), 'ADMIN');
+    await db.UserAdditionalField
+      .create({ user_id: userOne.id, additional_field_template_id: aftOne.id, value: false });
 
     const aftInDb = await db.AdditionalFieldTemplate.findByPk(aftOne.id);
     expect(aftInDb).toBeDefined();
+
+    const uafInDb = await db.UserAdditionalField
+      .findOne({ where: { additional_field_template_id: aftOne.id } });
+    expect(uafInDb).toBeDefined();
 
     await request(app)
       .delete(`/additional-field-templates/${aftOne.id}`)
@@ -150,5 +169,9 @@ describe('DELETE /additional-field-templates', () => {
 
     const aftInDbAfterDelete = await db.AdditionalFieldTemplate.findByPk(aftOne.id);
     expect(aftInDbAfterDelete).toBeNull();
+
+    const uafInDbAfterDelete = await db.UserAdditionalField
+      .findOne({ where: { additional_field_template_id: aftOne.id } });
+    expect(uafInDbAfterDelete).toBeNull();
   });
 });

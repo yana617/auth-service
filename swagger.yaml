@@ -18,6 +18,8 @@ tags:
   description: All about roles
 - name: Additional fields templates
   description: CRUD for additional fields templates
+- name: User additional fields
+  description: all needs with user additional fields
 paths:
   /auth/register:
     post:
@@ -594,6 +596,73 @@ paths:
                   success:
                     type: boolean
                     example: true
+  /user-additional-fields/me:
+    get:
+      summary: Get all user (yours) additional fields
+      tags:
+      - "User additional fields"
+      responses:
+        '200':
+          description: Returns all yours additional fields
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/UserAdditionalField'
+  /user-additional-fields/{uafId}:
+    put:
+      summary: Update your additional field
+      tags:
+      - "User additional fields"
+      parameters:
+      - name: "uafId"
+        in: "path"
+        description: "ID of user additional field to update"
+        required: true
+        type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                value:
+                  type: boolean
+                  required: true
+      responses:
+        '200':
+          description: Returns updated additional field
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/UserAdditionalField'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: User additional field is not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      
 components:
   schemas:
     Error:
@@ -639,7 +708,7 @@ components:
     RegisterUserAdditionalField:
       type: object
       properties:
-        additional_field_template_id:
+        additionalFieldTemplateId:
           type: string
         value:
           type: boolean
@@ -656,7 +725,7 @@ components:
           type: string
         password:
           type: string
-        additional_fields:
+        additionalFields:
           type: array
           items:
             $ref: '#/components/schemas/RegisterUserAdditionalField'
@@ -692,3 +761,14 @@ components:
           type: string
         icon:
           type: string
+    UserAdditionalField:
+      type: object
+      properties:
+        id:
+          type: string
+        user_id:
+          type: string
+        additional_field_template_id:
+          type: string
+        value:
+          type: boolean

@@ -20,6 +20,9 @@ module.exports = {
     SEARCH_QUERY_ERROR: 'Search should be from 1 to 30',
     AFT_NOT_FOUND: 'Additional field template not found',
     ROLE_WITH_SAME_PERMISSIONS_EXIST: 'Role with same permissions exist, try to change role',
+    UAF_NOT_FOUND: 'User additional field not found',
+    VALUE_BOOLEAN: 'Value must be a boolean',
+    AFT_FILL_REQUIRED: 'Not all additional fields templates filled',
   },
   RU: {
     FORBIDDEN: 'Недостаточно прав',
@@ -40,5 +43,8 @@ module.exports = {
     SEARCH_QUERY_ERROR: 'Строка поиска должна быть от 1 до 30',
     AFT_NOT_FOUND: 'Шаблон дополнительного поля не найден',
     ROLE_WITH_SAME_PERMISSIONS_EXIST: 'Существует роль с такими же правами, попробуйте обновить роль',
+    UAF_NOT_FOUND: 'Дополнительное поле пользователя не найдено',
+    VALUE_BOOLEAN: 'Значение должно быть быть булевого типа',
+    AFT_FILL_REQUIRED: 'Не все дополнительные поля заполнены',
   },
 };
