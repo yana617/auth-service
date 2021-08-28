@@ -1,9 +1,8 @@
 const bcrypt = require('bcrypt');
 const { validationResult } = require('express-validator');
-const nodemailer = require('nodemailer');
 const crypto = require('crypto');
 
-const { ERRORS, TEXTS } = require('../translations');
+const { ERRORS } = require('../translations');
 const userRepository = require('../repositories/UserRepository');
 const tokenRepository = require('../repositories/TokenRepository');
 const roleRepository = require('../repositories/RoleRepository');
@@ -11,25 +10,9 @@ const { DEFAULT_ROLE } = require('../database/constants');
 const uafRepository = require('../repositories/UserAdditionalFieldRepository');
 const aftRepository = require('../repositories/AdditionalFieldTemplateRepository');
 const generateToken = require('../utils/generateToken');
+const { sendLinkEmail, sendPasswordChangedSuccessfullyEmail } = require('../utils/mails');
 
-const {
-  CLIENT_URL: clientURL,
-  BCRYPT_SALT: bcryptSalt,
-  EMAIL_LOGIN,
-  EMAIL_PASSWORD,
-  TRANSPORT_HOST,
-  TRANSPORT_PORT,
-} = process.env;
-
-const transporter = nodemailer.createTransport({
-  port: TRANSPORT_PORT,
-  host: TRANSPORT_HOST,
-  auth: {
-    user: EMAIL_LOGIN,
-    pass: EMAIL_PASSWORD,
-  },
-  secure: true,
-});
+const { CLIENT_URL: clientURL, BCRYPT_SALT: bcryptSalt } = process.env;
 
 const registerUser = async (req, res) => {
   const errors = validationResult(req);
@@ -139,16 +122,8 @@ const forgotPassword = async (req, res) => {
     const hash = await bcrypt.hash(resetToken, Number(bcryptSalt));
     await tokenRepository.create({ user_id: user.id, token: hash });
 
-    const link = `${clientURL}/reset-password?token=${resetToken}&id=${user.id}`;
-
-    await transporter.sendMail({
-      from: EMAIL_LOGIN,
-      to: email,
-      subject: TEXTS.EMAIL_SUBJECT_LINK,
-      html: `<b>${TEXTS.HELLO}</b>
-        <br>${TEXTS.RESET_LINK}:<br/>
-        <a href='${link}'>${TEXTS.OPEN_LINK}</a>`,
-    });
+    const link = `${clientURL}/reset-password?token=${resetToken}&userId=${user.id}`;
+    await sendLinkEmail(link, email);
 
     res.json({ success: true });
   } catch (e) {
@@ -181,12 +156,7 @@ const resetPassword = async (req, res) => {
     await tokenRepository.deleteById(passwordResetToken.id);
 
     const user = userUpdateInfo[1];
-    await transporter.sendMail({
-      from: EMAIL_LOGIN,
-      to: user.email,
-      subject: TEXTS.EMAIL_SUBJECT_SUCCESS,
-      text: TEXTS.EMAIL_SUCCESS_DESCRIPTION,
-    });
+    await sendPasswordChangedSuccessfullyEmail(user.email);
 
     res.json({ success: true });
   } catch (e) {
