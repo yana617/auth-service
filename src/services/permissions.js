@@ -38,8 +38,8 @@ exports.permissionsFromExistingRole = async (
     name: r.name,
     permissionsIds: r.role_permissions.map((rp) => rp.permission_id),
   }));
-  const biggerRoles = mappedRoles.filter((r) => !r.permissionsIds
-    .every((v) => rolePermissionsIds.includes(v)) && r.id !== userRoleId);
+  const rolesSeniorThanUserRole = mappedRoles.filter((r) => !r.permissionsIds
+    .every((permissionsId) => rolePermissionsIds.includes(permissionsId)) && r.id !== userRoleId);
   const additionalPermissionsIds = mappedPermissionsToUpdate.reduce((filtered, p) => {
     if (p.value) {
       filtered.push(p.id);
@@ -48,5 +48,6 @@ exports.permissionsFromExistingRole = async (
   }, []);
   const newPermissions = rolePermissionsIds
     .concat(userPermissionsIds).concat(additionalPermissionsIds);
-  return biggerRoles.some((r) => r.permissionsIds.every((p) => newPermissions.includes(p)));
+  return rolesSeniorThanUserRole.some((r) => r.permissionsIds
+    .every((p) => newPermissions.includes(p)));
 };

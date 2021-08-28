@@ -1,5 +1,4 @@
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 const { validationResult } = require('express-validator');
 
 const { ERRORS } = require('../translations');
@@ -8,6 +7,7 @@ const roleRepository = require('../repositories/RoleRepository');
 const { DEFAULT_ROLE } = require('../database/constants');
 const uafRepository = require('../repositories/UserAdditionalFieldRepository');
 const aftRepository = require('../repositories/AdditionalFieldTemplateRepository');
+const generateToken = require('../utils/generateToken');
 
 const registerUser = async (req, res) => {
   const errors = validationResult(req);
@@ -63,6 +63,7 @@ const registerUser = async (req, res) => {
     })));
 
     const result = newUser.get({ plain: true });
+    result.token = generateToken(result);
     delete result.hash;
     delete result.salt;
 
@@ -85,14 +86,8 @@ const loginUser = async (req, res) => {
     if (user.hash !== bcrypt.hashSync(password, user.salt)) {
       return res.status(400).json({ success: false, error: ERRORS.AUTH_ERROR });
     }
-    const token = jwt.sign(
-      { id: user.id, role_id: user.role_id },
-      process.env.TOKEN_KEY,
-      {
-        expiresIn: '2d',
-      },
-    );
-    user.token = token;
+
+    user.token = generateToken(user);
     delete user.hash;
     delete user.salt;
     res.json({ success: true, data: user });

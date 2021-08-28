@@ -1,10 +1,10 @@
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 const { v4 } = require('uuid');
 const faker = require('faker');
 
 const db = require('../../database');
 const { DEFAULT_ROLE } = require('../../database/constants');
+const generateToken = require('../../utils/generateToken');
 
 const generateUser = () => ({
   id: v4(),
@@ -44,11 +44,7 @@ const createUser = async (userToSave = generateUser(), role = DEFAULT_ROLE) => {
 
 const createUserAndGetToken = async (userToSave = generateUser(), role = DEFAULT_ROLE) => {
   const user = await createUser(userToSave, role);
-  const token = jwt.sign(
-    { id: user.id, role_id: user.role_id },
-    process.env.TOKEN_KEY,
-    { expiresIn: '2d' },
-  );
+  const token = generateToken(user);
   return token;
 };
 
