@@ -25,6 +25,65 @@ module.exports = {
           onDelete: 'CASCADE',
         }
       ),
+      queryInterface.addColumn(
+        'users',
+        'role_id',
+        {
+          type: Sequelize.UUID,
+          references: {
+            model: 'roles',
+            key: 'id',
+          },
+        }
+      ),
+      queryInterface.addColumn(
+        'role_permissions',
+        'role_id',
+        {
+          type: Sequelize.UUID,
+          references: {
+            model: 'roles',
+            key: 'id',
+          },
+          onDelete: 'CASCADE',
+        }
+      ),
+      queryInterface.addColumn(
+        'role_permissions',
+        'permission_id',
+        {
+          type: Sequelize.UUID,
+          references: {
+            model: 'permissions',
+            key: 'id',
+          },
+          onDelete: 'CASCADE',
+        }
+      ),
+      queryInterface.addColumn(
+        'user_permissions',
+        'user_id',
+        {
+          type: Sequelize.UUID,
+          references: {
+            model: 'users',
+            key: 'id',
+          },
+          onDelete: 'CASCADE',
+        }
+      ),
+      queryInterface.addColumn(
+        'user_permissions',
+        'permission_id',
+        {
+          type: Sequelize.UUID,
+          references: {
+            model: 'permissions',
+            key: 'id',
+          },
+          onDelete: 'CASCADE',
+        }
+      ),
     ]);
   },
 

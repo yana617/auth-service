@@ -1,9 +1,10 @@
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 const { v4 } = require('uuid');
 const faker = require('faker');
 
 const db = require('../../database');
+const { DEFAULT_ROLE } = require('../../database/constants');
+const generateToken = require('../../utils/generateToken');
 
 const generateUser = () => ({
   id: v4(),
@@ -29,23 +30,21 @@ const generateUaf = (user_id, additional_field_template_id) => ({
   value: faker.datatype.boolean(),
 });
 
-const createUser = async (userToSave = generateUser()) => {
+const createUser = async (userToSave = generateUser(), role = DEFAULT_ROLE) => {
   const user = { ...userToSave };
   const salt = await bcrypt.genSalt(10);
   const hash = await bcrypt.hash(user.password, salt);
   user.hash = hash;
   user.salt = salt;
+  const { id: role_id } = await db.Role.findOne({ where: { name: role } });
+  user.role_id = role_id;
   await db.User.create(user);
   return user;
 };
 
-const createUserAndGetToken = async (userToSave = generateUser()) => {
-  const user = await createUser(userToSave);
-  const token = jwt.sign(
-    { id: user.id, email: user.email },
-    process.env.TOKEN_KEY,
-    { expiresIn: '2d' },
-  );
+const createUserAndGetToken = async (userToSave = generateUser(), role = DEFAULT_ROLE) => {
+  const user = await createUser(userToSave, role);
+  const token = generateToken(user);
   return token;
 };
 

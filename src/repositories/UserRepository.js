@@ -22,8 +22,9 @@ class UserRepository extends BaseRepository {
     });
   }
 
-  async getByIdWithoutSaltHash(id) {
-    return this.model.findByPk(id, { attributes: { exclude: ['hash', 'salt'] }, raw: true });
+  async getByIdWithoutSaltHash(id, loadRole = false) {
+    const query = loadRole ? { include: ['role'], nest: true } : {};
+    return this.model.findByPk(id, { attributes: { exclude: ['hash', 'salt'] }, ...query, raw: true });
   }
 
   async getAllWithFilters({

@@ -30,10 +30,8 @@ describe('POST /register', () => {
 
     const { data: user } = response.body;
     expect(user.name).toEqual(userOne.name);
-    const [userInDb] = await db.User.findAll({
-      where: { phone: userOne.phone },
-    }, { raw: true });
-    expect(userInDb).not.toBeNull();
+    const userInDb = await db.User.findOne({ where: { phone: userOne.phone } });
+    expect(userInDb).toBeDefined();
     expect(userInDb.name).toEqual(userOne.name);
 
     // expect uaf was created

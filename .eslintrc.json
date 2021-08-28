@@ -15,7 +15,10 @@
     "afterEach": true,
     "jest": true
   },
-  "ignorePatterns": ["src/migrations"],
+  "ignorePatterns": [
+    "src/migrations",
+    "src/seeders"
+  ],
   "rules": {
     "linebreak-style": 0,
     "semi": [
