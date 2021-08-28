@@ -13,8 +13,8 @@ COPY . .
 
 EXPOSE 1081
 
-COPY ./bin/docker-entrypoint.sh /bin/docker-entrypoint.sh
+COPY ./bin/dev-docker-entrypoint.sh /bin/dev-docker-entrypoint.sh
 
-RUN chmod +x /bin/docker-entrypoint.sh
+RUN chmod +x /bin/dev-docker-entrypoint.sh
 
-ENTRYPOINT ["/bin/docker-entrypoint.sh"]
+ENTRYPOINT ["/bin/dev-docker-entrypoint.sh"]

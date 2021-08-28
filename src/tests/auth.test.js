@@ -5,7 +5,7 @@ const { v4 } = require('uuid');
 
 const app = require('../../app');
 const db = require('../database');
-const { generateUser, createUser } = require('./fixtures/db');
+const { generateUser, createUser, generateAft } = require('./fixtures/db');
 const { ERRORS } = require('../translations');
 
 const { BCRYPT_SALT: bcryptSalt } = process.env;
@@ -18,23 +18,38 @@ jest.mock('nodemailer', () => ({
 
 beforeEach(async () => {
   await db.User.destroy({ where: {} });
+  await db.AdditionalFieldTemplate.destroy({ where: {} });
+  await db.UserAdditionalField.destroy({ where: {} });
 });
 
 describe('POST /register', () => {
   test('Should register new admin', async () => {
     const userOne = generateUser();
+    const aft = generateAft();
+    await db.AdditionalFieldTemplate.create(aft);
+
     const response = await request(app)
       .post('/auth/register')
-      .send(userOne)
+      .send({
+        ...userOne,
+        additionalFields: [{
+          additionalFieldTemplateId: aft.id,
+          value: false,
+        }],
+      })
       .expect(201);
 
     const { data: user } = response.body;
     expect(user.name).toEqual(userOne.name);
-    const [userInDb] = await db.User.findAll({
-      where: { phone: userOne.phone },
-    }, { raw: true });
-    expect(userInDb).not.toBeNull();
+    const userInDb = await db.User.findOne({ where: { phone: userOne.phone } });
+    expect(userInDb).toBeDefined();
     expect(userInDb.name).toEqual(userOne.name);
+
+    // expect uaf was created
+    const uafInDb = await db.UserAdditionalField.findAll({ where: { user_id: user.id } });
+    expect(uafInDb).toBeDefined();
+    expect(uafInDb.length).toBe(1);
+    expect(uafInDb[0].additional_field_template_id).toBe(aft.id);
   });
 
   test('Should fail because user already exist', async () => {
@@ -61,6 +76,20 @@ describe('POST /register', () => {
 
     const { errors } = response.body;
     expect(errors).not.toBeNull();
+  });
+
+  test('Should fail because additional fields did not sent correctly', async () => {
+    const userOne = generateUser();
+    const aft = generateAft();
+    await db.AdditionalFieldTemplate.create(aft);
+
+    const response = await request(app)
+      .post('/auth/register')
+      .send(userOne)
+      .expect(400);
+
+    const { error } = response.body;
+    expect(error).toEqual(ERRORS.AFT_FILL_REQUIRED);
   });
 });
 

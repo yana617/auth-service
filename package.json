@@ -10,27 +10,14 @@
     "test": "NODE_ENV=test jest --coverage",
     "test:docker": "chmod +x ./bin/test.sh && NODE_ENV=test ./bin/test.sh",
     "lint": "node_modules/.bin/eslint .",
-    "db:migrate": "sequelize-cli db:migrate"
+    "db:migrate": "sequelize-cli db:migrate",
+    "db:seed:all": "sequelize-cli db:seed:all"
   },
   "keywords": [
     "docker"
   ],
   "author": "Yana Sidorova",
   "license": "ISC",
-  "jest": {
-    "testEnvironment": "node",
-    "setupFilesAfterEnv": [
-      "<rootDir>/src/tests/fixtures/setup.js"
-    ],
-    "coverageThreshold": {
-      "global": {
-        "branches": 80,
-        "functions": 80,
-        "lines": 80,
-        "statements": 80
-      }
-    }
-  },
   "dependencies": {
     "bcrypt": "^5.0.1",
     "dotenv": "^10.0.0",
@@ -43,7 +30,8 @@
     "pg": "^8.6.0",
     "pg-hstore": "^2.3.4",
     "sequelize": "^6.6.5",
-    "swagger-ui-express": "^4.1.6"
+    "swagger-ui-express": "^4.1.6",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "eslint": "^7.31.0",

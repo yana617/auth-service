@@ -12,8 +12,14 @@ tags:
   description: Authorization
 - name: Users
   description: All about users
+- name: Permissions
+  description: All about permissions
+- name: Roles
+  description: All about roles
 - name: Additional fields templates
   description: CRUD for additional fields templates
+- name: User additional fields
+  description: all needs with user additional fields
 paths:
   /auth/register:
     post:
@@ -43,10 +49,20 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
-              example:
-                success: false
-                error: 'Fields are required'
+                $ref: '#/components/schemas/MultipleErrors'
+              examples:
+                Client Error:
+                  value:
+                    success: false
+                    error: 'User already exist'
+                Validation Errors:
+                  value:
+                    success: false
+                    errors: 
+                      - value: ''
+                        msg: Required
+                        param: name
+                        location: body
   /auth/login:
     post:
       summary: Login with existing user
@@ -178,7 +194,7 @@ paths:
                   data:
                     $ref: '#/components/schemas/User'
         '403':
-          description: Forbidden error while trying to get someone else's profile
+          description: Forbidden error if no enough permissions
           content:
             application/json:
               schema:
@@ -186,6 +202,71 @@ paths:
               example:
                 success: false
                 error: 'Forbidden'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                success: false
+                error: 'User not found'
+    put:
+      summary: Update user information (your own)
+      tags:
+      - "Users"
+      parameters:
+      - name: "userId"
+        in: "path"
+        description: "ID of user to edit [ONLY YOURS]"
+        required: true
+        type: string
+      responses:
+        '200':
+          description: Returns updated user info
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/User'
+        '400':
+          description: validation errors because of invalid fields
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '403':
+          description: Forbidden error while trying to update someone else's profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                success: false
+                error: 'Forbidden'
+  /users/me:
+    get:
+      summary: Get user (your) information
+      tags:
+      - "Users"
+      responses:
+        '200':
+          description: Returns user info
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/User'
   /users:
     get:
       summary: Get users
@@ -242,6 +323,220 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ValidationError'
+  /users/{userId}/permissions:
+    get:
+      summary: Get user permissions
+      tags:
+      - "Users"
+      parameters:
+      - name: "userId"
+        in: "path"
+        description: "ID of user who permissions to return"
+        required: true
+        type: string
+      responses:
+        '200':
+          description: Returns user permissions
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      rolePermissions:
+                        type: array
+                        items:
+                          type: string
+                      additionalPermissions:
+                        type: array
+                        items:
+                          type: string
+        '403':
+          description: Forbidden error when you don't have enough permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                success: false
+                error: 'Forbidden'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                success: false
+                error: 'User not found'
+  /users/{userId}/role:
+    put:
+      summary: Update user role
+      tags:
+      - "Users"
+      parameters:
+      - name: "userId"
+        in: "path"
+        description: "ID of user to replace a role"
+        required: true
+        type: string
+      responses:
+        '200':
+          description: Role updated successfully
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '400':
+          description: Validation errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                success: false
+                error: 'Role field id required'
+        '403':
+          description: Forbidden error when you don't have enough permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                success: false
+                error: 'Forbidden'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                success: false
+                error: 'User not found'
+  /permissions:
+    get:
+      summary: Get all permissions available to be additional
+      tags:
+      - "Permissions"
+      responses:
+        '200':
+          description: Returns all permissions
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      type: string
+        '403':
+          description: Forbidden error when you don't have enough permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                success: false
+                error: 'Forbidden'
+    put:
+      summary: Update user additional permissions
+      tags:
+      - "Permissions"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                permissions:
+                  type: object
+                  example:
+                    EDIT_NOTICE: true
+                    CREATE_NOTICE: false
+      responses:
+        '200':
+          description: Permissions successfully updated
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '400':
+          description: Validation errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                success: false
+                error: 'Permissions field id required'
+        '403':
+          description: Forbidden error when you don't have enough permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                success: false
+                error: 'Forbidden'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                success: false
+                error: 'User not found'
+  /roles:
+    get:
+      summary: Get all roles
+      tags:
+      - "Roles"
+      responses:
+        '200':
+          description: Returns all roles
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      type: string
+        '403':
+          description: Forbidden error when you don't have enough permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                success: false
+                error: 'Forbidden'
   /additional-field-templates:
     get:
       summary: Get all additional field templates
@@ -374,6 +669,73 @@ paths:
                   success:
                     type: boolean
                     example: true
+  /user-additional-fields/me:
+    get:
+      summary: Get all user (yours) additional fields
+      tags:
+      - "User additional fields"
+      responses:
+        '200':
+          description: Returns all yours additional fields
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/UserAdditionalField'
+  /user-additional-fields/{uafId}:
+    put:
+      summary: Update your additional field
+      tags:
+      - "User additional fields"
+      parameters:
+      - name: "uafId"
+        in: "path"
+        description: "ID of user additional field to update"
+        required: true
+        type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                value:
+                  type: boolean
+                  required: true
+      responses:
+        '200':
+          description: Returns updated additional field
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/UserAdditionalField'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: User additional field is not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      
 components:
   schemas:
     Error:
@@ -419,7 +781,7 @@ components:
     RegisterUserAdditionalField:
       type: object
       properties:
-        additional_field_template_id:
+        additionalFieldTemplateId:
           type: string
         value:
           type: boolean
@@ -436,7 +798,7 @@ components:
           type: string
         password:
           type: string
-        additional_fields:
+        additionalFields:
           type: array
           items:
             $ref: '#/components/schemas/RegisterUserAdditionalField'
@@ -472,3 +834,14 @@ components:
           type: string
         icon:
           type: string
+    UserAdditionalField:
+      type: object
+      properties:
+        id:
+          type: string
+        user_id:
+          type: string
+        additional_field_template_id:
+          type: string
+        value:
+          type: boolean

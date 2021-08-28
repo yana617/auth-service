@@ -1,5 +1,4 @@
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 const { validationResult } = require('express-validator');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
@@ -7,6 +6,11 @@ const crypto = require('crypto');
 const { ERRORS, TEXTS } = require('../translations');
 const userRepository = require('../repositories/UserRepository');
 const tokenRepository = require('../repositories/TokenRepository');
+const roleRepository = require('../repositories/RoleRepository');
+const { DEFAULT_ROLE } = require('../database/constants');
+const uafRepository = require('../repositories/UserAdditionalFieldRepository');
+const aftRepository = require('../repositories/AdditionalFieldTemplateRepository');
+const generateToken = require('../utils/generateToken');
 
 const {
   CLIENT_URL: clientURL,
@@ -40,6 +44,7 @@ const registerUser = async (req, res) => {
       phone,
       email,
       password,
+      additionalFields,
     } = req.body;
 
     const user = await userRepository.getByEmailOrPhone(email, phone);
@@ -50,6 +55,11 @@ const registerUser = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(password, salt);
 
+    const role = await roleRepository.getByName(DEFAULT_ROLE);
+    if (!role) {
+      return res.status(500).json({ success: false, error: 'Default role not found' });
+    }
+
     const newUser = await userRepository.create({
       name,
       surname,
@@ -57,9 +67,25 @@ const registerUser = async (req, res) => {
       email,
       salt,
       hash,
+      role_id: role.id,
     });
 
+    const allAft = await aftRepository.getAll();
+    const userAftIds = additionalFields.map((uaf) => uaf.additionalFieldTemplateId);
+
+    if (additionalFields.length !== allAft.length
+      || !allAft.every(({ id }) => userAftIds.includes(id))) {
+      return res.status(400).json({ success: false, error: ERRORS.AFT_FILL_REQUIRED });
+    }
+
+    await Promise.all(additionalFields.map((af) => uafRepository.create({
+      user_id: newUser.id,
+      additional_field_template_id: af.additionalFieldTemplateId,
+      value: af.value,
+    })));
+
     const result = newUser.get({ plain: true });
+    result.token = generateToken(result);
     delete result.hash;
     delete result.salt;
 
@@ -82,14 +108,8 @@ const loginUser = async (req, res) => {
     if (user.hash !== bcrypt.hashSync(password, user.salt)) {
       return res.status(400).json({ success: false, error: ERRORS.AUTH_ERROR });
     }
-    const token = jwt.sign(
-      { id: user.id, role_id: user.role_id },
-      process.env.TOKEN_KEY,
-      {
-        expiresIn: '2d',
-      },
-    );
-    user.token = token;
+
+    user.token = generateToken(user);
     delete user.hash;
     delete user.salt;
     res.json({ success: true, data: user });
