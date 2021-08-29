@@ -1,0 +1,28 @@
+get:
+  summary: Get all roles
+  tags:
+    - "Roles"
+  responses:
+    "200":
+      description: Returns all roles
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              data:
+                type: array
+                items:
+                  type: string
+    "403":
+      description: Forbidden error when you don't have enough permissions
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Error.yaml"
+          example:
+            success: false
+            error: "Forbidden"

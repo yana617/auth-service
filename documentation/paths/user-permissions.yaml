@@ -1,0 +1,51 @@
+get:
+  summary: Get user permissions
+  tags:
+    - "Users"
+  parameters:
+    - name: "userId"
+      in: "path"
+      description: "ID of user who permissions to return"
+      required: true
+      schema:
+        type: string
+  responses:
+    "200":
+      description: Returns user permissions
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              data:
+                type: object
+                properties:
+                  rolePermissions:
+                    type: array
+                    items:
+                      type: string
+                  additionalPermissions:
+                    type: array
+                    items:
+                      type: string
+    "403":
+      description: Forbidden error when you don't have enough permissions
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Error.yaml"
+          example:
+            success: false
+            error: "Forbidden"
+    "404":
+      description: User not found
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Error.yaml"
+          example:
+            success: false
+            error: "User not found"

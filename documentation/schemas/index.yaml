@@ -1,0 +1,14 @@
+User:
+  $ref: "./User.yaml"
+Error:
+  $ref: "./Error.yaml"
+ValidationError:
+  $ref: "./ValidationError.yaml"
+RegisterUserAdditionalField:
+  $ref: "./RegisterUserAdditionalField.yaml"
+RegisterBody:
+  $ref: "./RegisterBody.yaml"
+AdditionalFieldTemplate:
+  $ref: "./AdditionalFieldTemplate.yaml"
+UserAdditionalField:
+  $ref: "./UserAdditionalField.yaml"

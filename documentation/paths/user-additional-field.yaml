@@ -1,0 +1,47 @@
+put:
+  summary: Update your additional field
+  tags:
+    - "User additional fields"
+  parameters:
+    - name: "uafId"
+      in: "path"
+      description: "ID of user additional field to update"
+      required: true
+      schema: 
+        type: string
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            value:
+              type: boolean
+          required:
+            - value
+  responses:
+    "200":
+      description: Returns updated additional field
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              data:
+                $ref: "../schemas/UserAdditionalField.yaml"
+    "400":
+      description: Validation error
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Error.yaml"
+    "404":
+      description: User additional field is not found
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Error.yaml"

@@ -1,0 +1,57 @@
+openapi: 3.0.0
+info:
+  title: API
+  version: 0.0.1
+servers:
+  - url: http://localhost:1081/
+    description: Development
+  - url: https://auth-service.dogcatbmpz.by/
+    description: Production
+tags:
+  - name: Auth
+    description: Authorization
+  - name: Users
+    description: All about users
+  - name: Permissions
+    description: All about permissions
+  - name: Roles
+    description: All about roles
+  - name: Additional fields templates
+    description: CRUD for additional fields templates
+  - name: User additional fields
+    description: all needs with user additional fields
+paths:
+  /auth/register:
+    $ref: "./paths/register.yaml"
+  /auth/login:
+    $ref: "./paths/login.yaml"
+  /auth/forgot-password:
+    $ref: "./paths/forgot-password.yaml"
+  /auth/reset-password:
+    $ref: "./paths/reset-password.yaml"
+  /users/{userId}:
+    $ref: "./paths/user.yaml"
+  /users/me:
+    $ref: "./paths/users-me.yaml"
+  /users:
+    $ref: "./paths/users.yaml"
+  /users/{userId}/permissions:
+    $ref: "./paths/user-permissions.yaml"
+  /users/{userId}/role:
+    $ref: "./paths/user-role.yaml"
+  /permissions:
+    $ref: "./paths/permissions.yaml"
+  /roles:
+    $ref: "./paths/roles.yaml"
+  /additional-field-templates:
+    $ref: "./paths/additional-field-templates.yaml"
+  /additional-field-templates/{aftId}:
+    $ref: "./paths/additional-field-template.yaml"
+  /user-additional-fields/me:
+    $ref: "./paths/user-additional-fields-me.yaml"
+  /user-additional-fields/{uafId}:
+    $ref: "./paths/user-additional-field.yaml"
+
+components:
+  schemas:
+    $ref: "./schemas/index.yaml"

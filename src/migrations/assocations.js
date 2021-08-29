@@ -26,6 +26,18 @@ module.exports = {
         }
       ),
       queryInterface.addColumn(
+        'tokens',
+        'user_id',
+        {
+          type: Sequelize.UUID,
+          references: {
+            model: 'users',
+            key: 'id',
+          },
+          onDelete: 'CASCADE',
+        }
+      ),
+      queryInterface.addColumn(
         'users',
         'role_id',
         {
@@ -62,11 +74,11 @@ module.exports = {
       ),
       queryInterface.addColumn(
         'user_permissions',
-        'user_id',
+        'permission_id',
         {
           type: Sequelize.UUID,
           references: {
-            model: 'users',
+            model: 'permissions',
             key: 'id',
           },
           onDelete: 'CASCADE',
@@ -74,11 +86,11 @@ module.exports = {
       ),
       queryInterface.addColumn(
         'user_permissions',
-        'permission_id',
+        'user_id',
         {
           type: Sequelize.UUID,
           references: {
-            model: 'permissions',
+            model: 'users',
             key: 'id',
           },
           onDelete: 'CASCADE',

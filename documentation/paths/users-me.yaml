@@ -1,0 +1,17 @@
+get:
+  summary: Get user (your) information
+  tags:
+    - "Users"
+  responses:
+    "200":
+      description: Returns user info
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              data:
+                $ref: "../schemas/User.yaml"

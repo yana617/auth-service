@@ -14,3 +14,12 @@ docker compose up --build
 ```
 sequelize model:generate --name User --attributes name:string,surname:string
 ```
+
+### Updating swagger
+Add new swagger path or schema files in **documentation/** folder
+
+Then run
+```
+npm install -g swagger-cli
+swagger-cli bundle documentation/swagger.yaml --outfile swagger.yaml --type yaml
+```

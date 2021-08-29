@@ -1,0 +1,81 @@
+get:
+  summary: Get user information
+  tags:
+    - "Users"
+  parameters:
+    - name: "userId"
+      in: "path"
+      description: "ID of user to return [ONLY YOURS]"
+      required: true
+      schema:
+        type: string
+  responses:
+    "200":
+      description: Returns user info
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              data:
+                $ref: "../schemas/User.yaml"
+    "403":
+      description: Forbidden error if no enough permissions
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Error.yaml"
+            example:
+              success: false
+              error: "Forbidden"
+    "404":
+      description: User not found
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Error.yaml"
+          example:
+            success: false
+            error: "User not found"
+put:
+  summary: Update user information (your own)
+  tags:
+    - "Users"
+  parameters:
+    - name: "userId"
+      in: "path"
+      description: "ID of user to edit [ONLY YOURS]"
+      required: true
+      schema:
+        type: string
+  responses:
+    "200":
+      description: Returns updated user info
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              data:
+                $ref: "../schemas/User.yaml"
+    "400":
+      description: validation errors because of invalid fields
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/ValidationError.yaml"
+    "403":
+      description: Forbidden error while trying to update someone else's profile
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Error.yaml"
+          example:
+            success: false
+            error: "Forbidden"
