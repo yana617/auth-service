@@ -1,0 +1,6 @@
+type: object
+properties:
+  additionalFieldTemplateId:
+    type: string
+  value:
+    type: boolean

@@ -1,0 +1,41 @@
+post:
+  summary: Register a new user
+  tags:
+    - "Auth"
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: "../schemas/RegisterBody.yaml"
+  responses:
+    "201":
+      description: User successfully registered
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              data:
+                $ref: "../schemas/RegisterBody.yaml"
+    "400":
+      description: Client error
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/MultipleErrors.yaml"
+          examples:
+            Client Error:
+              value:
+                success: false
+                error: "User already exist"
+            Validation Errors:
+              value:
+                success: false
+                errors:
+                  - value: ""
+                    msg: Required
+                    param: name
+                    location: body

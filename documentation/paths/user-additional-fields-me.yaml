@@ -1,0 +1,19 @@
+get:
+  summary: Get all user (yours) additional fields
+  tags:
+    - "User additional fields"
+  responses:
+    "200":
+      description: Returns all yours additional fields
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              data:
+                type: array
+                items:
+                  $ref: "../schemas/UserAdditionalField.yaml"

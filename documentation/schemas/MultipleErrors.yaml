@@ -1,0 +1,4 @@
+type: object
+oneOf:
+  - $ref: "./Error.yaml"
+  - $ref: "./ValidationError.yaml"
