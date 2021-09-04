@@ -1,0 +1,10 @@
+type: object
+properties:
+  id:
+    type: string
+  user_id:
+    type: string
+  additional_field_template_id:
+    type: string
+  value:
+    type: boolean

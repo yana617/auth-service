@@ -1,0 +1,51 @@
+post:
+  summary: Login with existing user
+  tags:
+    - "Auth"
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            email:
+              type: string
+              example: test@test.com
+            password:
+              type: string
+  responses:
+    "200":
+      description: You are successfully logged in
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              data:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  surname:
+                    type: string
+                  phone:
+                    type: string
+                  email:
+                    type: string
+                  token:
+                    type: string
+    "400":
+      description: Client error
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Error.yaml"
+          example:
+            success: false
+            error: "Fields are required"

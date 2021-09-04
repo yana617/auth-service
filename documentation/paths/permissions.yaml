@@ -1,0 +1,84 @@
+get:
+  summary: Get all permissions available to be additional
+  tags:
+    - "Permissions"
+  responses:
+    "200":
+      description: Returns all permissions
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              data:
+                type: array
+                items:
+                  type: string
+    "403":
+      description: Forbidden error when you don't have enough permissions
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Error.yaml"
+          example:
+            success: false
+            error: "Forbidden"
+put:
+  summary: Update user additional permissions
+  tags:
+    - "Permissions"
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            userId:
+              type: string
+            permissions:
+              type: object
+              example:
+                EDIT_NOTICE: true
+                CREATE_NOTICE: false
+  responses:
+    "200":
+      description: Permissions successfully updated
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+    "400":
+      description: Validation errors
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Error.yaml"
+          example:
+            success: false
+            error: "Permissions field id required"
+    "403":
+      description: Forbidden error when you don't have enough permissions
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Error.yaml"
+          example:
+            success: false
+            error: "Forbidden"
+    "404":
+      description: User not found
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Error.yaml"
+          example:
+            success: false
+            error: "User not found"

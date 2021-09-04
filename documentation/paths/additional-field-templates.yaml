@@ -1,0 +1,58 @@
+get:
+  summary: Get all additional field templates
+  tags:
+    - "Additional fields templates"
+  responses:
+    "200":
+      description: Returns all additional field templates
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              data:
+                type: array
+                items:
+                  $ref: "../schemas/AdditionalFieldTemplate.yaml"
+post:
+  summary: Create new additional field template
+  tags:
+    - "Additional fields templates"
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            label:
+              type: string
+            description:
+              type: string
+            icon:
+              type: string
+          required:
+            - label
+              description
+  responses:
+    "200":
+      description: Returns created additional field template and set false to all users
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              data:
+                $ref: "../schemas/AdditionalFieldTemplate.yaml"
+    "400":
+      description: Validation errors
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/ValidationError.yaml"

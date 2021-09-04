@@ -1,13 +1,18 @@
 const bcrypt = require('bcrypt');
 const { validationResult } = require('express-validator');
+const crypto = require('crypto');
 
 const { ERRORS } = require('../translations');
 const userRepository = require('../repositories/UserRepository');
+const tokenRepository = require('../repositories/TokenRepository');
 const roleRepository = require('../repositories/RoleRepository');
 const { DEFAULT_ROLE } = require('../database/constants');
 const uafRepository = require('../repositories/UserAdditionalFieldRepository');
 const aftRepository = require('../repositories/AdditionalFieldTemplateRepository');
 const generateToken = require('../utils/generateToken');
+const { sendLinkEmail, sendPasswordChangedSuccessfullyEmail } = require('../utils/mails');
+
+const { CLIENT_URL: clientURL, BCRYPT_SALT: bcryptSalt } = process.env;
 
 const registerUser = async (req, res) => {
   const errors = validationResult(req);
@@ -96,7 +101,72 @@ const loginUser = async (req, res) => {
   }
 };
 
+const forgotPassword = async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ success: false, errors: errors.array() });
+    }
+
+    const { email } = req.body;
+    const user = await userRepository.getByEmail(email);
+    if (!user) {
+      return res.status(404).json({ success: false, error: ERRORS.USER_EMAIL_NOT_FOUND });
+    }
+
+    const existingToken = await tokenRepository.getByUserId(user.id);
+    if (existingToken) {
+      await tokenRepository.deleteById(existingToken.id);
+    }
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const hash = await bcrypt.hash(resetToken, Number(bcryptSalt));
+    await tokenRepository.create({ user_id: user.id, token: hash });
+
+    const link = `${clientURL}/reset-password?token=${resetToken}&userId=${user.id}`;
+    await sendLinkEmail(link, email);
+
+    res.json({ success: true });
+  } catch (e) {
+    res.status(500).json({ success: false, error: e.message });
+  }
+};
+
+const resetPassword = async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ success: false, errors: errors.array() });
+    }
+
+    const { userId, token, password } = req.body;
+    await tokenRepository.deleteExpiredTokens();
+    const passwordResetToken = await tokenRepository.getByUserId(userId);
+    if (!passwordResetToken) {
+      return res.status(400).json({ success: false, error: ERRORS.INVALID_RESET_TOKEN });
+    }
+    const isValid = await bcrypt.compare(token, passwordResetToken.token);
+    if (!isValid) {
+      return res.status(400).json({ success: false, error: ERRORS.INVALID_RESET_TOKEN });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hash = await bcrypt.hash(password, salt);
+
+    const userUpdateInfo = await userRepository.updateById(userId, { salt, hash });
+    await tokenRepository.deleteById(passwordResetToken.id);
+
+    const user = userUpdateInfo[1];
+    await sendPasswordChangedSuccessfullyEmail(user.email);
+
+    res.json({ success: true });
+  } catch (e) {
+    res.status(500).json({ success: false, error: e.message });
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
+  forgotPassword,
+  resetPassword,
 };
