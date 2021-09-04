@@ -15,7 +15,7 @@ module.exports = checkSchema({
     in: ['body'],
     isString: true,
     isLength: {
-      errorMessage: 'userId should be from 36 characters',
+      errorMessage: 'userId should be 36 characters',
       options: { min: 36, max: 36 },
     },
     exists: true,

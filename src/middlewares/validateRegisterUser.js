@@ -1,29 +1,23 @@
 const { checkSchema } = require('express-validator');
 
 const validationOptions = require('../utils/validationOptions');
+const { ERRORS } = require('../translations');
 
 module.exports = checkSchema({
   name: validationOptions.name,
   surname: validationOptions.surname,
   phone: validationOptions.phone,
   email: validationOptions.email,
-  password: {
-    in: ['body'],
-    isString: true,
-    isLength: {
-      errorMessage: 'Password should be at least 6 chars long',
-      options: { min: 6 },
-    },
-    exists: true,
-  },
-  additional_fields: {
+  password: validationOptions.password,
+  additionalFields: {
     exists: true,
     isArray: true,
+    errorMessage: ERRORS.UAF_FIELD_ERROR,
   },
-  'additional_fields.*.additional_field_template_id': {
+  'additionalFields.*.additionalFieldTemplateId': {
     exists: true,
   },
-  'additional_fields.*.value': {
+  'additionalFields.*.value': {
     exists: true,
     isBoolean: true,
   },

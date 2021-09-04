@@ -23,7 +23,7 @@ beforeEach(async () => {
 });
 
 describe('POST /register', () => {
-  test('Should register new admin', async () => {
+  test('Should register new user', async () => {
     const userOne = generateUser();
     const aft = generateAft();
     await db.AdditionalFieldTemplate.create(aft);
