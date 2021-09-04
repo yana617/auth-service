@@ -1,7 +1,9 @@
+const { ERRORS } = require('../translations');
+
 exports.name = {
   in: ['body'],
   isLength: {
-    errorMessage: 'Name should be from 2 to 30 characters',
+    errorMessage: ERRORS.NAME_FIELD_ERROR,
     options: { min: 2, max: 30 },
   },
   exists: true,
@@ -9,9 +11,8 @@ exports.name = {
 
 exports.surname = {
   in: ['body'],
-  isString: true,
   isLength: {
-    errorMessage: 'Surname should be from 2 to 30 characters',
+    errorMessage: ERRORS.SURNAME_FIELD_ERROR,
     options: { min: 2, max: 30 },
   },
   exists: true,
@@ -20,7 +21,7 @@ exports.surname = {
 exports.phone = {
   in: ['body'],
   isLength: {
-    errorMessage: 'Phone should be 12 characters',
+    errorMessage: ERRORS.PHONE_FIELD_ERROR,
     options: { min: 12, max: 12 },
   },
   exists: true,
@@ -30,6 +31,16 @@ exports.email = {
   in: ['body'],
   isEmail: {
     bail: true,
+  },
+  exists: true,
+  errorMessage: ERRORS.EMAIL_FIELD_ERROR,
+};
+
+exports.password = {
+  in: ['body'],
+  isLength: {
+    errorMessage: ERRORS.PASSWORD_FIELD_ERROR,
+    options: { min: 6 },
   },
   exists: true,
 };
