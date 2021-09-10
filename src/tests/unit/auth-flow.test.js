@@ -8,6 +8,12 @@ const { generateUser } = require('../fixtures/db');
 
 const { BCRYPT_SALT: bcryptSalt } = process.env;
 
+jest.mock('nodemailer', () => ({
+  createTransport: jest.fn().mockReturnValue({
+    sendMail: jest.fn(),
+  }),
+}));
+
 beforeEach(async () => {
   await db.User.destroy({ where: {} });
   await db.AdditionalFieldTemplate.destroy({ where: {} });
