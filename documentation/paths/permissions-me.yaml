@@ -1,0 +1,19 @@
+get:
+  summary: Get permissions list (yours)
+  tags:
+    - "Permissions"
+  responses:
+    "200":
+      description: Returns list of permissions
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              data:
+                type: array
+                items:
+                  type: string

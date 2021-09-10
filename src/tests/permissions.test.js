@@ -5,7 +5,7 @@ const app = require('../../app');
 const db = require('../database');
 const { generateUser, createUser, createUserAndGetToken } = require('./fixtures/db');
 const { ERRORS } = require('../translations');
-const { permissions, permissionsForbiddenToBeAdditional } = require('../database/constants');
+const { permissions, rolePermissions, permissionsForbiddenToBeAdditional } = require('../database/constants');
 
 beforeEach(async () => {
   await db.User.destroy({ where: {} });
@@ -154,5 +154,51 @@ describe('PUT /permissions', () => {
 
     const { error } = response.body;
     expect(error).toEqual(ERRORS.USER_NOT_FOUND);
+  });
+});
+
+describe('GET /permissions/me', () => {
+  test('Should return all user permissions', async () => {
+    const token = await createUserAndGetToken(generateUser(), 'USER');
+
+    const response = await request(app)
+      .get('/permissions/me')
+      .set('x-access-token', token)
+      .expect(200);
+
+    const { data: permissionsResponse } = response.body;
+    expect(permissionsResponse).not.toBeNull();
+    expect(permissionsResponse.length).toBe(rolePermissions.USER.length);
+  });
+
+  test('Should return all admin permissions', async () => {
+    const token = await createUserAndGetToken(generateUser(), 'ADMIN');
+
+    const response = await request(app)
+      .get('/permissions/me')
+      .set('x-access-token', token)
+      .expect(200);
+
+    const { data: permissionsResponse } = response.body;
+    expect(permissionsResponse).not.toBeNull();
+    expect(permissionsResponse.length).toBe(rolePermissions.ADMIN.length);
+  });
+
+  test('Should return all user+additional permissions', async () => {
+    const userOne = generateUser();
+    const token = await createUserAndGetToken(userOne, 'USER');
+    const permission = await db.Permission.findOne({ where: { name: 'EDIT_NOTICE' } });
+    await db.UserPermission.create({ user_id: userOne.id, permission_id: permission.id });
+
+    const response = await request(app)
+      .get('/permissions/me')
+      .set('x-access-token', token)
+      .expect(200);
+
+    const { data: permissionsResponse } = response.body;
+    const expectedRolePermissionsLength = rolePermissions.USER.length;
+
+    expect(permissionsResponse).not.toBeNull();
+    expect(permissionsResponse.length).toBe(expectedRolePermissionsLength + 1);
   });
 });

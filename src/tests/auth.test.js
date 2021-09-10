@@ -91,6 +91,19 @@ describe('POST /register', () => {
     const { error } = response.body;
     expect(error).toEqual(ERRORS.AFT_FILL_REQUIRED);
   });
+
+  test('Should fail because birthday field from future', async () => {
+    const response = await request(app)
+      .post('/auth/register')
+      .send({
+        ...generateUser(),
+        birthday: new Date('2100'),
+      })
+      .expect(400);
+
+    const { errors } = response.body;
+    expect(errors).not.toBeNull();
+  });
 });
 
 describe('POST /login', () => {

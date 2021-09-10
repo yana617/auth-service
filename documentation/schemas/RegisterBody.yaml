@@ -10,6 +10,8 @@ properties:
     type: string
   password:
     type: string
+  birthday:
+    type: string
   additionalFields:
     type: array
     items:

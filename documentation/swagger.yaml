@@ -41,6 +41,8 @@ paths:
     $ref: "./paths/user-role.yaml"
   /permissions:
     $ref: "./paths/permissions.yaml"
+  /permissions/me:
+    $ref: "./paths/permissions-me.yaml"
   /roles:
     $ref: "./paths/roles.yaml"
   /additional-field-templates:

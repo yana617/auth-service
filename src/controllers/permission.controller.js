@@ -66,7 +66,19 @@ const updatePermissions = async (req, res) => {
   }
 };
 
+const getUserPermissions = async (req, res) => {
+  const { id: userId, role_id: roleId } = req.user;
+  const userPermissions = await userPermissionRepository.getByUserId(userId);
+  const userPermissionsNames = userPermissions.map((up) => up.permission.name);
+  const rolePermissions = await rolePermissionRepository.getByRoleId(roleId);
+  const rolePermissionsNames = rolePermissions.map((up) => up.permission.name);
+
+  const allPermissions = userPermissionsNames.concat(rolePermissionsNames);
+  res.json({ success: true, data: allPermissions });
+};
+
 module.exports = {
   getAll,
   updatePermissions,
+  getUserPermissions,
 };
