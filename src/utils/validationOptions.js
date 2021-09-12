@@ -44,3 +44,19 @@ exports.password = {
   },
   exists: true,
 };
+
+exports.birthday = {
+  in: ['body'],
+  errorMessage: ERRORS.INVALID_BIRTHDAY,
+  custom: {
+    options: (value) => {
+      const enteredDate = new Date(value);
+      const todaysDate = new Date();
+      if (enteredDate > todaysDate) {
+        throw new Error(ERRORS.INVALID_BIRTHDAY);
+      }
+      return true;
+    },
+  },
+  exists: true,
+};

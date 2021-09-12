@@ -25,8 +25,10 @@ const corsOptions = {
   optionsSuccessStatus: 200,
 };
 
-if (process.env.NODE_ENV !== 'test') {
+if (process.env.NODE_ENV === 'production') {
   app.use(cors(corsOptions));
+}
+if (process.env.NODE_ENV !== 'test') {
   app.use(morgan(':method [:status] :url  :response-time ms'));
 }
 

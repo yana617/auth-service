@@ -542,6 +542,26 @@ paths:
               example:
                 success: false
                 error: User not found
+  /permissions/me:
+    get:
+      summary: Get permissions list (yours)
+      tags:
+        - Permissions
+      responses:
+        '200':
+          description: Returns list of permissions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      type: string
   /roles:
     get:
       summary: Get all roles
@@ -786,6 +806,8 @@ components:
           type: string
         email:
           type: string
+        birthday:
+          type: string
     Error:
       type: object
       properties:
@@ -832,6 +854,8 @@ components:
         email:
           type: string
         password:
+          type: string
+        birthday:
           type: string
         additionalFields:
           type: array

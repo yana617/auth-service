@@ -10,3 +10,5 @@ properties:
     type: string
   email:
     type: string
+  birthday:
+    type: string

@@ -12,6 +12,7 @@ const generateUser = () => ({
   surname: faker.internet.userName(),
   phone: `37529${faker.datatype.number({ min: 1111111, max: 9999999 })}`,
   email: faker.internet.email(),
+  birthday: new Date(),
   password: faker.internet.password(),
   additionalFields: [],
 });

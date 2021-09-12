@@ -8,6 +8,7 @@ module.exports = checkSchema({
   surname: validationOptions.surname,
   phone: validationOptions.phone,
   email: validationOptions.email,
+  birthday: validationOptions.birthday,
   password: validationOptions.password,
   additionalFields: {
     exists: true,

@@ -31,6 +31,7 @@ module.exports = {
     PASSWORD_FIELD_ERROR: 'Password should be at least 6 chars long',
     UAF_FIELD_ERROR: 'Invalid additional fields data',
     INVALID_USER_ID: 'Invalid user id',
+    INVALID_BIRTHDAY: 'Invalid birthday',
   },
   RU: {
     FORBIDDEN: 'Недостаточно прав',
@@ -62,5 +63,6 @@ module.exports = {
     PASSWORD_FIELD_ERROR: 'Пароль должен содержать как минимум 6 символов',
     UAF_FIELD_ERROR: 'Неверные данные',
     INVALID_USER_ID: 'Неверный идентификатор пользователя',
+    INVALID_BIRTHDAY: 'Некорректная дата рождения',
   },
 };

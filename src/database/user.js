@@ -10,6 +10,9 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       unique: true,
     },
+    birthday: {
+      type: DataTypes.DATE,
+    },
     hash: DataTypes.STRING,
     salt: DataTypes.STRING,
   }, {
