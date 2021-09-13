@@ -11,7 +11,12 @@ const app = express();
 
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-const whitelist = ['http://localhost:8080', 'https://house-of-souls.dogcatbmpz.by'];
+app.use((req, res, next) => {
+  req.headers.origin = req.headers.origin || req.headers.host;
+  next();
+});
+
+const whitelist = ['http://localhost:8080', 'auth-service:1081', 'https://house-of-souls.dogcatbmpz.by'];
 const corsOptions = {
   origin: (origin, callback) => {
     if (whitelist.indexOf(origin) !== -1) {
