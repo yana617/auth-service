@@ -51,7 +51,7 @@ class UserRepository extends BaseRepository {
   async getShortUsersByIds(ids) {
     return this.model.findAll({
       where: { id: ids },
-      attributes: { exclude: ['phone', 'email', 'birthday', 'hash', 'salt'] },
+      attributes: { exclude: ['phone', 'email', 'birthday', 'hash', 'salt', 'role_id'] },
       raw: true,
     });
   }
@@ -59,7 +59,7 @@ class UserRepository extends BaseRepository {
   async getFullUsersByIds(ids) {
     return this.model.findAll({
       where: { id: ids },
-      attributes: { exclude: ['hash', 'salt'] },
+      attributes: { exclude: ['hash', 'salt', 'role_id'] },
       raw: true,
     });
   }

@@ -1,17 +1,10 @@
-const userPermissionRepository = require('../repositories/UserPermissionRepository');
-const rolePermissionRepository = require('../repositories/RolePermissionRepository');
 const { ERRORS } = require('../translations');
+const permissionsService = require('../services/permissions');
 
 module.exports = (permissions) => async (req, res, next) => {
   try {
     const { id: userId, role_id } = req.user;
-
-    const userPermissions = await userPermissionRepository.getByUserId(userId);
-    const userPermissionsNames = userPermissions.map((up) => up.permission.name);
-    const rolePermissions = await rolePermissionRepository.getByRoleId(role_id);
-    const rolePermissionsNames = rolePermissions.map((up) => up.permission.name);
-
-    const allPermissions = userPermissionsNames.concat(rolePermissionsNames);
+    const allPermissions = await permissionsService.getAllPermissions(userId, role_id);
     if (permissions.every((p) => allPermissions.includes(p))) {
       return next();
     }

@@ -8,13 +8,9 @@ const { DEFAULT_LIMIT } = require('../database/constants');
 const { ERRORS } = require('../translations');
 
 const getMe = async (req, res) => {
-  try {
-    const { id } = req.user;
-    const user = await userRepository.getByIdWithoutSaltHash(id);
-    res.json({ success: true, data: user });
-  } catch (e) {
-    res.status(500).json({ success: false, error: e.message });
-  }
+  const { id } = req.user;
+  const user = await userRepository.getByIdWithoutSaltHash(id);
+  res.json({ success: true, data: user });
 };
 
 const updateUser = async (req, res) => {
@@ -31,33 +27,25 @@ const updateUser = async (req, res) => {
     surname,
   } = req.body;
 
-  try {
-    const updatesInfo = await userRepository.updateById(userId, {
-      email,
-      phone,
-      name,
-      surname,
-    });
-    const user = updatesInfo[1];
-    delete user.hash;
-    delete user.salt;
-    return res.json({ success: true, data: user });
-  } catch (e) {
-    res.status(500).json({ success: false, error: e.message });
-  }
+  const updatesInfo = await userRepository.updateById(userId, {
+    email,
+    phone,
+    name,
+    surname,
+  });
+  const user = updatesInfo[1];
+  delete user.hash;
+  delete user.salt;
+  return res.json({ success: true, data: user });
 };
 
 const getUserById = async (req, res) => {
-  try {
-    const { id: userId } = req.params;
-    const user = await userRepository.getByIdWithoutSaltHash(userId, true);
-    if (!user) {
-      return res.status(404).json({ success: false, error: ERRORS.USER_NOT_FOUND });
-    }
-    res.json({ success: true, data: { ...user, role: user.role.name } });
-  } catch (e) {
-    res.status(500).json({ success: false, error: e.message });
+  const { id: userId } = req.params;
+  const user = await userRepository.getByIdWithoutSaltHash(userId, true);
+  if (!user) {
+    return res.status(404).json({ success: false, error: ERRORS.USER_NOT_FOUND });
   }
+  res.json({ success: true, data: { ...user, role: user.role.name } });
 };
 
 const getUsers = async (req, res) => {
@@ -66,47 +54,39 @@ const getUsers = async (req, res) => {
     return res.status(400).json({ success: false, errors: errors.array() });
   }
 
-  try {
-    const {
-      sortBy = 'name',
-      order = 'ASC',
-      limit = DEFAULT_LIMIT,
-      skip = 0,
-      search = '',
-    } = req.query;
-    const users = await userRepository.getAllWithFilters({
-      sortBy,
-      order,
-      limit,
-      skip,
-      search,
-    });
-    res.json({ success: true, data: users });
-  } catch (e) {
-    res.status(500).json({ success: false, error: e.message });
-  }
+  const {
+    sortBy = 'name',
+    order = 'ASC',
+    limit = DEFAULT_LIMIT,
+    skip = 0,
+    search = '',
+  } = req.query;
+  const users = await userRepository.getAllWithFilters({
+    sortBy,
+    order,
+    limit,
+    skip,
+    search,
+  });
+  res.json({ success: true, data: users });
 };
 
 const getUserPermissions = async (req, res) => {
-  try {
-    const { id: userId } = req.params;
-    const user = await userRepository.getById(userId);
-    if (!user) {
-      return res.status(404).json({ success: false, error: ERRORS.USER_NOT_FOUND });
-    }
-
-    const rolePermissions = await rolePermissionRepository.getByRoleId(user.role_id);
-    const userPermissions = await userPermissionRepository.getByUserId(user.id);
-    res.json({
-      success: true,
-      data: {
-        userPermissions: userPermissions.map((up) => up.permission.name),
-        rolePermissions: rolePermissions.map((rp) => rp.permission.name),
-      },
-    });
-  } catch (e) {
-    res.status(500).json({ success: false, error: e.message });
+  const { id: userId } = req.params;
+  const user = await userRepository.getById(userId);
+  if (!user) {
+    return res.status(404).json({ success: false, error: ERRORS.USER_NOT_FOUND });
   }
+
+  const rolePermissions = await rolePermissionRepository.getByRoleId(user.role_id);
+  const userPermissions = await userPermissionRepository.getByUserId(user.id);
+  res.json({
+    success: true,
+    data: {
+      userPermissions: userPermissions.map((up) => up.permission.name),
+      rolePermissions: rolePermissions.map((rp) => rp.permission.name),
+    },
+  });
 };
 
 const updateUserRole = async (req, res) => {
@@ -127,27 +107,23 @@ const updateUserRole = async (req, res) => {
       error: ERRORS.ROLE_REQUIRED,
     });
   }
-  try {
-    const roleToSet = await roleRepository.getByName(role, true);
-    if (!roleToSet) {
-      return res.status(403).json({
-        success: false,
-        error: ERRORS.FORBIDDEN,
-      });
-    }
-
-    const user = await userRepository.getById(userToUpdateId);
-    if (!user) {
-      return res.status(404).json({ success: false, error: ERRORS.USER_NOT_FOUND });
-    }
-
-    const newRolePermsIds = roleToSet.role_permissions.map((rp) => rp.permission_id);
-    await userPermissionRepository.deleteByUserIdAndPermissionId(user.id, newRolePermsIds);
-    await userRepository.updateById(user.id, { role_id: roleToSet.id });
-    res.json({ success: true });
-  } catch (e) {
-    res.status(500).json({ success: false, error: e.message });
+  const roleToSet = await roleRepository.getByName(role, true);
+  if (!roleToSet) {
+    return res.status(403).json({
+      success: false,
+      error: ERRORS.FORBIDDEN,
+    });
   }
+
+  const user = await userRepository.getById(userToUpdateId);
+  if (!user) {
+    return res.status(404).json({ success: false, error: ERRORS.USER_NOT_FOUND });
+  }
+
+  const newRolePermsIds = roleToSet.role_permissions.map((rp) => rp.permission_id);
+  await userPermissionRepository.deleteByUserIdAndPermissionId(user.id, newRolePermsIds);
+  await userRepository.updateById(user.id, { role_id: roleToSet.id });
+  res.json({ success: true });
 };
 
 module.exports = {

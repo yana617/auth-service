@@ -54,11 +54,11 @@ test('Should fail because token is not provided', () => {
   const next = jest.fn();
   authRequired(request, response, next);
   expect(response.status).toHaveBeenCalledTimes(1);
-  expect(response.status).toHaveBeenCalledWith(403);
+  expect(response.status).toHaveBeenCalledWith(401);
 
   expect(response.json).toHaveBeenCalledTimes(1);
   expect(response.json).toHaveBeenCalledWith({
     success: false,
-    error: ERRORS.TOKEN_REQUIRED,
+    error: ERRORS.INVALID_TOKEN,
   });
 });

@@ -1,34 +1,19 @@
 const route = require('express').Router();
-const jwt = require('jsonwebtoken');
 
 const verifyToken = require('../middlewares/authRequired');
-const userRepository = require('../repositories/UserRepository');
-// const permissionController = require('../controllers/permission.controller');
-
-const { TOKEN_KEY } = process.env;
+const permissionController = require('../controllers/permission.controller');
+const userController = require('../controllers/user.controller');
+const internalController = require('../controllers/internal.controller');
+const checkPermissions = require('../middlewares/checkPermissions');
+const validateGuest = require('../middlewares/validateGuest');
+const errorHandler = require('../middlewares/errorHandler');
 
 route.get('/auth', verifyToken, (req, res) => res.json({ success: true }));
-route.post('/users', async (req, res) => {
-  try {
-    const { ids = [] } = req.body;
-
-    const token = req.body.token || req.query.token || req.headers['x-access-token'];
-    if (!token) {
-      const users = await userRepository.getShortUsersByIds(ids);
-      return res.json({ success: true, data: users });
-    }
-    try {
-      req.user = jwt.verify(token, TOKEN_KEY);
-    } catch (err) {
-      const users = await userRepository.getShortUsersByIds(ids);
-      return res.json({ success: true, data: users });
-    }
-
-    const users = await userRepository.getFullUsersByIds(ids);
-    res.json({ success: true, data: users });
-  } catch (e) {
-    res.status(500).json({ success: false, error: e.message });
-  }
-});
+route.post('/users', errorHandler(internalController.getUsers));
+route.post('/guests', errorHandler(internalController.getGuests));
+route.get('/permissions/me', errorHandler(permissionController.getUserPermissions));
+route.get('/users/me', verifyToken, errorHandler(userController.getMe));
+route.post('/guest', verifyToken, checkPermissions(['CREATE_CLAIM_FOR_UNREGISTERED_USERS']),
+  validateGuest, errorHandler(internalController.getOrCreateGuest));
 
 module.exports = route;

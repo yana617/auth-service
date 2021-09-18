@@ -5,19 +5,16 @@ const rolePermissionRepository = require('../repositories/RolePermissionReposito
 const userPermissionRepository = require('../repositories/UserPermissionRepository');
 const { permissionsForbiddenToBeAdditional } = require('../database/constants');
 const permissionsService = require('../services/permissions');
+const authService = require('../services/auth');
 
 const getAll = async (req, res) => {
-  try {
-    const permissions = await permissionRepository.getAll();
-    const permissionsNames = permissions
-      .map((p) => ({ name: p.name, translate: PERMISSIONS[p.name] }));
-    res.json({
-      success: true,
-      data: permissionsNames.filter((p) => !permissionsForbiddenToBeAdditional.includes(p.name)),
-    });
-  } catch (e) {
-    res.status(500).json({ success: false, error: e.message });
-  }
+  const permissions = await permissionRepository.getAll();
+  const permissionsNames = permissions
+    .map((p) => ({ name: p.name, translate: PERMISSIONS[p.name] }));
+  res.json({
+    success: true,
+    data: permissionsNames.filter((p) => !permissionsForbiddenToBeAdditional.includes(p.name)),
+  });
 };
 
 const updatePermissions = async (req, res) => {
@@ -28,52 +25,48 @@ const updatePermissions = async (req, res) => {
       error: ERRORS.PERMISSIONS_REQUIRED,
     });
   }
-  try {
-    const user = await userRepository.getById(userId);
-    if (!user) {
-      return res.status(404).json({ success: false, error: ERRORS.USER_NOT_FOUND });
-    }
 
-    const mappedPermissionsToUpdate = await permissionsService.getMappedPermissions(permissions);
-    const rolePerms = await rolePermissionRepository.getByRoleId(user.role_id);
-    const rolePermissionsIds = rolePerms.map((p) => p.permission_id);
-    const userPermissions = await userPermissionRepository.getByUserId(user.id);
-    const userPermissionsIds = userPermissions.map((p) => p.permission_id);
-
-    const roleExist = await permissionsService.permissionsFromExistingRole(
-      mappedPermissionsToUpdate,
-      userPermissionsIds,
-      rolePermissionsIds,
-      user.role_id,
-    );
-    if (roleExist) {
-      return res.status(400).json({
-        success: false,
-        error: ERRORS.ROLE_WITH_SAME_PERMISSIONS_EXIST,
-      });
-    }
-
-    await permissionsService.createOrDeletePermissions(
-      mappedPermissionsToUpdate,
-      userPermissionsIds,
-      rolePermissionsIds,
-      userId,
-    );
-
-    res.json({ success: true });
-  } catch (e) {
-    res.status(500).json({ success: false, error: e.message });
+  const user = await userRepository.getById(userId);
+  if (!user) {
+    return res.status(404).json({ success: false, error: ERRORS.USER_NOT_FOUND });
   }
+
+  const mappedPermissionsToUpdate = await permissionsService.getMappedPermissions(permissions);
+  const rolePerms = await rolePermissionRepository.getByRoleId(user.role_id);
+  const rolePermissionsIds = rolePerms.map((p) => p.permission_id);
+  const userPermissions = await userPermissionRepository.getByUserId(user.id);
+  const userPermissionsIds = userPermissions.map((p) => p.permission_id);
+
+  const roleExist = await permissionsService.permissionsFromExistingRole(
+    mappedPermissionsToUpdate,
+    userPermissionsIds,
+    rolePermissionsIds,
+    user.role_id,
+  );
+  if (roleExist) {
+    return res.status(400).json({
+      success: false,
+      error: ERRORS.ROLE_WITH_SAME_PERMISSIONS_EXIST,
+    });
+  }
+
+  await permissionsService.createOrDeletePermissions(
+    mappedPermissionsToUpdate,
+    userPermissionsIds,
+    rolePermissionsIds,
+    userId,
+  );
+
+  res.json({ success: true });
 };
 
 const getUserPermissions = async (req, res) => {
-  const { id: userId, role_id: roleId } = req.user;
-  const userPermissions = await userPermissionRepository.getByUserId(userId);
-  const userPermissionsNames = userPermissions.map((up) => up.permission.name);
-  const rolePermissions = await rolePermissionRepository.getByRoleId(roleId);
-  const rolePermissionsNames = rolePermissions.map((up) => up.permission.name);
+  if (!authService.isAuthorized(req)) {
+    return res.json({ success: true, data: [] });
+  }
 
-  const allPermissions = userPermissionsNames.concat(rolePermissionsNames);
+  const { id: userId, role_id: roleId } = req.user;
+  const allPermissions = await permissionsService.getAllPermissions(userId, roleId);
   res.json({ success: true, data: allPermissions });
 };
 

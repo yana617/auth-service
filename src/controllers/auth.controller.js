@@ -20,62 +20,58 @@ const registerUser = async (req, res) => {
     return res.status(400).json({ success: false, errors: errors.array() });
   }
 
-  try {
-    const {
-      name,
-      surname,
-      phone,
-      email,
-      password,
-      additionalFields,
-    } = req.body;
+  const {
+    name,
+    surname,
+    phone,
+    email,
+    password,
+    additionalFields,
+  } = req.body;
 
-    const user = await userRepository.getByEmailOrPhone(email, phone);
-    if (user.length > 0) {
-      return res.status(400).json({ success: false, error: ERRORS.USER_ALREADY_EXISTS });
-    }
-
-    const salt = await bcrypt.genSalt(10);
-    const hash = await bcrypt.hash(password, salt);
-
-    const role = await roleRepository.getByName(DEFAULT_ROLE);
-    if (!role) {
-      return res.status(500).json({ success: false, error: 'Default role not found' });
-    }
-
-    const newUser = await userRepository.create({
-      name,
-      surname,
-      phone,
-      email,
-      salt,
-      hash,
-      role_id: role.id,
-    });
-
-    const allAft = await aftRepository.getAll();
-    const userAftIds = additionalFields.map((uaf) => uaf.additionalFieldTemplateId);
-
-    if (additionalFields.length !== allAft.length
-      || !allAft.every(({ id }) => userAftIds.includes(id))) {
-      return res.status(400).json({ success: false, error: ERRORS.AFT_FILL_REQUIRED });
-    }
-
-    await Promise.all(additionalFields.map((af) => uafRepository.create({
-      user_id: newUser.id,
-      additional_field_template_id: af.additionalFieldTemplateId,
-      value: af.value,
-    })));
-
-    const result = newUser.get({ plain: true });
-    result.token = generateToken(result);
-    delete result.hash;
-    delete result.salt;
-
-    res.status(201).json({ success: true, data: result });
-  } catch (e) {
-    res.status(500).json({ success: false, error: e.message });
+  const user = await userRepository.getByEmailOrPhone(email, phone);
+  if (user.length > 0) {
+    return res.status(400).json({ success: false, error: ERRORS.USER_ALREADY_EXISTS });
   }
+
+  const salt = await bcrypt.genSalt(10);
+  const hash = await bcrypt.hash(password, salt);
+
+  const role = await roleRepository.getByName(DEFAULT_ROLE);
+  if (!role) {
+    return res.status(500).json({ success: false, error: 'Default role not found' });
+  }
+
+  const newUser = await userRepository.create({
+    name,
+    surname,
+    phone,
+    email,
+    salt,
+    hash,
+    role_id: role.id,
+  });
+
+  const allAft = await aftRepository.getAll();
+  const userAftIds = additionalFields.map((uaf) => uaf.additionalFieldTemplateId);
+
+  if (additionalFields.length !== allAft.length
+    || !allAft.every(({ id }) => userAftIds.includes(id))) {
+    return res.status(400).json({ success: false, error: ERRORS.AFT_FILL_REQUIRED });
+  }
+
+  await Promise.all(additionalFields.map((af) => uafRepository.create({
+    user_id: newUser.id,
+    additional_field_template_id: af.additionalFieldTemplateId,
+    value: af.value,
+  })));
+
+  const result = newUser.get({ plain: true });
+  result.token = generateToken(result);
+  delete result.hash;
+  delete result.salt;
+
+  res.status(201).json({ success: true, data: result });
 };
 
 const loginUser = async (req, res) => {
@@ -83,85 +79,73 @@ const loginUser = async (req, res) => {
   if (!email || !password) {
     return res.status(400).json({ success: false, error: ERRORS.EMAIL_PASSWORD_REQUIRED });
   }
-  try {
-    const user = await userRepository.getByEmail(email);
-    if (!user) {
-      return res.status(400).json({ success: false, error: ERRORS.USER_EMAIL_NOT_FOUND });
-    }
-    if (user.hash !== bcrypt.hashSync(password, user.salt)) {
-      return res.status(400).json({ success: false, error: ERRORS.AUTH_ERROR });
-    }
-
-    user.token = generateToken(user);
-    delete user.hash;
-    delete user.salt;
-    res.json({ success: true, data: user });
-  } catch (e) {
-    res.status(500).json({ success: false, error: e.message });
+  const user = await userRepository.getByEmail(email);
+  if (!user) {
+    return res.status(400).json({ success: false, error: ERRORS.USER_EMAIL_NOT_FOUND });
   }
+  if (user.hash !== bcrypt.hashSync(password, user.salt)) {
+    return res.status(400).json({ success: false, error: ERRORS.AUTH_ERROR });
+  }
+
+  user.token = generateToken(user);
+  delete user.hash;
+  delete user.salt;
+  res.json({ success: true, data: user });
 };
 
 const forgotPassword = async (req, res) => {
-  try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ success: false, errors: errors.array() });
-    }
-
-    const { email } = req.body;
-    const user = await userRepository.getByEmail(email);
-    if (!user) {
-      return res.status(404).json({ success: false, error: ERRORS.USER_EMAIL_NOT_FOUND });
-    }
-
-    const existingToken = await tokenRepository.getByUserId(user.id);
-    if (existingToken) {
-      await tokenRepository.deleteById(existingToken.id);
-    }
-    const resetToken = crypto.randomBytes(32).toString('hex');
-    const hash = await bcrypt.hash(resetToken, Number(bcryptSalt));
-    await tokenRepository.create({ user_id: user.id, token: hash });
-
-    const link = `${clientURL}/reset-password?token=${resetToken}&userId=${user.id}`;
-    await sendLinkEmail(link, email);
-
-    res.json({ success: true });
-  } catch (e) {
-    res.status(500).json({ success: false, error: e.message });
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ success: false, errors: errors.array() });
   }
+
+  const { email } = req.body;
+  const user = await userRepository.getByEmail(email);
+  if (!user) {
+    return res.status(404).json({ success: false, error: ERRORS.USER_EMAIL_NOT_FOUND });
+  }
+
+  const existingToken = await tokenRepository.getByUserId(user.id);
+  if (existingToken) {
+    await tokenRepository.deleteById(existingToken.id);
+  }
+  const resetToken = crypto.randomBytes(32).toString('hex');
+  const hash = await bcrypt.hash(resetToken, Number(bcryptSalt));
+  await tokenRepository.create({ user_id: user.id, token: hash });
+
+  const link = `${clientURL}/reset-password?token=${resetToken}&userId=${user.id}`;
+  await sendLinkEmail(link, email);
+
+  res.json({ success: true });
 };
 
 const resetPassword = async (req, res) => {
-  try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ success: false, errors: errors.array() });
-    }
-
-    const { userId, token, password } = req.body;
-    await tokenRepository.deleteExpiredTokens();
-    const passwordResetToken = await tokenRepository.getByUserId(userId);
-    if (!passwordResetToken) {
-      return res.status(400).json({ success: false, error: ERRORS.INVALID_RESET_TOKEN });
-    }
-    const isValid = await bcrypt.compare(token, passwordResetToken.token);
-    if (!isValid) {
-      return res.status(400).json({ success: false, error: ERRORS.INVALID_RESET_TOKEN });
-    }
-
-    const salt = await bcrypt.genSalt(10);
-    const hash = await bcrypt.hash(password, salt);
-
-    const userUpdateInfo = await userRepository.updateById(userId, { salt, hash });
-    await tokenRepository.deleteById(passwordResetToken.id);
-
-    const user = userUpdateInfo[1];
-    await sendPasswordChangedSuccessfullyEmail(user.email);
-
-    res.json({ success: true });
-  } catch (e) {
-    res.status(500).json({ success: false, error: e.message });
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ success: false, errors: errors.array() });
   }
+
+  const { userId, token, password } = req.body;
+  await tokenRepository.deleteExpiredTokens();
+  const passwordResetToken = await tokenRepository.getByUserId(userId);
+  if (!passwordResetToken) {
+    return res.status(400).json({ success: false, error: ERRORS.INVALID_RESET_TOKEN });
+  }
+  const isValid = await bcrypt.compare(token, passwordResetToken.token);
+  if (!isValid) {
+    return res.status(400).json({ success: false, error: ERRORS.INVALID_RESET_TOKEN });
+  }
+
+  const salt = await bcrypt.genSalt(10);
+  const hash = await bcrypt.hash(password, salt);
+
+  const userUpdateInfo = await userRepository.updateById(userId, { salt, hash });
+  await tokenRepository.deleteById(passwordResetToken.id);
+
+  const user = userUpdateInfo[1];
+  await sendPasswordChangedSuccessfullyEmail(user.email);
+
+  res.json({ success: true });
 };
 
 module.exports = {

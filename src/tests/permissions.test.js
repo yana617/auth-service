@@ -158,6 +158,16 @@ describe('PUT /permissions', () => {
 });
 
 describe('GET /permissions/me', () => {
+  test('Should return no permissions for unauthorized user', async () => {
+    const response = await request(app)
+      .get('/permissions/me')
+      .expect(200);
+
+    const { data: permissionsResponse } = response.body;
+    expect(permissionsResponse).not.toBeNull();
+    expect(permissionsResponse.length).toBe(0);
+  });
+
   test('Should return all user permissions', async () => {
     const token = await createUserAndGetToken(generateUser(), 'USER');
 
