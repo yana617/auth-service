@@ -1,7 +1,7 @@
 const { checkSchema } = require('express-validator');
 
-const validationOptions = require('../utils/validationOptions');
-const { ERRORS } = require('../translations');
+const validationOptions = require('../../utils/validationOptions');
+const { ERRORS } = require('../../translations');
 
 module.exports = checkSchema({
   name: validationOptions.name,

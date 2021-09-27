@@ -1,5 +1,3 @@
-const { validationResult } = require('express-validator');
-
 const { ERRORS } = require('../translations');
 const aftRepository = require('../repositories/AdditionalFieldTemplateRepository');
 const userRepository = require('../repositories/UserRepository');
@@ -11,11 +9,6 @@ const getAllAft = async (req, res) => {
 };
 
 const createAft = async (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ success: false, errors: errors.array() });
-  }
-
   const { label, description, icon = '' } = req.body;
   const newAft = await aftRepository.create({ label, description, icon });
 
@@ -30,11 +23,6 @@ const createAft = async (req, res) => {
 };
 
 const updateAft = async (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ success: false, errors: errors.array() });
-  }
-
   const { id } = req.params;
   const aft = await aftRepository.getById(id);
   if (!aft) {

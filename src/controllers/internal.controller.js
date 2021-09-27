@@ -1,5 +1,3 @@
-const { validationResult } = require('express-validator');
-
 const userRepository = require('../repositories/UserRepository');
 const guestRepository = require('../repositories/GuestRepository');
 const permissionsService = require('../services/permissions');
@@ -44,11 +42,6 @@ const getGuests = async (req, res) => {
 };
 
 const getOrCreateGuest = async (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ success: false, errors: errors.array() });
-  }
-
   const { name, surname, phone } = req.body;
   let guest = await guestRepository.getByPhone(phone);
   if (!guest) {

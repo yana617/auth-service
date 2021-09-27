@@ -1,5 +1,4 @@
 const bcrypt = require('bcrypt');
-const { validationResult } = require('express-validator');
 const crypto = require('crypto');
 
 const { ERRORS } = require('../translations');
@@ -15,11 +14,6 @@ const { sendLinkEmail, sendPasswordChangedSuccessfullyEmail } = require('../util
 const { CLIENT_URL: clientURL, BCRYPT_SALT: bcryptSalt } = process.env;
 
 const registerUser = async (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ success: false, errors: errors.array() });
-  }
-
   const {
     name,
     surname,
@@ -94,11 +88,6 @@ const loginUser = async (req, res) => {
 };
 
 const forgotPassword = async (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ success: false, errors: errors.array() });
-  }
-
   const { email } = req.body;
   const user = await userRepository.getByEmail(email);
   if (!user) {
@@ -120,11 +109,6 @@ const forgotPassword = async (req, res) => {
 };
 
 const resetPassword = async (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ success: false, errors: errors.array() });
-  }
-
   const { userId, token, password } = req.body;
   await tokenRepository.deleteExpiredTokens();
   const passwordResetToken = await tokenRepository.getByUserId(userId);

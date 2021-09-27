@@ -1,5 +1,3 @@
-const { validationResult } = require('express-validator');
-
 const userRepository = require('../repositories/UserRepository');
 const rolePermissionRepository = require('../repositories/RolePermissionRepository');
 const userPermissionRepository = require('../repositories/UserPermissionRepository');
@@ -14,11 +12,6 @@ const getMe = async (req, res) => {
 };
 
 const updateUser = async (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ success: false, errors: errors.array() });
-  }
-
   const { id: userId } = req.params;
   const {
     email,
@@ -49,11 +42,6 @@ const getUserById = async (req, res) => {
 };
 
 const getUsers = async (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ success: false, errors: errors.array() });
-  }
-
   const {
     sortBy = 'name',
     order = 'ASC',
