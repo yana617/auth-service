@@ -17,6 +17,13 @@ const generateUser = () => ({
   additionalFields: [],
 });
 
+const generateGuest = () => ({
+  id: v4(),
+  name: faker.internet.userName(),
+  surname: faker.internet.userName(),
+  phone: `37529${faker.datatype.number({ min: 1111111, max: 9999999 })}`,
+});
+
 const generateAft = () => ({
   id: v4(),
   label: faker.lorem.words(2),
@@ -55,4 +62,5 @@ module.exports = {
   createUser,
   generateAft,
   generateUaf,
+  generateGuest,
 };

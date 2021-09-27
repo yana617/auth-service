@@ -47,6 +47,22 @@ class UserRepository extends BaseRepository {
       raw: true,
     });
   }
+
+  async getShortUsersByIds(ids) {
+    return this.model.findAll({
+      where: { id: ids },
+      attributes: { exclude: ['phone', 'email', 'birthday', 'hash', 'salt', 'role_id'] },
+      raw: true,
+    });
+  }
+
+  async getFullUsersByIds(ids) {
+    return this.model.findAll({
+      where: { id: ids },
+      attributes: { exclude: ['hash', 'salt', 'role_id'] },
+      raw: true,
+    });
+  }
 }
 
 module.exports = new UserRepository(User);

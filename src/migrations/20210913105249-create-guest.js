@@ -1,21 +1,21 @@
 'use strict';
-const { roles } = require('../database/constants');
-
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('roles', {
+    await queryInterface.createTable('guests', {
       id: {
         type: Sequelize.UUID,
         primaryKey: true,
         defaultValue: Sequelize.literal('uuid_generate_v4()'),
         allowNull: false,
       },
-      name: {
-        type: Sequelize.ENUM(roles),
-        unique: true,
+      phone: {
+        type: Sequelize.STRING
       },
-      translate: {
-        type: Sequelize.STRING,
+      name: {
+        type: Sequelize.STRING
+      },
+      surname: {
+        type: Sequelize.STRING
       },
       createdAt: {
         allowNull: false,
@@ -28,6 +28,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('roles');
+    await queryInterface.dropTable('guests');
   }
 };

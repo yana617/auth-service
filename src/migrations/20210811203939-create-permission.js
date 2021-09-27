@@ -11,7 +11,8 @@ module.exports = {
         allowNull: false,
       },
       name: {
-        type: Sequelize.ENUM(permissions)
+        type: Sequelize.ENUM(permissions),
+        unique: true,
       },
       createdAt: {
         allowNull: false,

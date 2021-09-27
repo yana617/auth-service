@@ -1,6 +1,7 @@
 const permissionRepository = require('../repositories/PermissionRepository');
 const { permissionsForbiddenToBeAdditional } = require('../database/constants');
 const userPermissionRepository = require('../repositories/UserPermissionRepository');
+const rolePermissionRepository = require('../repositories/RolePermissionRepository');
 const roleRepository = require('../repositories/RoleRepository');
 
 exports.getMappedPermissions = async (permissions) => {
@@ -50,4 +51,12 @@ exports.permissionsFromExistingRole = async (
     .concat(userPermissionsIds).concat(additionalPermissionsIds);
   return rolesSeniorThanUserRole.some((r) => r.permissionsIds
     .every((p) => newPermissions.includes(p)));
+};
+
+exports.getAllPermissions = async (userId, roleId) => {
+  const userPermissions = await userPermissionRepository.getByUserId(userId);
+  const userPermissionsNames = userPermissions.map((up) => up.permission.name);
+  const rolePermissions = await rolePermissionRepository.getByRoleId(roleId);
+  const rolePermissionsNames = rolePermissions.map((up) => up.permission.name);
+  return userPermissionsNames.concat(rolePermissionsNames);
 };

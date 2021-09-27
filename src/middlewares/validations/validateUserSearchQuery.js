@@ -1,7 +1,7 @@
 const { checkSchema } = require('express-validator');
 
-const { availableOrder, availableSortByNames } = require('../database/constants');
-const { ERRORS } = require('../translations');
+const { availableOrder, availableSortByNames } = require('../../database/constants');
+const { ERRORS } = require('../../translations');
 
 module.exports = checkSchema({
   limit: {
