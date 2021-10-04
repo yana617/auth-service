@@ -10,6 +10,7 @@ const uafRepository = require('../repositories/UserAdditionalFieldRepository');
 const aftRepository = require('../repositories/AdditionalFieldTemplateRepository');
 const generateToken = require('../utils/generateToken');
 const { sendLinkEmail, sendPasswordChangedSuccessfullyEmail } = require('../utils/mails');
+const { sendHistoryAction } = require('../utils/emitHistoryAction');
 
 const { CLIENT_URL: clientURL, BCRYPT_SALT: bcryptSalt } = process.env;
 
@@ -21,6 +22,7 @@ const registerUser = async (req, res) => {
     email,
     password,
     additionalFields,
+    birthday,
   } = req.body;
 
   const user = await userRepository.getByEmailOrPhone(email, phone);
@@ -40,6 +42,7 @@ const registerUser = async (req, res) => {
     name,
     surname,
     phone,
+    birthday,
     email,
     salt,
     hash,
@@ -64,6 +67,8 @@ const registerUser = async (req, res) => {
   result.token = generateToken(result);
   delete result.hash;
   delete result.salt;
+
+  await sendHistoryAction({ action_type: 'NEW_USER', user_from: result._id });
 
   res.status(201).json({ success: true, data: result });
 };

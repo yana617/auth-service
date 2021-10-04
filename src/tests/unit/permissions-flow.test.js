@@ -5,6 +5,13 @@ const db = require('../../database');
 const { generateUser, createUserAndGetToken } = require('../fixtures/db');
 const { rolePermissions } = require('../../database/constants');
 
+jest.mock('../../utils/emitHistoryAction');
+jest.mock('nodemailer', () => ({
+  createTransport: jest.fn().mockReturnValue({
+    sendMail: jest.fn(),
+  }),
+}));
+
 beforeEach(async () => {
   await db.User.destroy({ where: {} });
   await db.UserPermission.destroy({ where: {} });

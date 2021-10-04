@@ -8,6 +8,7 @@ const { generateUser } = require('../fixtures/db');
 
 const { BCRYPT_SALT: bcryptSalt } = process.env;
 
+jest.mock('../../utils/emitHistoryAction');
 jest.mock('nodemailer', () => ({
   createTransport: jest.fn().mockReturnValue({
     sendMail: jest.fn(),
