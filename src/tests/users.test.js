@@ -241,7 +241,7 @@ describe('PUT /users/:id', () => {
 describe('GET /users', () => {
   beforeEach(async () => {
     await createUser();
-    await createUser();
+    await createUser(generateUser(), 'VOLUNTEER');
   });
 
   test('Should return all users without queries', async () => {
@@ -252,7 +252,7 @@ describe('GET /users', () => {
       .set('x-access-token', token)
       .expect(200);
 
-    const { data: users } = response.body;
+    const { data: { users } } = response.body;
     expect(users.length).toBe(3);
   });
 
@@ -264,7 +264,7 @@ describe('GET /users', () => {
       .set('x-access-token', token)
       .expect(200);
 
-    const { data: users } = response.body;
+    const { data: { users } } = response.body;
     expect(users.length).toBe(1);
   });
 
@@ -276,7 +276,7 @@ describe('GET /users', () => {
       .set('x-access-token', token)
       .expect(200);
 
-    const { data: users } = response.body;
+    const { data: { users } } = response.body;
     expect(users.length).toBe(2);
   });
 
@@ -293,7 +293,7 @@ describe('GET /users', () => {
       .set('x-access-token', token)
       .expect(200);
 
-    const { data: users } = response.body;
+    const { data: { users } } = response.body;
     expect(users.length).toBe(3);
     const usersFromResponseIds = users.map((user) => user.id);
     expect(usersFromResponseIds).toEqual(sortedUsersIds);
@@ -312,7 +312,7 @@ describe('GET /users', () => {
       .set('x-access-token', token)
       .expect(200);
 
-    const { data: users } = response.body;
+    const { data: { users } } = response.body;
     expect(users.length).toBe(3);
     const usersFromResponseIds = users.map((user) => user.id);
     expect(usersFromResponseIds).toEqual(sortedUsersIds);
@@ -328,9 +328,48 @@ describe('GET /users', () => {
       .set('x-access-token', token)
       .expect(200);
 
-    const { data: users } = response.body;
+    const { data: { users } } = response.body;
     expect(users.length).toBe(1);
     expect(users[0].name).toEqual(user.name);
+  });
+
+  test('Should filter by roles (USERS) correctly', async () => {
+    const token = await createUserAndGetToken(generateUser(), 'VOLUNTEER');
+
+    const response = await request(app)
+      .get('/users?roles=USER')
+      .set('x-access-token', token)
+      .expect(200);
+
+    const { data: { users } } = response.body;
+    expect(users.length).toBe(1);
+  });
+
+  test('Should filter by roles (VOLUNTEER, ADMIN) correctly', async () => {
+    const token = await createUserAndGetToken(generateUser(), 'ADMIN');
+
+    const response = await request(app)
+      .get('/users?roles=VOLUNTEER,ADMIN')
+      .set('x-access-token', token)
+      .expect(200);
+
+    const { data: { users } } = response.body;
+    expect(users.length).toBe(2);
+  });
+
+  test('pagination should work correctly', async () => {
+    const token = await createUserAndGetToken(generateUser(), 'ADMIN');
+    const creatingUsers = Array.from(Array(15).keys()).map(() => createUser());
+    await Promise.all(creatingUsers);
+
+    const response = await request(app)
+      .get('/users?roles=USER')
+      .set('x-access-token', token)
+      .expect(200);
+
+    const { data: { users, total } } = response.body;
+    expect(users.length).toBe(15);
+    expect(total).toBe(16);
   });
 
   test('Should fail because of incorrect limit query', async () => {
