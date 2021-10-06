@@ -54,7 +54,7 @@ const getUsers = async (req, res) => {
   const roles = await roleRepository.getByNames(rolesNames);
   const rolesIds = roles.length !== 0 ? roles.map((role) => role.id) : null;
 
-  const users = await userRepository.getAllWithFilters({
+  const users = await userRepository.getAllFiltered({
     sortBy,
     order,
     limit,
@@ -62,7 +62,7 @@ const getUsers = async (req, res) => {
     search,
     roles: rolesIds,
   });
-  const total = await userRepository.getCountWithFilters({ search, roles: rolesIds });
+  const total = await userRepository.getCountFiltered({ search, roles: rolesIds });
 
   res.json({ success: true, data: { users, total } });
 };

@@ -3,7 +3,7 @@ const { Op, Sequelize } = require('sequelize');
 const { User } = require('../database');
 const BaseRepository = require('./BaseRepository');
 
-const getWhereFilter = (search, roles) => ({
+const searchByNameAndRoles = (search, roles) => ({
   [Op.and]: [
     Sequelize.where(Sequelize.fn('concat', Sequelize.col('name'), ' ', Sequelize.col('surname')), {
       [Op.iLike]: `%${search}%`,
@@ -36,7 +36,7 @@ class UserRepository extends BaseRepository {
     return this.model.findByPk(id, { attributes: { exclude: ['hash', 'salt'] }, ...query, raw: true });
   }
 
-  async getAllWithFilters({
+  async getAllFiltered({
     skip,
     limit,
     order,
@@ -45,7 +45,7 @@ class UserRepository extends BaseRepository {
     roles,
   }) {
     return this.model.findAll({
-      where: getWhereFilter(search, roles),
+      where: searchByNameAndRoles(search, roles),
       order: [
         [sortBy, order],
       ],
@@ -56,8 +56,8 @@ class UserRepository extends BaseRepository {
     });
   }
 
-  async getCountWithFilters({ search, roles }) {
-    return this.model.count({ where: getWhereFilter(search, roles) });
+  async getCountFiltered({ search, roles }) {
+    return this.model.count({ where: searchByNameAndRoles(search, roles) });
   }
 
   async getShortUsersByIds(ids) {

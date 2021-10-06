@@ -333,29 +333,32 @@ describe('GET /users', () => {
     expect(users[0].name).toEqual(user.name);
   });
 
-  test('Should filter by roles (USERS) correctly', async () => {
-    const token = await createUserAndGetToken(generateUser(), 'VOLUNTEER');
+  const testCases = [{
+    tokenRole: 'VOLUNTEER',
+    rolesFilter: 'USER',
+    expectedUsersCount: 1,
+  }, {
+    tokenRole: 'ADMIN',
+    rolesFilter: 'VOLUNTEER,ADMIN',
+    expectedUsersCount: 2,
+  }, {
+    tokenRole: 'VOLUNTEER',
+    rolesFilter: 'ADMIN',
+    expectedUsersCount: 0,
+  }];
 
-    const response = await request(app)
-      .get('/users?roles=USER')
-      .set('x-access-token', token)
-      .expect(200);
+  test.each(testCases)('Should filter by roles correctly',
+    async ({ tokenRole, rolesFilter, expectedUsersCount }) => {
+      const token = await createUserAndGetToken(generateUser(), tokenRole);
 
-    const { data: { users } } = response.body;
-    expect(users.length).toBe(1);
-  });
+      const response = await request(app)
+        .get(`/users?roles=${rolesFilter}`)
+        .set('x-access-token', token)
+        .expect(200);
 
-  test('Should filter by roles (VOLUNTEER, ADMIN) correctly', async () => {
-    const token = await createUserAndGetToken(generateUser(), 'ADMIN');
-
-    const response = await request(app)
-      .get('/users?roles=VOLUNTEER,ADMIN')
-      .set('x-access-token', token)
-      .expect(200);
-
-    const { data: { users } } = response.body;
-    expect(users.length).toBe(2);
-  });
+      const { data: { users } } = response.body;
+      expect(users.length).toBe(expectedUsersCount);
+    });
 
   test('pagination should work correctly', async () => {
     const token = await createUserAndGetToken(generateUser(), 'ADMIN');
