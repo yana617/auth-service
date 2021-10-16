@@ -52,7 +52,8 @@ class UserRepository extends BaseRepository {
       offset: skip,
       limit,
       attributes: { exclude: ['hash', 'salt'] },
-      raw: true,
+      include: ['user_additional_fields'],
+      nest: true,
     });
   }
 
@@ -72,7 +73,8 @@ class UserRepository extends BaseRepository {
     return this.model.findAll({
       where: { id: ids },
       attributes: { exclude: ['hash', 'salt', 'role_id'] },
-      raw: true,
+      include: ['user_additional_fields'],
+      nest: true,
     });
   }
 }

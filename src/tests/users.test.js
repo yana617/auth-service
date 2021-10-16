@@ -254,6 +254,9 @@ describe('GET /users', () => {
 
     const { data: { users } } = response.body;
     expect(users.length).toBe(3);
+
+    const [user] = users;
+    expect(user.user_additional_fields).toBeDefined();
   });
 
   test('Should return limited users', async () => {
