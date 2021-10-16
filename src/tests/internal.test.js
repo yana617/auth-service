@@ -74,6 +74,9 @@ describe('(get) POST /users', () => {
     expect(users[0].email).toBeDefined();
     expect(users[1].phone).toBeDefined();
     expect(users[1].email).toBeDefined();
+
+    const [user] = users;
+    expect(user.user_additional_fields).toBeDefined();
   });
 });
 

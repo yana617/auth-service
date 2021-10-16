@@ -1,4 +1,4 @@
-const { permissions } = require('./constants');
+const { permissions } = require('../constants');
 
 module.exports = (sequelize, DataTypes) => {
   const Permission = sequelize.define('Permission', {
