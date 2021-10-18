@@ -147,7 +147,7 @@ describe('PUT /additional-field-templates', () => {
 });
 
 describe('DELETE /additional-field-templates', () => {
-  test('Should delete additional field template', async () => {
+  test('Should delete additional field template & delete all uaf', async () => {
     const userOne = createUser();
     const aftOne = generateAft();
     await db.AdditionalFieldTemplate.create(aftOne);

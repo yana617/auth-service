@@ -32,6 +32,9 @@ module.exports = {
     UAF_FIELD_ERROR: 'Invalid additional fields data',
     INVALID_USER_ID: 'Invalid user id',
     INVALID_BIRTHDAY: 'Invalid birthday',
+    AFT_LABEL_ERROR: 'Label should be from 2 to 30 characters',
+    AFT_DESCRIPTION_ERROR: 'Description should be from 50 to 150 characters',
+    AFT_ICON_ERROR: 'Icon should be from 10 to 150 characters',
   },
   RU: {
     FORBIDDEN: 'Недостаточно прав',
@@ -64,5 +67,8 @@ module.exports = {
     UAF_FIELD_ERROR: 'Неверные данные',
     INVALID_USER_ID: 'Неверный идентификатор пользователя',
     INVALID_BIRTHDAY: 'Некорректная дата рождения',
+    AFT_LABEL_ERROR: 'Название должно быть от 2 до 30 символов',
+    AFT_DESCRIPTION_ERROR: 'Описание должно быть от 50 до 150 символов',
+    AFT_ICON_ERROR: 'Иконка должна быть от 10 до 150 символов',
   },
 };

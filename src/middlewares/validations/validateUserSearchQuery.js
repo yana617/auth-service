@@ -46,4 +46,12 @@ module.exports = checkSchema({
     },
     optional: { options: { nullable: true } },
   },
+  roles: {
+    in: ['query'],
+    isString: true,
+    customSanitizer: {
+      options: (rolesString) => rolesString.split(','),
+    },
+    optional: { options: { nullable: true } },
+  },
 });

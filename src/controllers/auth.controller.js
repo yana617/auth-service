@@ -38,6 +38,14 @@ const registerUser = async (req, res) => {
     return res.status(500).json({ success: false, error: 'Default role not found' });
   }
 
+  const allAft = await aftRepository.getAll();
+  const userAftIds = additionalFields.map((uaf) => uaf.additionalFieldTemplateId);
+
+  if (additionalFields.length !== allAft.length
+    || !allAft.every(({ id }) => userAftIds.includes(id))) {
+    return res.status(400).json({ success: false, error: ERRORS.AFT_FILL_REQUIRED });
+  }
+
   const newUser = await userRepository.create({
     name,
     surname,
@@ -48,14 +56,6 @@ const registerUser = async (req, res) => {
     hash,
     role_id: role.id,
   });
-
-  const allAft = await aftRepository.getAll();
-  const userAftIds = additionalFields.map((uaf) => uaf.additionalFieldTemplateId);
-
-  if (additionalFields.length !== allAft.length
-    || !allAft.every(({ id }) => userAftIds.includes(id))) {
-    return res.status(400).json({ success: false, error: ERRORS.AFT_FILL_REQUIRED });
-  }
 
   await Promise.all(additionalFields.map((af) => uafRepository.create({
     user_id: newUser.id,

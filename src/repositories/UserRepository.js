@@ -3,6 +3,15 @@ const { Op, Sequelize } = require('sequelize');
 const { User } = require('../database');
 const BaseRepository = require('./BaseRepository');
 
+const searchByNameAndRoles = (search, roles) => ({
+  [Op.and]: [
+    Sequelize.where(Sequelize.fn('concat', Sequelize.col('name'), ' ', Sequelize.col('surname')), {
+      [Op.iLike]: `%${search}%`,
+    }),
+    (roles ? { role_id: roles } : {}),
+  ],
+});
+
 class UserRepository extends BaseRepository {
   async getByEmailOrPhone(email, phone) {
     return this.model.findAll({
@@ -27,25 +36,29 @@ class UserRepository extends BaseRepository {
     return this.model.findByPk(id, { attributes: { exclude: ['hash', 'salt'] }, ...query, raw: true });
   }
 
-  async getAllWithFilters({
+  async getAllFiltered({
     skip,
     limit,
     order,
     sortBy,
     search,
+    roles,
   }) {
     return this.model.findAll({
-      where: Sequelize.where(Sequelize.fn('concat', Sequelize.col('name'), ' ', Sequelize.col('surname')), {
-        [Op.iLike]: `%${search}%`,
-      }),
+      where: searchByNameAndRoles(search, roles),
       order: [
         [sortBy, order],
       ],
       offset: skip,
       limit,
       attributes: { exclude: ['hash', 'salt'] },
-      raw: true,
+      include: ['user_additional_fields'],
+      nest: true,
     });
+  }
+
+  async getCountFiltered({ search, roles }) {
+    return this.model.count({ where: searchByNameAndRoles(search, roles) });
   }
 
   async getShortUsersByIds(ids) {
@@ -60,7 +73,8 @@ class UserRepository extends BaseRepository {
     return this.model.findAll({
       where: { id: ids },
       attributes: { exclude: ['hash', 'salt', 'role_id'] },
-      raw: true,
+      include: ['user_additional_fields'],
+      nest: true,
     });
   }
 }
