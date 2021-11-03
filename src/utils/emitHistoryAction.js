@@ -11,7 +11,7 @@ const getOptions = (body = {}) => ({
 
 exports.sendHistoryAction = async (eventData) => {
   try {
-    await got.post(eventsUrl, getOptions(eventData));
+    got.post(eventsUrl, getOptions(eventData));
   } catch (e) {
     throw Error('HISTORY_ACTION_CREATING_ERROR');
   }

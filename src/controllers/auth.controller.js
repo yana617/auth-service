@@ -68,7 +68,7 @@ const registerUser = async (req, res) => {
   delete result.hash;
   delete result.salt;
 
-  await sendHistoryAction({ action_type: 'NEW_USER', user_from: result._id });
+  sendHistoryAction({ action_type: 'NEW_USER', user_from_id: result.id });
 
   res.status(201).json({ success: true, data: result });
 };
