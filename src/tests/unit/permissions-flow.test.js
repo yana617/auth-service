@@ -1,9 +1,12 @@
 const request = require('supertest');
+const nock = require('nock');
 
 const app = require('../../../app');
 const db = require('../../database');
 const { generateUser, createUserAndGetToken } = require('../fixtures/db');
 const { rolePermissions } = require('../../database/constants');
+
+const { EVENTS_SERVICE_URL } = process.env;
 
 jest.mock('../../utils/emitHistoryAction');
 jest.mock('nodemailer', () => ({
@@ -17,6 +20,7 @@ beforeEach(async () => {
   await db.UserPermission.destroy({ where: {} });
   await db.AdditionalFieldTemplate.destroy({ where: {} });
   await db.UserAdditionalField.destroy({ where: {} });
+  nock(EVENTS_SERVICE_URL).post('/history-actions').reply(200, { success: true });
 });
 
 test('I can register, update permissions and change role successfully', async () => {

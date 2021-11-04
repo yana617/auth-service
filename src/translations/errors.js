@@ -35,6 +35,7 @@ module.exports = {
     AFT_LABEL_ERROR: 'Label should be from 2 to 30 characters',
     AFT_DESCRIPTION_ERROR: 'Description should be from 50 to 150 characters',
     AFT_ICON_ERROR: 'Icon should be from 10 to 150 characters',
+    HISTORY_ACTION_CREATING_ERROR: 'History action was not created',
   },
   RU: {
     FORBIDDEN: 'Недостаточно прав',
@@ -70,5 +71,6 @@ module.exports = {
     AFT_LABEL_ERROR: 'Название должно быть от 2 до 30 символов',
     AFT_DESCRIPTION_ERROR: 'Описание должно быть от 50 до 150 символов',
     AFT_ICON_ERROR: 'Иконка должна быть от 10 до 150 символов',
+    HISTORY_ACTION_CREATING_ERROR: 'Ошибка при создании лога для истории действий',
   },
 };
