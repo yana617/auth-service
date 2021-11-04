@@ -45,6 +45,7 @@ jobs:
           POSTGRES_PASSWORD: postgres
           POSTGRES_TEST_HOST: localhost
           POSTGRES_PORT: 5432
+          EVENTS_SERVICE_URL: fake.url
       - name: Run linter and tests
         run: |
           npm run lint
