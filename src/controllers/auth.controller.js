@@ -11,6 +11,7 @@ const aftRepository = require('../repositories/AdditionalFieldTemplateRepository
 const generateToken = require('../utils/generateToken');
 const { sendLinkEmail, sendPasswordChangedSuccessfullyEmail } = require('../utils/mails');
 const { sendHistoryAction } = require('../utils/emitHistoryAction');
+const { HISTORY_ACTION_TYPES } = require('../constants');
 
 const { CLIENT_URL: clientURL, BCRYPT_SALT: bcryptSalt } = process.env;
 
@@ -68,7 +69,7 @@ const registerUser = async (req, res) => {
   delete result.hash;
   delete result.salt;
 
-  sendHistoryAction({ action_type: 'NEW_USER', user_from_id: result.id });
+  sendHistoryAction({ action_type: HISTORY_ACTION_TYPES.NEW_USER, user_from_id: result.id });
 
   res.status(201).json({ success: true, data: result });
 };

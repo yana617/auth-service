@@ -5,6 +5,7 @@ const roleRepository = require('../repositories/RoleRepository');
 const { DEFAULT_LIMIT } = require('../database/constants');
 const { ERRORS } = require('../translations');
 const { sendHistoryAction } = require('../utils/emitHistoryAction');
+const { HISTORY_ACTION_TYPES } = require('../constants');
 
 const getMe = async (req, res) => {
   const { id } = req.user;
@@ -124,7 +125,7 @@ const updateUserRole = async (req, res) => {
   await userRepository.updateById(user.id, { role_id: roleToSet.id });
 
   sendHistoryAction({
-    action_type: 'EDIT_ROLE',
+    action_type: HISTORY_ACTION_TYPES.EDIT_ROLE,
     user_from_id: userId,
     user_to_id: userToUpdateId,
     new_role: roleToSet.name,

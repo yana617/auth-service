@@ -1,0 +1,4 @@
+exports.HISTORY_ACTION_TYPES = {
+  EDIT_ROLE: 'EDIT_ROLE',
+  NEW_USER: 'NEW_USER',
+};
