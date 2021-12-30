@@ -4,6 +4,8 @@ const userPermissionRepository = require('../repositories/UserPermissionReposito
 const roleRepository = require('../repositories/RoleRepository');
 const { DEFAULT_LIMIT } = require('../database/constants');
 const { ERRORS } = require('../translations');
+const { sendHistoryAction } = require('../utils/emitHistoryAction');
+const { HISTORY_ACTION_TYPES } = require('../constants');
 
 const getMe = async (req, res) => {
   const { id } = req.user;
@@ -18,6 +20,7 @@ const updateUser = async (req, res) => {
     phone,
     name,
     surname,
+    birthday,
   } = req.body;
 
   const updatesInfo = await userRepository.updateById(userId, {
@@ -25,6 +28,7 @@ const updateUser = async (req, res) => {
     phone,
     name,
     surname,
+    birthday,
   });
   const user = updatesInfo[1];
   delete user.hash;
@@ -119,6 +123,14 @@ const updateUserRole = async (req, res) => {
   const newRolePermsIds = roleToSet.role_permissions.map((rp) => rp.permission_id);
   await userPermissionRepository.deleteByUserIdAndPermissionId(user.id, newRolePermsIds);
   await userRepository.updateById(user.id, { role_id: roleToSet.id });
+
+  sendHistoryAction({
+    action_type: HISTORY_ACTION_TYPES.EDIT_ROLE,
+    user_from_id: userId,
+    user_to_id: userToUpdateId,
+    new_role: roleToSet.name,
+  });
+
   res.json({ success: true });
 };
 

@@ -2,14 +2,17 @@ const request = require('supertest');
 const crypto = require('crypto');
 const bcrypt = require('bcrypt');
 const { v4 } = require('uuid');
+const nock = require('nock');
 
 const app = require('../../app');
 const db = require('../database');
 const { generateUser, createUser, generateAft } = require('./fixtures/db');
 const { ERRORS } = require('../translations');
+const emitHistoryAction = require('../utils/emitHistoryAction');
 
-const { BCRYPT_SALT: bcryptSalt } = process.env;
+const { BCRYPT_SALT: bcryptSalt, EVENTS_SERVICE_URL } = process.env;
 
+jest.mock('../utils/emitHistoryAction');
 jest.mock('nodemailer', () => ({
   createTransport: jest.fn().mockReturnValue({
     sendMail: jest.fn(),
@@ -23,10 +26,15 @@ beforeEach(async () => {
 });
 
 describe('POST /register', () => {
+  beforeEach(async () => {
+    nock(EVENTS_SERVICE_URL).post('/history-actions').reply(200, { success: true });
+  });
+
   test('Should register new user', async () => {
     const userOne = generateUser();
     const aft = generateAft();
     await db.AdditionalFieldTemplate.create(aft);
+    const sendHistoryActionMock = jest.spyOn(emitHistoryAction, 'sendHistoryAction');
 
     const response = await request(app)
       .post('/auth/register')
@@ -38,6 +46,7 @@ describe('POST /register', () => {
         }],
       })
       .expect(201);
+    expect(sendHistoryActionMock).toHaveBeenCalledTimes(1);
 
     const { data: user } = response.body;
     expect(user.name).toEqual(userOne.name);

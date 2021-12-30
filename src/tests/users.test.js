@@ -1,11 +1,17 @@
 const request = require('supertest');
 const { v4 } = require('uuid');
+const nock = require('nock');
 
 const app = require('../../app');
 const db = require('../database');
 const { generateUser, createUser, createUserAndGetToken } = require('./fixtures/db');
 const { ERRORS } = require('../translations');
 const { rolePermissions, DEFAULT_ROLE } = require('../database/constants');
+const emitHistoryAction = require('../utils/emitHistoryAction');
+
+const { EVENTS_SERVICE_URL } = process.env;
+
+jest.mock('../utils/emitHistoryAction');
 
 beforeEach(async () => {
   await db.User.destroy({ where: {} });
@@ -97,18 +103,25 @@ describe('GET /users/:id/permissions', () => {
 });
 
 describe('PUT /users/:id/role', () => {
+  beforeEach(async () => {
+    nock(EVENTS_SERVICE_URL).post('/history-actions').reply(200, { success: true });
+  });
+
   test('Should update role', async () => {
     const userOne = await createUser();
     const token = await createUserAndGetToken(generateUser(), 'ADMIN');
     const roleToSet = 'VOLUNTEER';
 
+    const sendHistoryActionMock = jest.spyOn(emitHistoryAction, 'sendHistoryAction');
     const response = await request(app)
       .put(`/users/${userOne.id}/role`)
       .send({ role: roleToSet })
       .set('x-access-token', token)
       .expect(200);
+    expect(sendHistoryActionMock).toHaveBeenCalledTimes(1);
 
     const { success } = response.body;
+
     expect(success).toBe(true);
     const userInDb = await db.User.findByPk(userOne.id);
     expect(userInDb).toBeDefined();

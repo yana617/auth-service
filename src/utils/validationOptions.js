@@ -55,7 +55,7 @@ exports.birthday = {
       if (enteredDate > todaysDate) {
         throw new Error(ERRORS.INVALID_BIRTHDAY);
       }
-      return true;
+      return !Number.isNaN(Date.parse(value));
     },
   },
   exists: true,

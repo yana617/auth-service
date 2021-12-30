@@ -25,7 +25,7 @@ describe('GET /roles', () => {
   });
 
   test('Should fail because you do not have enough permissions', async () => {
-    const token = await createUserAndGetToken(generateUser(), 'VOLUNTEER');
+    const token = await createUserAndGetToken(generateUser(), 'USER');
 
     const response = await request(app)
       .get('/roles')
