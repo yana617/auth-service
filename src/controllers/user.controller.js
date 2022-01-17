@@ -9,8 +9,8 @@ const { HISTORY_ACTION_TYPES } = require('../constants');
 
 const getMe = async (req, res) => {
   const { id } = req.user;
-  const user = await userRepository.getByIdWithoutSaltHash(id);
-  res.json({ success: true, data: user });
+  const user = await userRepository.getByIdWithoutSaltHash(id, true);
+  res.json({ success: true, data: { ...user, role: user.role.name } });
 };
 
 const updateUser = async (req, res) => {
