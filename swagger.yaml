@@ -808,6 +808,8 @@ components:
           type: string
         birthday:
           type: string
+        role:
+          type: string
     Error:
       type: object
       properties:

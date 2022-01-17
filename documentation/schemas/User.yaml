@@ -12,3 +12,5 @@ properties:
     type: string
   birthday:
     type: string
+  role:
+    type: string
