@@ -3,7 +3,7 @@ module.exports = (sequelize, DataTypes) => {
     token: DataTypes.STRING,
     expiration: {
       type: DataTypes.DATE,
-      defaultValue: Date.now() + 1000 * 60 * 20,
+      defaultValue: new Date(Date.now() + 1000 * 60 * 20),
     },
   }, {
     tableName: 'tokens',
