@@ -106,7 +106,11 @@ const forgotPassword = async (req, res) => {
   }
   const resetToken = crypto.randomBytes(32).toString('hex');
   const hash = await bcrypt.hash(resetToken, Number(bcryptSalt));
-  await tokenRepository.create({ user_id: user.id, token: hash });
+  await tokenRepository.create({
+    user_id: user.id,
+    token: hash,
+    expiration: new Date(Date.now() + 1000 * 60 * 20),
+  });
 
   const link = `${clientURL}/reset-password?token=${resetToken}&userId=${user.id}`;
   await sendLinkEmail(link, email);
