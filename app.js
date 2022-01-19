@@ -16,7 +16,13 @@ app.use((req, res, next) => {
   next();
 });
 
-const whitelist = ['http://localhost:8080', 'auth-service:1081', 'https://house-of-souls.dogcatbmpz.by'];
+const {
+  UI_LOCAL_URL,
+  UI_PROD_URL,
+  DOCKER_AUTH_SERVICE_URL,
+} = process.env;
+
+const whitelist = [UI_LOCAL_URL, UI_PROD_URL, DOCKER_AUTH_SERVICE_URL];
 const corsOptions = {
   origin: (origin, callback) => {
     if (whitelist.indexOf(origin) !== -1) {
