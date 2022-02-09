@@ -14,6 +14,7 @@ module.exports = {
     DELETE_ADDITIONAL_FIELD_TEMPLATE: 'Delete additional field template',
     EDIT_PERMISSIONS: 'Edit permissions',
     CREATE_CLAIM_FOR_UNREGISTERED_USERS: 'Create claim for unregistered users',
+    VIEW_RATING: 'View rating',
   },
   RU: {
     VIEW_PROFILE: 'Просматривать профиль',
@@ -30,5 +31,6 @@ module.exports = {
     DELETE_ADDITIONAL_FIELD_TEMPLATE: 'Удалять дополнительные поля',
     EDIT_PERMISSIONS: 'Редактировать права доступа',
     CREATE_CLAIM_FOR_UNREGISTERED_USERS: 'Записывать в график незарегистрированных пользователей',
+    VIEW_RATING: 'Просматривать рейтинг',
   },
 };
