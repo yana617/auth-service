@@ -24,6 +24,7 @@ const permissions = [
   'DELETE_ADDITIONAL_FIELD_TEMPLATE',
   'EDIT_PERMISSIONS',
   'CREATE_CLAIM_FOR_UNREGISTERED_USERS',
+  'VIEW_RATING',
 ];
 
 const rolePermissions = {
@@ -38,6 +39,7 @@ const rolePermissions = {
     'EDIT_CLAIM',
     'DELETE_CLAIM',
     'VIEW_USERS',
+    'VIEW_RATING',
   ],
   ADMIN: permissions,
 };
