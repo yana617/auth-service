@@ -1,9 +1,41 @@
 const { v4 } = require('uuid');
 const bcrypt = require('bcrypt');
 
-const { roles, permissions, rolePermissions, rolesTranslates } = require('../database/constants');
+const { roles, rolesTranslates } = require('../database/constants');
 
 const { NODE_ENV } = process.env;
+
+const permissions = [
+  'VIEW_PROFILE',
+  'EDIT_PROFILE',
+  'CREATE_CLAIM',
+  'EDIT_CLAIM',
+  'DELETE_CLAIM',
+  'VIEW_USERS',
+  'CREATE_NOTICE',
+  'EDIT_NOTICE',
+  'DELETE_NOTICE',
+  'CREATE_ADDITIONAL_FIELD_TEMPLATE',
+  'EDIT_ADDITIONAL_FIELD_TEMPLATE',
+  'DELETE_ADDITIONAL_FIELD_TEMPLATE',
+  'EDIT_PERMISSIONS',
+  'CREATE_CLAIM_FOR_UNREGISTERED_USERS',
+];
+const rolePermissions = {
+  USER: [
+    'VIEW_PROFILE',
+    'EDIT_PROFILE',
+  ],
+  VOLUNTEER: [
+    'VIEW_PROFILE',
+    'EDIT_PROFILE',
+    'CREATE_CLAIM',
+    'EDIT_CLAIM',
+    'DELETE_CLAIM',
+    'VIEW_USERS',
+  ],
+  ADMIN: permissions,
+};
 
 const rolesInDb = {};
 const rolesToInsert = roles.map((role) => {
