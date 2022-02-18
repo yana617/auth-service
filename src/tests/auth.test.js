@@ -77,6 +77,24 @@ describe('POST /register', () => {
     expect(error).toEqual(ERRORS.USER_ALREADY_EXISTS);
   });
 
+  test('Should fail because user already exist (email case insensitive test)', async () => {
+    const userOne = generateUser();
+    const emailOne = 'test@example.com';
+    const emailTwo = 'Test@example.com';
+    await request(app)
+      .post('/auth/register')
+      .send({ ...userOne, email: emailOne })
+      .expect(201);
+
+    const response = await request(app)
+      .post('/auth/register')
+      .send({ ...userOne, email: emailTwo })
+      .expect(400);
+
+    const { error } = response.body;
+    expect(error).toEqual(ERRORS.USER_ALREADY_EXISTS);
+  });
+
   test('Should fail because fields filled wrong', async () => {
     const response = await request(app)
       .post('/auth/register')
@@ -126,6 +144,32 @@ describe('POST /login', () => {
     const response = await request(app)
       .post('/auth/login')
       .send(userOne)
+      .expect(200);
+
+    const { data: user } = response.body;
+
+    expect(user.name).toEqual(userOne.name);
+    expect(user.token).not.toBeNull();
+  });
+
+  test('Should login existing user (email insensitive case test)', async () => {
+    const userOne = generateUser();
+    const userWithLowerCaseEmail = { ...userOne, email: 'test@example.com' };
+    const userWithUpperCaseEmail = { ...userOne, email: 'Test@example.com' };
+
+    await request(app)
+      .post('/auth/register')
+      .send(userWithLowerCaseEmail)
+      .expect(201);
+
+    await request(app)
+      .post('/auth/login')
+      .send(userWithLowerCaseEmail)
+      .expect(200);
+
+    const response = await request(app)
+      .post('/auth/login')
+      .send(userWithUpperCaseEmail)
       .expect(200);
 
     const { data: user } = response.body;
