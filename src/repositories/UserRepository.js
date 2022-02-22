@@ -12,7 +12,7 @@ const searchByNameAndRoles = (search, roles) => ({
   ],
 });
 
-const insensitiveEmailQuery = (email) => Sequelize
+const emailCaseInsensitiveQuery = (email) => Sequelize
   .where(Sequelize.fn('LOWER', Sequelize.col('email')), 'LIKE', `%${email.toLowerCase()}%`);
 
 class UserRepository extends BaseRepository {
@@ -21,7 +21,7 @@ class UserRepository extends BaseRepository {
       where: {
         [Op.or]: [
           { phone },
-          { email: insensitiveEmailQuery(email) },
+          { email: emailCaseInsensitiveQuery(email) },
         ],
       },
     });
@@ -29,7 +29,7 @@ class UserRepository extends BaseRepository {
 
   async getByEmail(email) {
     return this.model.findOne({
-      where: { email: insensitiveEmailQuery(email) },
+      where: { email: emailCaseInsensitiveQuery(email) },
       raw: true,
     });
   }
