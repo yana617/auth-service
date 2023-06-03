@@ -14,6 +14,14 @@ const config = {
       statements: 80,
     },
   },
+  transform: {
+    '^.+\\.(js)$': 'babel-jest',
+  },
+  moduleDirectories: ['node_modules', 'src'],
+  moduleNameMapper: {
+    '#validators/(.*)': '<rootDir>/src/middlewares/validators/$1',
+    '#(.*)': '<rootDir>/src/$1',
+  },
 };
 
-module.exports = config;
+export default config;

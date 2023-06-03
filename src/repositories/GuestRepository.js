@@ -1,5 +1,5 @@
-const { Guest } = require('../database');
-const BaseRepository = require('./BaseRepository');
+import db from '#database';
+import BaseRepository from './BaseRepository';
 
 class GuestRepository extends BaseRepository {
   async getByPhone(phone) {
@@ -25,4 +25,4 @@ class GuestRepository extends BaseRepository {
   }
 }
 
-module.exports = new GuestRepository(Guest);
+export default new GuestRepository(db.Guest);

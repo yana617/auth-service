@@ -1,10 +1,10 @@
-const route = require('express').Router();
+import express from 'express';
 
-const verifyToken = require('../middlewares/authRequired');
-const checkPermissions = require('../middlewares/checkPermissions');
-const roleController = require('../controllers/role.controller');
-const errorHandler = require('../middlewares/errorHandler');
+import roleController from '#controllers/role.controller';
+import { checkPermissions, verifyToken, errorHandler } from '#middlewares/index';
+
+const route = express.Router();
 
 route.get('/', verifyToken, checkPermissions(['CREATE_CLAIM']), errorHandler(roleController.getAll));
 
-module.exports = route;
+export default route;

@@ -1,11 +1,11 @@
-const request = require('supertest');
-const { v4 } = require('uuid');
+import request from 'supertest';
+import { v4 } from 'uuid';
 
-const app = require('../../app');
-const db = require('../database');
-const { generateUser, createUser, createUserAndGetToken } = require('./fixtures/db');
-const { ERRORS } = require('../translations');
-const { permissions, rolePermissions, permissionsForbiddenToBeAdditional } = require('../database/constants');
+import db from '#database';
+import { ERRORS } from '#translations';
+import { permissions, rolePermissions, permissionsForbiddenToBeAdditional } from '#database/constants';
+import { generateUser, createUser, createUserAndGetToken } from './fixtures/db';
+import app from '../../app';
 
 beforeEach(async () => {
   await db.User.destroy({ where: {} });

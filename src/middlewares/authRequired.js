@@ -1,11 +1,11 @@
-const { ERRORS } = require('../translations');
-const { isAuthorized } = require('../services/auth');
+import { ERRORS } from '#translations';
+import authService from '#services/auth';
 
 const verifyToken = (req, res, next) => {
-  if (!isAuthorized(req)) {
+  if (!authService.isAuthorized(req)) {
     return res.status(401).json({ success: false, error: ERRORS.INVALID_TOKEN });
   }
   return next();
 };
 
-module.exports = verifyToken;
+export default verifyToken;

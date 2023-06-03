@@ -1,8 +1,20 @@
-require('dotenv').config();
-const db = require('../../database');
+import 'regenerator-runtime/runtime';
+import dotenv from 'dotenv';
 
-beforeEach(async () => {
-  await db.sequelize.sync({});
+import db from '#database';
+
+dotenv.config();
+
+async function initDatabase() {
+  try {
+    await db.sequelize.sync();
+  } catch (error) {
+    console.error('Unable to initialize database:', error);
+  }
+}
+
+beforeAll(async () => {
+  await initDatabase();
 });
 
 afterAll(async () => {

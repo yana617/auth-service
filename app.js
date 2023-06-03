@@ -1,9 +1,12 @@
-const express = require('express');
-const morgan = require('morgan');
-const swaggerUi = require('swagger-ui-express');
-const fs = require('fs');
-const yaml = require('js-yaml');
-const cors = require('cors');
+import express from 'express';
+import morgan from 'morgan';
+import swaggerUi from 'swagger-ui-express';
+import fs from 'fs';
+import yaml from 'js-yaml';
+import cors from 'cors';
+
+import router from '#routes';
+import '#database';
 
 const swaggerDocument = yaml.load(fs.readFileSync('./swagger.yaml'));
 
@@ -48,13 +51,11 @@ app.use('/static', express.static('img'));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(express.json({ limit: '10mb' }));
 
-require('./src/database');
-
-app.use(require('./src/routes'));
+app.use(router);
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ success: false, error: err.message });
 });
 
-module.exports = app;
+export default app;

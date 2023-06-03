@@ -1,11 +1,11 @@
-const { ERRORS, PERMISSIONS } = require('../translations');
-const userRepository = require('../repositories/UserRepository');
-const permissionRepository = require('../repositories/PermissionRepository');
-const rolePermissionRepository = require('../repositories/RolePermissionRepository');
-const userPermissionRepository = require('../repositories/UserPermissionRepository');
-const { permissionsForbiddenToBeAdditional } = require('../database/constants');
-const permissionsService = require('../services/permissions');
-const authService = require('../services/auth');
+import { ERRORS, PERMISSIONS } from '#translations';
+import authService from '#services/auth';
+import userRepository from '#repositories/UserRepository';
+import permissionRepository from '#repositories/PermissionRepository';
+import rolePermissionRepository from '#repositories/RolePermissionRepository';
+import userPermissionRepository from '#repositories/UserPermissionRepository';
+import { permissionsForbiddenToBeAdditional } from '#database/constants';
+import permissionsService from '#services/permissions';
 
 const getAll = async (req, res) => {
   const permissions = await permissionRepository.getAll();
@@ -70,7 +70,7 @@ const getUserPermissions = async (req, res) => {
   res.json({ success: true, data: allPermissions });
 };
 
-module.exports = {
+export default {
   getAll,
   updatePermissions,
   getUserPermissions,

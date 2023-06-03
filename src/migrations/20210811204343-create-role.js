@@ -1,5 +1,10 @@
 'use strict';
-const { roles } = require('../database/constants');
+
+const roles = [
+  'USER',
+  'VOLUNTEER',
+  'ADMIN',
+];
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {

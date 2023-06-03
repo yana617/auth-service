@@ -1,7 +1,7 @@
-const userRepository = require('../repositories/UserRepository');
-const guestRepository = require('../repositories/GuestRepository');
-const permissionsService = require('../services/permissions');
-const authService = require('../services/auth');
+import userRepository from '#repositories/UserRepository';
+import guestRepository from '#repositories/GuestRepository';
+import permissionsService from '#services/permissions';
+import authService from '#services/auth';
 
 const hasPermissions = async (req) => {
   const isAuthorized = authService.isAuthorized(req);
@@ -50,7 +50,7 @@ const getOrCreateGuest = async (req, res) => {
   res.json({ success: true, data: guest });
 };
 
-module.exports = {
+export default {
   getUsers,
   getGuests,
   getOrCreateGuest,

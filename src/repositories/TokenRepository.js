@@ -1,7 +1,7 @@
-const { Op, Sequelize } = require('sequelize');
+import { Op, Sequelize } from 'sequelize';
 
-const { Token } = require('../database');
-const BaseRepository = require('./BaseRepository');
+import db from '#database';
+import BaseRepository from './BaseRepository';
 
 class TokenRepository extends BaseRepository {
   async getByUserId(userId) {
@@ -17,4 +17,4 @@ class TokenRepository extends BaseRepository {
   }
 }
 
-module.exports = new TokenRepository(Token);
+export default new TokenRepository(db.Token);

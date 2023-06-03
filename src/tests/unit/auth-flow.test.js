@@ -1,20 +1,13 @@
-const request = require('supertest');
-const bcrypt = require('bcrypt');
-const crypto = require('crypto');
-const nock = require('nock');
+import request from 'supertest';
+import nock from 'nock';
 
-const app = require('../../../app');
-const db = require('../../database');
-const { generateUser } = require('../fixtures/db');
+import db from '#database';
+import { createUserAndGetToken, generateUser } from '../fixtures/db';
+import app from '../../../app';
 
-const { BCRYPT_SALT: bcryptSalt, EVENTS_SERVICE_URL } = process.env;
+const { EVENTS_SERVICE_URL } = process.env;
 
-jest.mock('../../utils/emitHistoryAction');
-jest.mock('nodemailer', () => ({
-  createTransport: jest.fn().mockReturnValue({
-    sendMail: jest.fn(),
-  }),
-}));
+jest.mock('utils/emitHistoryAction');
 
 beforeEach(async () => {
   await db.User.destroy({ where: {} });
@@ -57,15 +50,15 @@ test('I can register, login and get own info successfully', async () => {
   expect(user.name).toEqual(userToSave.name);
 });
 
-const createToken = async (userId) => {
-  await db.Token.destroy({ where: {} });
-  const resetToken = crypto.randomBytes(32).toString('hex');
-  const hash = await bcrypt.hash(resetToken, Number(bcryptSalt));
-  await db.Token.create({ user_id: userId, token: hash });
-  return resetToken;
+const findTokenInLink = (link) => {
+  const start = link.indexOf('token');
+  const end = link.indexOf('userId');
+  return link.slice(start + 6, end - 1);
 };
 
 test('I forgot password and can reset it successfully', async () => {
+  const adminToken = await createUserAndGetToken(generateUser(), 'ADMIN');
+
   const userOne = generateUser();
   const registerResponse = await request(app)
     .post('/auth/register')
@@ -79,20 +72,30 @@ test('I forgot password and can reset it successfully', async () => {
   expect(userInDb.name).toEqual(userOne.name);
 
   const updatedPassword = '111111';
+
+  // admin asks for link and share it to user
   const forgotResponse = await request(app)
     .post('/auth/forgot-password')
-    .send({ email: userOne.email })
+    .send({ userId: userInDb.id })
+    .set('x-access-token', adminToken)
     .expect(200);
 
-  const { success } = forgotResponse.body;
+  const { success, data: resetLink } = forgotResponse.body;
   expect(success).toBeTruthy();
+  expect(resetLink).toBeDefined();
 
-  const token = await createToken(userInDb.id);
+  await request(app)
+    .post('/auth/login')
+    .send({
+      email: userInDb.email,
+      password: updatedPassword,
+    })
+    .expect(400);
 
   const resetResponse = await request(app)
     .post('/auth/reset-password')
     .send({
-      token,
+      token: findTokenInLink(resetLink),
       userId: userInDb.id,
       password: updatedPassword,
     })
@@ -103,11 +106,11 @@ test('I forgot password and can reset it successfully', async () => {
 
   const loginResponse = await request(app)
     .post('/auth/login')
-    .send({ email: userOne.email, password: updatedPassword })
+    .send({ email: userInDb.email, password: updatedPassword })
     .expect(200);
 
   const { data: loginUser } = loginResponse.body;
 
-  expect(loginUser.name).toEqual(userOne.name);
+  expect(loginUser.name).toEqual(userInDb.name);
   expect(loginUser.token).not.toBeNull();
 });

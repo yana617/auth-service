@@ -1,5 +1,5 @@
-const { ERRORS } = require('../translations');
-const uafRepository = require('../repositories/UserAdditionalFieldRepository');
+import { ERRORS } from '#translations';
+import uafRepository from '#repositories/UserAdditionalFieldRepository';
 
 const getMyUaf = async (req, res) => {
   const { id } = req.user;
@@ -25,7 +25,7 @@ const updateMyUaf = async (req, res) => {
   res.json({ success: true, data: updateInfo[1] });
 };
 
-module.exports = {
+export default {
   getMyUaf,
   updateMyUaf,
 };

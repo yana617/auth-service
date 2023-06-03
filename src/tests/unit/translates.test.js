@@ -1,6 +1,6 @@
-const { permissions } = require('../../database/constants');
-const { PERMISSIONS } = require('../../translations');
-const errors = require('../../translations/errors');
+import { permissions } from '#database/constants';
+import { PERMISSIONS } from '#translations';
+import errors from '#translations/errors';
 
 test('Expect all permissions translates exist', async () => {
   const translatesCount = Object.keys(PERMISSIONS);

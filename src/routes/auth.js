@@ -1,16 +1,37 @@
-const route = require('express').Router();
-const { checkSchema } = require('express-validator');
+import express from 'express';
+import { checkSchema } from 'express-validator';
 
-const validateRegisterUser = require('../middlewares/validations/validateRegisterUser');
-const validateResetPassword = require('../middlewares/validations/validateResetPassword');
-const authController = require('../controllers/auth.controller');
-const checkValidationErrors = require('../middlewares/checkValidation');
-const errorHandler = require('../middlewares/errorHandler');
-const { email } = require('../utils/validationOptions');
+import authController from '#controllers/auth.controller';
+import validateRegisterUser from '#validators/validateRegisterUser';
+import validateResetPassword from '#validators/validateResetPassword';
+import { userId } from '#utils/validationOptions';
+import {
+  checkPermissions,
+  verifyToken,
+  errorHandler,
+  checkValidationErrors,
+} from '#middlewares';
+
+const route = express.Router();
 
 route.post('/register', validateRegisterUser, checkValidationErrors, errorHandler(authController.registerUser));
-route.post('/login', errorHandler(authController.loginUser));
-route.post('/forgot-password', checkSchema({ email }), checkValidationErrors, errorHandler(authController.forgotPassword));
-route.post('/reset-password', validateResetPassword, checkValidationErrors, errorHandler(authController.resetPassword));
 
-module.exports = route;
+route.post('/login', errorHandler(authController.loginUser));
+
+route.post(
+  '/forgot-password',
+  verifyToken,
+  checkPermissions(['EDIT_PERMISSIONS']),
+  checkSchema({ userId }),
+  checkValidationErrors,
+  errorHandler(authController.generateResetLink),
+);
+
+route.post(
+  '/reset-password',
+  validateResetPassword,
+  checkValidationErrors,
+  errorHandler(authController.resetPassword),
+);
+
+export default route;

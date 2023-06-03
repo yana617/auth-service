@@ -12,7 +12,7 @@ const common = {
   password,
 };
 
-module.exports = {
+const config = {
   development: {
     ...common,
     database,
@@ -30,3 +30,5 @@ module.exports = {
     host,
   },
 };
+
+export default config;

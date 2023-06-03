@@ -1,4 +1,4 @@
-const roleRepository = require('../repositories/RoleRepository');
+import roleRepository from '#repositories/RoleRepository';
 
 const getAll = async (req, res) => {
   const roles = await roleRepository.getAll();
@@ -8,6 +8,6 @@ const getAll = async (req, res) => {
   });
 };
 
-module.exports = {
+export default {
   getAll,
 };

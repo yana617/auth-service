@@ -1,10 +1,10 @@
-const bcrypt = require('bcrypt');
-const { v4 } = require('uuid');
-const faker = require('faker');
+import bcrypt from 'bcrypt';
+import { v4 } from 'uuid';
+import faker from 'faker';
 
-const db = require('../../database');
-const { DEFAULT_ROLE } = require('../../database/constants');
-const generateToken = require('../../utils/generateToken');
+import db from '#database';
+import { DEFAULT_ROLE } from '#database/constants';
+import generateToken from '#utils/generateToken';
 
 const generateUser = () => ({
   id: v4(),
@@ -44,8 +44,11 @@ const createUser = async (userToSave = generateUser(), role = DEFAULT_ROLE) => {
   const hash = await bcrypt.hash(user.password, salt);
   user.hash = hash;
   user.salt = salt;
-  const { id: role_id } = await db.Role.findOne({ where: { name: role } });
-  user.role_id = role_id;
+  const roleInDb = await db.Role.findOne({ where: { name: role } });
+  if (!roleInDb) {
+    throw new Error('Role not found');
+  }
+  user.role_id = roleInDb.id;
   await db.User.create(user);
   return user;
 };
@@ -56,7 +59,7 @@ const createUserAndGetToken = async (userToSave = generateUser(), role = DEFAULT
   return token;
 };
 
-module.exports = {
+export {
   generateUser,
   createUserAndGetToken,
   createUser,

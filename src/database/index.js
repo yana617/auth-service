@@ -1,12 +1,18 @@
-/* eslint-disable import/no-dynamic-require */
-const fs = require('fs');
-const path = require('path');
-const Sequelize = require('sequelize');
+import { Sequelize, DataTypes } from 'sequelize';
+
+import configs from '#config';
+import AdditionalFieldTemplate from './models/additional_field_template';
+import User from './models/user';
+import Role from './models/role';
+import Token from './models/token';
+import RolePermission from './models/role_permission';
+import UserAdditionalField from './models/user_additional_field';
+import Permission from './models/permission';
+import UserPermission from './models/user_permission';
+import Guest from './models/guest';
 
 const env = process.env.NODE_ENV || 'development';
-const config = require(`${__dirname}/../config/config.js`)[env];
-
-const basename = path.basename(__filename);
+const config = configs[env];
 
 const db = {};
 
@@ -18,14 +24,15 @@ if (config.use_env_variable) {
     { ...config, logging: false });
 }
 
-fs
-  .readdirSync(`${__dirname}/models`)
-  .filter((file) => (file.indexOf('.') !== 0) && (file !== basename) && (file.slice(-3) === '.js'))
-  .forEach((file) => {
-    // eslint-disable-next-line global-require
-    const model = require(path.join(__dirname, '/models', file))(sequelize, Sequelize.DataTypes);
-    db[model.name] = model;
-  });
+db.AdditionalFieldTemplate = AdditionalFieldTemplate(sequelize, DataTypes);
+db.UserAdditionalField = UserAdditionalField(sequelize, DataTypes);
+db.User = User(sequelize, DataTypes);
+db.Role = Role(sequelize, DataTypes);
+db.Token = Token(sequelize, DataTypes);
+db.Permission = Permission(sequelize, DataTypes);
+db.RolePermission = RolePermission(sequelize, DataTypes);
+db.UserPermission = UserPermission(sequelize, DataTypes);
+db.Guest = Guest(sequelize, DataTypes);
 
 Object.keys(db).forEach((modelName) => {
   if (db[modelName].associate) {
@@ -36,4 +43,4 @@ Object.keys(db).forEach((modelName) => {
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
-module.exports = db;
+export default db;

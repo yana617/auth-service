@@ -1,3 +1,4 @@
+// KEEP SYNC WITH MIGRATION FILES -create-role.js, -create-roles-permissions.js
 const roles = [
   'USER',
   'VOLUNTEER',
@@ -54,7 +55,7 @@ const DEFAULT_LIMIT = 15;
 const availableSortByNames = ['name', 'surname', 'phone'];
 const availableOrder = ['asc', 'desc'];
 
-module.exports = {
+export {
   roles,
   permissions,
   rolePermissions,

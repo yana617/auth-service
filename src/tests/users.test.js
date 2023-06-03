@@ -1,17 +1,21 @@
-const request = require('supertest');
-const { v4 } = require('uuid');
-const nock = require('nock');
+import request from 'supertest';
+import nock from 'nock';
+import { v4 } from 'uuid';
 
-const app = require('../../app');
-const db = require('../database');
-const { generateUser, createUser, createUserAndGetToken } = require('./fixtures/db');
-const { ERRORS } = require('../translations');
-const { rolePermissions, DEFAULT_ROLE } = require('../database/constants');
-const emitHistoryAction = require('../utils/emitHistoryAction');
+import db from '#database';
+import { ERRORS } from '#translations';
+import { rolePermissions, DEFAULT_ROLE } from '#database/constants';
+import { generateUser, createUser, createUserAndGetToken } from './fixtures/db';
+import app from '../../app';
 
 const { EVENTS_SERVICE_URL } = process.env;
 
-jest.mock('../utils/emitHistoryAction');
+jest.mock('utils/emitHistoryAction');
+
+let emitHistoryAction;
+(async function () {
+  emitHistoryAction = (await import('utils/emitHistoryAction'));
+}());
 
 beforeEach(async () => {
   await db.User.destroy({ where: {} });
@@ -112,13 +116,13 @@ describe('PUT /users/:id/role', () => {
     const token = await createUserAndGetToken(generateUser(), 'ADMIN');
     const roleToSet = 'VOLUNTEER';
 
-    const sendHistoryActionMock = jest.spyOn(emitHistoryAction, 'sendHistoryAction');
+    const emitHistoryActionMock = jest.spyOn(emitHistoryAction, 'emitHistoryAction');
     const response = await request(app)
       .put(`/users/${userOne.id}/role`)
       .send({ role: roleToSet })
       .set('x-access-token', token)
       .expect(200);
-    expect(sendHistoryActionMock).toHaveBeenCalledTimes(1);
+    expect(emitHistoryActionMock).toHaveBeenCalledTimes(1);
 
     const { success } = response.body;
 

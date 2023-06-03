@@ -1,8 +1,8 @@
-const { checkSchema } = require('express-validator');
+import { checkSchema } from 'express-validator';
 
-const { ERRORS } = require('../../translations');
+import { ERRORS } from '#translations';
 
-module.exports = checkSchema({
+export default checkSchema({
   label: {
     in: ['body'],
     isLength: {

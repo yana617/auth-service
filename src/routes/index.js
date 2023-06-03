@@ -1,12 +1,14 @@
-const router = require('express').Router();
+import express from 'express';
 
-const authRoute = require('./auth');
-const usersRoute = require('./users');
-const permissionsRoute = require('./permissions');
-const rolesRoute = require('./roles');
-const aftRoute = require('./additional-field-templates');
-const uafRoute = require('./user-additional-fields');
-const internalRoute = require('./internal');
+import authRoute from './auth';
+import usersRoute from './users';
+import permissionsRoute from './permissions';
+import rolesRoute from './roles';
+import aftRoute from './additional-field-templates';
+import uafRoute from './user-additional-fields';
+import internalRoute from './internal';
+
+const router = express.Router();
 
 router.use('/auth', authRoute);
 router.use('/users', usersRoute);
@@ -16,4 +18,4 @@ router.use('/additional-field-templates', aftRoute);
 router.use('/user-additional-fields', uafRoute);
 router.use('/internal', internalRoute);
 
-module.exports = router;
+export default router;

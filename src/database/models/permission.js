@@ -1,6 +1,6 @@
-const { permissions } = require('../constants');
+import { permissions } from '#database/constants';
 
-module.exports = (sequelize, DataTypes) => {
+export default (sequelize, DataTypes) => {
   const Permission = sequelize.define('Permission', {
     name: {
       type: DataTypes.ENUM(permissions),

@@ -1,6 +1,6 @@
-const checkPermissions = require('../../middlewares/checkPermissions');
-const { createUser, generateUser } = require('../fixtures/db');
-const { ERRORS } = require('../../translations');
+import checkPermissions from '#middlewares/checkPermissions';
+import { ERRORS } from '#translations';
+import { createUser, generateUser } from '../fixtures/db';
 
 test('Should pass if user has correct permissions', async () => {
   const user = await createUser();

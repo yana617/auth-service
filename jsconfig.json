@@ -1,0 +1,43 @@
+{
+  "compilerOptions": {
+    "paths": {
+      "#routes/*": [
+        "./src/routes/*.js"
+      ],
+      "#routes": [
+        "./src/routes/index.js"
+      ],
+      "#database": [
+        "./src/database/index.js"
+      ],
+      "#validators/*": [
+        "./src/middlewares/validators/*.js"
+      ],
+      "#config": [
+        "./src/config/index.js"
+      ],
+      "#controllers/*": [
+        "./src/controllers/*.js"
+      ],
+      "#middlewares/*": [
+        "./src/middlewares/*.js"
+      ],
+      "#utils/*": [
+        "./src/utils/*.js"
+      ],
+      "#translations": [
+        "./src/translations/index.js"
+      ],
+      "#repositories/*": [
+        "./src/repositories/*.js"
+      ],
+      "#services/*": [
+        "./src/services/*.js"
+      ],
+      "#tests/*": [
+        "./src/tests/*.js"
+      ]
+    },
+    "target": "es6",
+  }
+}

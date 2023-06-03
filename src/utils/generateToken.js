@@ -1,6 +1,6 @@
-const jwt = require('jsonwebtoken');
+import jwt from 'jsonwebtoken';
 
-module.exports = (user) => jwt.sign(
+export default (user) => jwt.sign(
   { id: user.id, role_id: user.role_id },
   process.env.TOKEN_KEY,
   { expiresIn: '2d' },

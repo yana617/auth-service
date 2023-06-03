@@ -1,19 +1,14 @@
-const request = require('supertest');
-const nock = require('nock');
+import request from 'supertest';
+import nock from 'nock';
 
-const app = require('../../../app');
-const db = require('../../database');
-const { generateUser, createUserAndGetToken } = require('../fixtures/db');
-const { rolePermissions } = require('../../database/constants');
+import db from '#database';
+import { rolePermissions } from '#database/constants';
+import { generateUser, createUserAndGetToken } from '../fixtures/db';
+import app from '../../../app';
 
 const { EVENTS_SERVICE_URL } = process.env;
 
-jest.mock('../../utils/emitHistoryAction');
-jest.mock('nodemailer', () => ({
-  createTransport: jest.fn().mockReturnValue({
-    sendMail: jest.fn(),
-  }),
-}));
+jest.mock('utils/emitHistoryAction');
 
 beforeEach(async () => {
   await db.User.destroy({ where: {} });

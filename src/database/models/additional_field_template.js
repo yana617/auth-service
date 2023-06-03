@@ -1,4 +1,4 @@
-module.exports = (sequelize, DataTypes) => {
+export default (sequelize, DataTypes) => {
   const AdditionalFieldTemplate = sequelize.define('AdditionalFieldTemplate', {
     label: DataTypes.STRING,
     icon: DataTypes.STRING,

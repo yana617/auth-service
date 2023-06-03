@@ -1,7 +1,7 @@
-const { Op, Sequelize } = require('sequelize');
+import { Op, Sequelize } from 'sequelize';
 
-const { User } = require('../database');
-const BaseRepository = require('./BaseRepository');
+import db from '#database';
+import BaseRepository from './BaseRepository';
 
 const searchByNameAndRoles = (search, roles) => ({
   [Op.and]: [
@@ -82,4 +82,4 @@ class UserRepository extends BaseRepository {
   }
 }
 
-module.exports = new UserRepository(User);
+export default new UserRepository(db.User);

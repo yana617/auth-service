@@ -1,7 +1,7 @@
-const { ERRORS } = require('../translations');
-const aftRepository = require('../repositories/AdditionalFieldTemplateRepository');
-const userRepository = require('../repositories/UserRepository');
-const uafRepository = require('../repositories/UserAdditionalFieldRepository');
+import { ERRORS } from '#translations';
+import aftRepository from '#repositories/AdditionalFieldTemplateRepository';
+import userRepository from '#repositories/UserRepository';
+import uafRepository from '#repositories/UserAdditionalFieldRepository';
 
 const getAllAft = async (req, res) => {
   const aft = await aftRepository.getAll();
@@ -40,7 +40,7 @@ const deleteAft = async (req, res) => {
   res.json({ success: true });
 };
 
-module.exports = {
+export default {
   getAllAft,
   createAft,
   updateAft,

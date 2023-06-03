@@ -1,8 +1,8 @@
-const jwt = require('jsonwebtoken');
+import jwt from 'jsonwebtoken';
 
 const { TOKEN_KEY } = process.env;
 
-exports.isAuthorized = (req) => {
+const isAuthorized = (req) => {
   const token = req.body.token || req.query.token || req.headers['x-access-token'];
   if (!token) {
     return false;
@@ -13,4 +13,8 @@ exports.isAuthorized = (req) => {
     return false;
   }
   return true;
+};
+
+export default {
+  isAuthorized,
 };

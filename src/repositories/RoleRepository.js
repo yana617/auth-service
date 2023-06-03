@@ -1,5 +1,5 @@
-const { Role } = require('../database');
-const BaseRepository = require('./BaseRepository');
+import db from '#database';
+import BaseRepository from './BaseRepository';
 
 class RoleRepository extends BaseRepository {
   getByName(name, withRolePermissions = false) {
@@ -16,4 +16,4 @@ class RoleRepository extends BaseRepository {
   }
 }
 
-module.exports = new RoleRepository(Role);
+export default new RoleRepository(db.Role);

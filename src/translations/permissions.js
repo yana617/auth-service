@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   EN: {
     VIEW_PROFILE: 'View profile',
     EDIT_PROFILE: 'Edit profile',

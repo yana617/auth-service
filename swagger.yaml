@@ -120,7 +120,7 @@ paths:
                 error: Fields are required
   /auth/forgot-password:
     post:
-      summary: Sends link to email to reset password
+      summary: Sends link for password reset to an admin
       tags:
         - Auth
       requestBody:
@@ -130,12 +130,11 @@ paths:
             schema:
               type: object
               properties:
-                email:
+                userId:
                   type: string
-                  example: test@example.com
       responses:
         '200':
-          description: 'Success request, link was send to provided email'
+          description: 'Success request, link was returned'
           content:
             application/json:
               schema:
@@ -144,18 +143,36 @@ paths:
                   success:
                     type: boolean
                     example: true
+                  data:
+                    type: string
         '400':
-          description: Validation errors
+          description: Client error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ValidationError'
-        '404':
-          description: User not found
+                $ref: '#/paths/~1auth~1register/post/responses/400/content/application~1json/schema'
+              examples:
+                Client Error:
+                  value:
+                    success: false
+                    error: User not found
+                Validation Errors:
+                  value:
+                    success: false
+                    errors:
+                      - value: ''
+                        msg: Required
+                        param: userId
+                        location: body
+        '403':
+          description: Forbidden error when you don't have enough permissions
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+              example:
+                success: false
+                error: Forbidden
   /auth/reset-password:
     post:
       summary: Updates password

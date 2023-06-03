@@ -1,6 +1,6 @@
-const { ERRORS } = require('../translations');
+import { ERRORS } from '#translations';
 
-module.exports = async (req, res, next) => {
+export default async (req, res, next) => {
   const { id: userId } = req.user;
   const { id: idToUpdate } = req.params;
   if (idToUpdate !== userId) {
