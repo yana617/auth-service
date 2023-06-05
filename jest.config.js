@@ -21,6 +21,7 @@ const config = {
   moduleNameMapper: {
     '#validators/(.*)': '<rootDir>/src/middlewares/validators/$1',
     '#(.*)': '<rootDir>/src/$1',
+    axios: 'axios/dist/node/axios.cjs',
   },
 };
 
