@@ -97,13 +97,14 @@ const generateResetLink = async (req, res) => {
 
   const user = await userRepository.getById(userId);
   if (!user) {
-    return res.status(400).json({ success: false, error: ERRORS.USER_NOT_FOUND });
+    return res.status(404).json({ success: false, error: ERRORS.USER_NOT_FOUND });
   }
 
   const existingToken = await tokenRepository.getByUserId(user.id);
   if (existingToken) {
     await tokenRepository.deleteById(existingToken.id);
   }
+
   const resetToken = crypto.randomBytes(32).toString('hex');
   const hash = await bcrypt.hash(resetToken, Number(bcryptSalt));
   await tokenRepository.create({
@@ -120,11 +121,13 @@ const generateResetLink = async (req, res) => {
 const resetPassword = async (req, res) => {
   const { userId, token, password } = req.body;
   await tokenRepository.deleteExpiredTokens();
-  const passwordResetToken = await tokenRepository.getByUserId(userId);
-  if (!passwordResetToken) {
+
+  const tokenInDB = await tokenRepository.getByUserId(userId);
+  if (!tokenInDB) {
     return res.status(400).json({ success: false, error: ERRORS.INVALID_RESET_TOKEN });
   }
-  const isValid = await bcrypt.compare(token, passwordResetToken.token);
+
+  const isValid = await bcrypt.compare(token, tokenInDB.token);
   if (!isValid) {
     return res.status(400).json({ success: false, error: ERRORS.INVALID_RESET_TOKEN });
   }
@@ -133,7 +136,7 @@ const resetPassword = async (req, res) => {
   const hash = await bcrypt.hash(password, salt);
 
   await userRepository.updateById(userId, { salt, hash });
-  await tokenRepository.deleteById(passwordResetToken.id);
+  await tokenRepository.deleteByUserId(userId);
 
   res.json({ success: true });
 };

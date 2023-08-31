@@ -39,7 +39,7 @@ const updateUser = async (req, res) => {
 const getUserById = async (req, res) => {
   const { id: userId } = req.params;
   if (!userId) {
-    return res.status(400).json({ success: false, error: ERRORS.USER_NOT_FOUND });
+    return res.status(400).json({ success: false, error: ERRORS.INVALID_USER_ID });
   }
 
   const user = await userRepository.getByIdWithoutSaltHash(userId, true);

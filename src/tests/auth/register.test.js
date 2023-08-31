@@ -87,7 +87,7 @@ describe('POST /register', () => {
     expect(error).toEqual(ERRORS.USER_ALREADY_EXISTS);
   });
 
-  test('Should fail because fields filled wrong', async () => {
+  test('Should fail because no fields were sent', async () => {
     const response = await request(app)
       .post('/auth/register')
       .send({})

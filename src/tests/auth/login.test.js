@@ -58,7 +58,7 @@ describe('POST /login', () => {
     expect(user.token).not.toBeNull();
   });
 
-  test('Should fail because fields filled wrong', async () => {
+  test('Should fail because no fields were sent', async () => {
     const response = await request(app)
       .post('/auth/login')
       .send({})
