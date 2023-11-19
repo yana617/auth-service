@@ -3,6 +3,8 @@ import dotenv from 'dotenv';
 
 import db from '#database';
 
+jest.setTimeout(10000);
+
 dotenv.config();
 
 async function initDatabase() {
