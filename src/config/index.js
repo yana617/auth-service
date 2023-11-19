@@ -1,3 +1,5 @@
+import pg from 'pg';
+
 const {
   POSTGRES_DB: database,
   POSTGRES_USERNAME: username,
@@ -7,6 +9,7 @@ const {
 } = process.env;
 
 const common = {
+  dialectModule: pg,
   dialect: 'postgres',
   username,
   password,

@@ -73,7 +73,7 @@ describe('POST /forgot-password', () => {
         userId: v4(),
       })
       .set('x-access-token', adminToken)
-      .expect(400);
+      .expect(404);
 
     const { error } = response.body;
     expect(error).toEqual(ERRORS.USER_NOT_FOUND);
