@@ -1,4 +1,4 @@
-module.exports = (sequelize, DataTypes) => {
+export default (sequelize, DataTypes) => {
   const UserAdditionalField = sequelize.define('UserAdditionalField', {
     value: DataTypes.BOOLEAN,
   }, {

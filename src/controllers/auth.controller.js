@@ -1,17 +1,16 @@
-const bcrypt = require('bcrypt');
-const crypto = require('crypto');
+import bcrypt from 'bcrypt';
+import crypto from 'crypto';
 
-const { ERRORS } = require('../translations');
-const userRepository = require('../repositories/UserRepository');
-const tokenRepository = require('../repositories/TokenRepository');
-const roleRepository = require('../repositories/RoleRepository');
-const { DEFAULT_ROLE } = require('../database/constants');
-const uafRepository = require('../repositories/UserAdditionalFieldRepository');
-const aftRepository = require('../repositories/AdditionalFieldTemplateRepository');
-const generateToken = require('../utils/generateToken');
-const { sendLinkEmail, sendPasswordChangedSuccessfullyEmail } = require('../utils/mails');
-const { sendHistoryAction } = require('../utils/emitHistoryAction');
-const { HISTORY_ACTION_TYPES } = require('../constants');
+import { ERRORS } from '#translations';
+import userRepository from '#repositories/UserRepository';
+import tokenRepository from '#repositories/TokenRepository';
+import roleRepository from '#repositories/RoleRepository';
+import { DEFAULT_ROLE } from '#database/constants';
+import uafRepository from '#repositories/UserAdditionalFieldRepository';
+import aftRepository from '#repositories/AdditionalFieldTemplateRepository';
+import generateToken from '#utils/generateToken';
+import { emitHistoryAction } from '#utils/emitHistoryAction';
+import { HISTORY_ACTION_TYPES } from '#constants';
 
 const { CLIENT_URL: clientURL, BCRYPT_SALT: bcryptSalt } = process.env;
 
@@ -69,7 +68,7 @@ const registerUser = async (req, res) => {
   delete result.hash;
   delete result.salt;
 
-  sendHistoryAction({ action_type: HISTORY_ACTION_TYPES.NEW_USER, user_from_id: result.id });
+  emitHistoryAction({ action_type: HISTORY_ACTION_TYPES.NEW_USER, user_from_id: result.id });
 
   res.status(201).json({ success: true, data: result });
 };
@@ -93,17 +92,19 @@ const loginUser = async (req, res) => {
   res.json({ success: true, data: user });
 };
 
-const forgotPassword = async (req, res) => {
-  const { email } = req.body;
-  const user = await userRepository.getByEmail(email);
+const generateResetLink = async (req, res) => {
+  const { userId } = req.body;
+
+  const user = await userRepository.getById(userId);
   if (!user) {
-    return res.status(404).json({ success: false, error: ERRORS.USER_EMAIL_NOT_FOUND });
+    return res.status(404).json({ success: false, error: ERRORS.USER_NOT_FOUND });
   }
 
   const existingToken = await tokenRepository.getByUserId(user.id);
   if (existingToken) {
     await tokenRepository.deleteById(existingToken.id);
   }
+
   const resetToken = crypto.randomBytes(32).toString('hex');
   const hash = await bcrypt.hash(resetToken, Number(bcryptSalt));
   await tokenRepository.create({
@@ -112,20 +113,21 @@ const forgotPassword = async (req, res) => {
     expiration: new Date(Date.now() + 1000 * 60 * 20),
   });
 
-  const link = `${clientURL}/reset-password?token=${resetToken}&userId=${user.id}`;
-  await sendLinkEmail(link, email);
+  const resetLink = `${clientURL}/reset-password?token=${resetToken}&userId=${user.id}`;
 
-  res.json({ success: true });
+  res.json({ success: true, data: resetLink });
 };
 
 const resetPassword = async (req, res) => {
   const { userId, token, password } = req.body;
   await tokenRepository.deleteExpiredTokens();
-  const passwordResetToken = await tokenRepository.getByUserId(userId);
-  if (!passwordResetToken) {
+
+  const tokenInDB = await tokenRepository.getByUserId(userId);
+  if (!tokenInDB) {
     return res.status(400).json({ success: false, error: ERRORS.INVALID_RESET_TOKEN });
   }
-  const isValid = await bcrypt.compare(token, passwordResetToken.token);
+
+  const isValid = await bcrypt.compare(token, tokenInDB.token);
   if (!isValid) {
     return res.status(400).json({ success: false, error: ERRORS.INVALID_RESET_TOKEN });
   }
@@ -133,18 +135,15 @@ const resetPassword = async (req, res) => {
   const salt = await bcrypt.genSalt(10);
   const hash = await bcrypt.hash(password, salt);
 
-  const userUpdateInfo = await userRepository.updateById(userId, { salt, hash });
-  await tokenRepository.deleteById(passwordResetToken.id);
-
-  const user = userUpdateInfo[1];
-  await sendPasswordChangedSuccessfullyEmail(user.email);
+  await userRepository.updateById(userId, { salt, hash });
+  await tokenRepository.deleteByUserId(userId);
 
   res.json({ success: true });
 };
 
-module.exports = {
+export default {
   registerUser,
   loginUser,
-  forgotPassword,
   resetPassword,
+  generateResetLink,
 };

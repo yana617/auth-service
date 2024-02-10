@@ -1,6 +1,6 @@
-const { roles } = require('../constants');
+import { roles } from '#database/constants';
 
-module.exports = (sequelize, DataTypes) => {
+export default (sequelize, DataTypes) => {
   const Role = sequelize.define('Role', {
     name: {
       type: DataTypes.ENUM(roles),

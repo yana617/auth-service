@@ -1,5 +1,5 @@
-const { UserPermission } = require('../database');
-const BaseRepository = require('./BaseRepository');
+import db from '#database';
+import BaseRepository from './BaseRepository';
 
 class UserPermissionRepository extends BaseRepository {
   getByUserId(userId) {
@@ -11,4 +11,4 @@ class UserPermissionRepository extends BaseRepository {
   }
 }
 
-module.exports = new UserPermissionRepository(UserPermission);
+export default new UserPermissionRepository(db.UserPermission);

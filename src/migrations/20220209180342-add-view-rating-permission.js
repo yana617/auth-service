@@ -1,5 +1,4 @@
 'use strict';
-const replaceEnum = require('sequelize-replace-enum-postgres').default;
 
 const previousPermissions = [
   'VIEW_PROFILE',
@@ -20,22 +19,42 @@ const previousPermissions = [
 
 const newPermission = 'VIEW_RATING';
 
+const newPermissions = previousPermissions.concat([newPermission]);
+
 module.exports = {
   async up(queryInterface, Sequelize) {
-    return replaceEnum({
-      queryInterface,
-      tableName: 'permissions',
-      columnName: 'name',
-      newValues: previousPermissions.concat([newPermission]),
-    });
+    await queryInterface.changeColumn(
+      'permissions',
+      'name',
+      {
+        type: Sequelize.TEXT,
+      },
+    );
+    await queryInterface.sequelize.query('drop type enum_permissions_name;')
+      .then(() => queryInterface.changeColumn(
+        'permissions',
+        'name',
+        {
+          type: Sequelize.ENUM(...newPermissions),
+        },
+      ));
   },
 
-  async down(queryInterface, Sequelize) {
-    return replaceEnum({
-      queryInterface,
-      tableName: 'permissions',
-      columnName: 'name',
-      newValues: previousPermissions,
-    });
+  async down({ sequelize: { query } }, Sequelize) {
+    await queryInterface.changeColumn(
+      'permissions',
+      'name',
+      {
+        type: Sequelize.TEXT,
+      },
+    );
+    await queryInterface.sequelize.query('drop type enum_permissions_name;')
+      .then(() => queryInterface.changeColumn(
+        'permissions',
+        'name',
+        {
+          type: Sequelize.ENUM(...previousPermissions),
+        },
+      ));
   },
 };

@@ -1,6 +1,6 @@
-const { AdditionalFieldTemplate } = require('../database');
-const BaseRepository = require('./BaseRepository');
+import db from '#database';
+import BaseRepository from './BaseRepository';
 
 class AdditionalFieldTemplateRepository extends BaseRepository {}
 
-module.exports = new AdditionalFieldTemplateRepository(AdditionalFieldTemplate);
+export default new AdditionalFieldTemplateRepository(db.AdditionalFieldTemplate);

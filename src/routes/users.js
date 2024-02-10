@@ -1,21 +1,52 @@
-const route = require('express').Router();
+import express from 'express';
 
-const verifyToken = require('../middlewares/authRequired');
-const checkPermissions = require('../middlewares/checkPermissions');
-const onlyOwnData = require('../middlewares/onlyOwnData');
-const validateUser = require('../middlewares/validations/validateUser');
-const userController = require('../controllers/user.controller');
-const validateUserSearchQuery = require('../middlewares/validations/validateUserSearchQuery');
-const checkValidationErrors = require('../middlewares/checkValidation');
-const errorHandler = require('../middlewares/errorHandler');
+import userController from '#controllers/user.controller';
+import validateUser from '#middlewares/validators/validateUser';
+import validateUserSearchQuery from '#middlewares/validators/validateUserSearchQuery';
+import {
+  verifyToken,
+  errorHandler,
+  checkPermissions,
+  checkValidationErrors,
+  validateUpdatingOwnData,
+} from '#middlewares/index';
+
+const route = express.Router();
 
 route.get('/me', verifyToken, errorHandler(userController.getMe));
-route.get('/:id', verifyToken, checkPermissions(['VIEW_USERS']), errorHandler(userController.getUserById));
-route.get('/', verifyToken, checkPermissions(['VIEW_USERS']), validateUserSearchQuery, checkValidationErrors,
-  errorHandler(userController.getUsers));
-route.get('/:id/permissions', verifyToken, checkPermissions(['EDIT_PERMISSIONS']),
-  errorHandler(userController.getUserPermissions));
-route.put('/:id', verifyToken, onlyOwnData, validateUser, checkValidationErrors, errorHandler(userController.updateUser));
-route.put('/:id/role', verifyToken, checkPermissions(['EDIT_PERMISSIONS']), errorHandler(userController.updateUserRole));
 
-module.exports = route;
+route.get('/:id', verifyToken, checkPermissions(['VIEW_USERS']), errorHandler(userController.getUserById));
+
+route.get(
+  '/',
+  verifyToken,
+  checkPermissions(['VIEW_USERS']),
+  validateUserSearchQuery,
+  checkValidationErrors,
+  errorHandler(userController.getUsers),
+);
+
+route.get(
+  '/:id/permissions',
+  verifyToken,
+  checkPermissions(['EDIT_PERMISSIONS']),
+  errorHandler(userController.getUserPermissions),
+);
+
+route.put(
+  '/:id',
+  verifyToken,
+  validateUpdatingOwnData,
+  validateUser,
+  checkValidationErrors,
+  errorHandler(userController.updateUser),
+);
+
+route.put(
+  '/:id/role',
+  verifyToken,
+  checkPermissions(['EDIT_PERMISSIONS']),
+  errorHandler(userController.updateUserRole),
+);
+
+export default route;

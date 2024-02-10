@@ -31,4 +31,4 @@ class BaseRepository {
   }
 }
 
-module.exports = BaseRepository;
+export default BaseRepository;

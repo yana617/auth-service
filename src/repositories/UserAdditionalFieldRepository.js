@@ -1,5 +1,5 @@
-const { UserAdditionalField } = require('../database');
-const BaseRepository = require('./BaseRepository');
+import db from '#database';
+import BaseRepository from './BaseRepository';
 
 class UserAdditionalFieldRepository extends BaseRepository {
   async getByUserId(userId) {
@@ -11,4 +11,4 @@ class UserAdditionalFieldRepository extends BaseRepository {
   }
 }
 
-module.exports = new UserAdditionalFieldRepository(UserAdditionalField);
+export default new UserAdditionalFieldRepository(db.UserAdditionalField);

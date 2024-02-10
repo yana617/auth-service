@@ -1,18 +1,41 @@
-const route = require('express').Router();
+import express from 'express';
 
-const verifyToken = require('../middlewares/authRequired');
-const aftController = require('../controllers/additionalFieldTemplate.controller');
-const validateAft = require('../middlewares/validations/validateAdditionalFieldTemplate');
-const checkPermissions = require('../middlewares/checkPermissions');
-const checkValidationErrors = require('../middlewares/checkValidation');
-const errorHandler = require('../middlewares/errorHandler');
+import aftController from '#controllers/additionalFieldTemplate.controller';
+import validateAft from '#validators/validateAdditionalFieldTemplate';
+import {
+  verifyToken,
+  checkPermissions,
+  checkValidationErrors,
+  errorHandler,
+} from '#middlewares/index';
+
+const route = express.Router();
 
 route.get('/', aftController.getAllAft);
-route.post('/', verifyToken, checkPermissions(['CREATE_ADDITIONAL_FIELD_TEMPLATE']), validateAft,
-  checkValidationErrors, errorHandler(aftController.createAft));
-route.put('/:id', verifyToken, checkPermissions(['EDIT_ADDITIONAL_FIELD_TEMPLATE']), validateAft,
-  checkValidationErrors, errorHandler(aftController.updateAft));
-route.delete('/:id', verifyToken, checkPermissions(['DELETE_ADDITIONAL_FIELD_TEMPLATE']),
-  errorHandler(aftController.deleteAft));
 
-module.exports = route;
+route.post(
+  '/',
+  verifyToken,
+  checkPermissions(['CREATE_ADDITIONAL_FIELD_TEMPLATE']),
+  validateAft,
+  checkValidationErrors,
+  errorHandler(aftController.createAft),
+);
+
+route.put(
+  '/:id',
+  verifyToken,
+  checkPermissions(['EDIT_ADDITIONAL_FIELD_TEMPLATE']),
+  validateAft,
+  checkValidationErrors,
+  errorHandler(aftController.updateAft),
+);
+
+route.delete(
+  '/:id',
+  verifyToken,
+  checkPermissions(['DELETE_ADDITIONAL_FIELD_TEMPLATE']),
+  errorHandler(aftController.deleteAft),
+);
+
+export default route;

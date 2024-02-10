@@ -1,9 +1,9 @@
-const { checkSchema } = require('express-validator');
+import { checkSchema } from 'express-validator';
 
-const { availableOrder, availableSortByNames } = require('../../database/constants');
-const { ERRORS } = require('../../translations');
+import { availableOrder, availableSortByNames } from '#database/constants';
+import { ERRORS } from '#translations';
 
-module.exports = checkSchema({
+export default checkSchema({
   limit: {
     in: ['query'],
     isNumeric: true,

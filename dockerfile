@@ -1,4 +1,4 @@
-FROM node:14.17.0
+FROM node:18.16.0
 LABEL maintainer="jana.ru.sidorova@yandex.ru"
 ENV NODE_ENV=production PORT=1081
 
@@ -6,7 +6,7 @@ WORKDIR /usr/src/auth-service
 
 COPY package*.json ./
 
-RUN npm install --production
+RUN npm install --omit=dev
 
 COPY . .
 

@@ -1,11 +1,11 @@
-const userRepository = require('../repositories/UserRepository');
-const rolePermissionRepository = require('../repositories/RolePermissionRepository');
-const userPermissionRepository = require('../repositories/UserPermissionRepository');
-const roleRepository = require('../repositories/RoleRepository');
-const { DEFAULT_LIMIT } = require('../database/constants');
-const { ERRORS } = require('../translations');
-const { sendHistoryAction } = require('../utils/emitHistoryAction');
-const { HISTORY_ACTION_TYPES } = require('../constants');
+import userRepository from '#repositories/UserRepository';
+import rolePermissionRepository from '#repositories/RolePermissionRepository';
+import userPermissionRepository from '#repositories/UserPermissionRepository';
+import roleRepository from '#repositories/RoleRepository';
+import { DEFAULT_LIMIT } from '#database/constants';
+import { ERRORS } from '#translations';
+import { emitHistoryAction } from '#utils/emitHistoryAction';
+import { HISTORY_ACTION_TYPES } from '../constants';
 
 const getMe = async (req, res) => {
   const { id } = req.user;
@@ -38,6 +38,10 @@ const updateUser = async (req, res) => {
 
 const getUserById = async (req, res) => {
   const { id: userId } = req.params;
+  if (!userId) {
+    return res.status(400).json({ success: false, error: ERRORS.INVALID_USER_ID });
+  }
+
   const user = await userRepository.getByIdWithoutSaltHash(userId, true);
   if (!user) {
     return res.status(404).json({ success: false, error: ERRORS.USER_NOT_FOUND });
@@ -124,7 +128,7 @@ const updateUserRole = async (req, res) => {
   await userPermissionRepository.deleteByUserIdAndPermissionId(user.id, newRolePermsIds);
   await userRepository.updateById(user.id, { role_id: roleToSet.id });
 
-  sendHistoryAction({
+  emitHistoryAction({
     action_type: HISTORY_ACTION_TYPES.EDIT_ROLE,
     user_from_id: userId,
     user_to_id: userToUpdateId,
@@ -134,7 +138,7 @@ const updateUserRole = async (req, res) => {
   res.json({ success: true });
 };
 
-module.exports = {
+export default {
   getMe,
   updateUser,
   getUsers,

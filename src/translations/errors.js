@@ -1,6 +1,6 @@
-const { availableOrder, availableSortByNames } = require('../database/constants');
+import { availableOrder, availableSortByNames } from '#database/constants';
 
-module.exports = {
+export default {
   EN: {
     FORBIDDEN: 'Forbidden',
     AUTH_ERROR: 'Authorization error',

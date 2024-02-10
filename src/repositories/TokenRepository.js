@@ -1,11 +1,14 @@
-const { Op, Sequelize } = require('sequelize');
+import { Op, Sequelize } from 'sequelize';
 
-const { Token } = require('../database');
-const BaseRepository = require('./BaseRepository');
+import db from '#database';
+import BaseRepository from './BaseRepository';
 
 class TokenRepository extends BaseRepository {
   async getByUserId(userId) {
-    return this.model.findOne({ where: { user_id: userId } });
+    return this.model.findOne({
+      where: { user_id: userId },
+      raw: true,
+    });
   }
 
   async deleteExpiredTokens() {
@@ -15,6 +18,14 @@ class TokenRepository extends BaseRepository {
       },
     });
   }
+
+  async deleteByUserId(userId) {
+    return this.model.destroy({
+      where: {
+        user_id: userId,
+      },
+    });
+  }
 }
 
-module.exports = new TokenRepository(Token);
+export default new TokenRepository(db.Token);

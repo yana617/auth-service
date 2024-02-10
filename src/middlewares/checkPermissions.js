@@ -1,7 +1,7 @@
-const { ERRORS } = require('../translations');
-const permissionsService = require('../services/permissions');
+import { ERRORS } from '#translations';
+import permissionsService from '#services/permissions';
 
-module.exports = (permissions) => async (req, res, next) => {
+export default (permissions) => async (req, res, next) => {
   try {
     const { id: userId, role_id } = req.user;
     const allPermissions = await permissionsService.getAllPermissions(userId, role_id);

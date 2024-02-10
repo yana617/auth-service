@@ -1,4 +1,4 @@
-module.exports = (sequelize) => {
+export default (sequelize) => {
   const RolePermission = sequelize.define('RolePermission', {}, {
     tableName: 'role_permissions',
   });

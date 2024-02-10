@@ -1,15 +1,15 @@
-const request = require('supertest');
+import request from 'supertest';
 
-const app = require('../../app');
-const db = require('../database');
-const { ERRORS } = require('../translations');
-const {
+import db from '#database';
+import { ERRORS } from '#translations';
+import app from '../../app';
+import {
   generateUser,
   createUser,
   createUserAndGetToken,
   generateAft,
   generateUaf,
-} = require('./fixtures/db');
+} from './fixtures/db';
 
 beforeEach(async () => {
   await db.User.destroy({ where: {} });

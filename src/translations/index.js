@@ -1,6 +1,5 @@
-const errors = require('./errors');
-const texts = require('./texts');
-const permissions = require('./permissions');
+import errors from './errors';
+import permissions from './permissions';
 
 const { LANG } = process.env;
 
@@ -11,8 +10,5 @@ const existingLangs = {
 
 const lang = existingLangs[LANG] || 'EN';
 
-module.exports = {
-  ERRORS: errors[lang],
-  TEXTS: texts[lang],
-  PERMISSIONS: permissions[lang],
-};
+export const ERRORS = errors[lang];
+export const PERMISSIONS = permissions[lang];

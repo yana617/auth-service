@@ -1,6 +1,6 @@
-const { ERRORS } = require('../translations');
+import { ERRORS } from '#translations';
 
-exports.name = {
+export const name = {
   in: ['body'],
   isLength: {
     errorMessage: ERRORS.NAME_FIELD_ERROR,
@@ -9,7 +9,7 @@ exports.name = {
   exists: true,
 };
 
-exports.surname = {
+export const surname = {
   in: ['body'],
   isLength: {
     errorMessage: ERRORS.SURNAME_FIELD_ERROR,
@@ -18,7 +18,7 @@ exports.surname = {
   exists: true,
 };
 
-exports.phone = {
+export const phone = {
   in: ['body'],
   isLength: {
     errorMessage: ERRORS.PHONE_FIELD_ERROR,
@@ -27,7 +27,7 @@ exports.phone = {
   exists: true,
 };
 
-exports.email = {
+export const email = {
   in: ['body'],
   isEmail: {
     bail: true,
@@ -36,7 +36,7 @@ exports.email = {
   errorMessage: ERRORS.EMAIL_FIELD_ERROR,
 };
 
-exports.password = {
+export const password = {
   in: ['body'],
   isLength: {
     errorMessage: ERRORS.PASSWORD_FIELD_ERROR,
@@ -45,7 +45,7 @@ exports.password = {
   exists: true,
 };
 
-exports.birthday = {
+export const birthday = {
   in: ['body'],
   errorMessage: ERRORS.INVALID_BIRTHDAY,
   custom: {
@@ -57,6 +57,15 @@ exports.birthday = {
       }
       return !Number.isNaN(Date.parse(value));
     },
+  },
+  exists: true,
+};
+
+export const userId = {
+  in: ['body'],
+  isLength: {
+    errorMessage: ERRORS.INVALID_USER_ID,
+    options: { min: 36, max: 36 },
   },
   exists: true,
 };

@@ -1,6 +1,6 @@
-const authRequired = require('../../middlewares/authRequired');
-const { createUserAndGetToken } = require('../fixtures/db');
-const { ERRORS } = require('../../translations');
+import authRequired from '#middlewares/authRequired';
+import { ERRORS } from '#translations';
+import { createUserAndGetToken } from '../fixtures/db';
 
 test('Should pass if token correct', async () => {
   const token = await createUserAndGetToken();

@@ -24,5 +24,14 @@ services:
     env_file:
      - .env
 
+  postgres-db-test:
+    image: postgres:12.3-alpine
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: "test-db"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+
 volumes:
   postgres-app-data:

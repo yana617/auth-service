@@ -1,9 +1,18 @@
 const { v4 } = require('uuid');
 const bcrypt = require('bcrypt');
 
-const { roles, rolesTranslates } = require('../database/constants');
-
 const { NODE_ENV } = process.env;
+
+const roles = [
+  'USER',
+  'VOLUNTEER',
+  'ADMIN',
+];
+const rolesTranslates = {
+  USER: 'Пользователь',
+  VOLUNTEER: 'Волонтер',
+  ADMIN: 'Администратор',
+};
 
 const permissions = [
   'VIEW_PROFILE',

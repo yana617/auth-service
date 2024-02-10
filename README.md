@@ -23,3 +23,5 @@ Then run
 npm install -g swagger-cli
 swagger-cli bundle documentation/swagger.yaml --outfile swagger.yaml --type yaml
 ```
+
+You can run `npm run dev` and see swagger UI [via this url](http://localhost:1081/docs/)

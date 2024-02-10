@@ -1,3 +1,5 @@
+import pg from 'pg';
+
 const {
   POSTGRES_DB: database,
   POSTGRES_USERNAME: username,
@@ -7,12 +9,13 @@ const {
 } = process.env;
 
 const common = {
+  dialectModule: pg,
   dialect: 'postgres',
   username,
   password,
 };
 
-module.exports = {
+const config = {
   development: {
     ...common,
     database,
@@ -30,3 +33,5 @@ module.exports = {
     host,
   },
 };
+
+export default config;
