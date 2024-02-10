@@ -8,7 +8,7 @@
     "start": "NODE_ENV=production node --experimental-specifier-resolution=node index.js",
     "dev": "NODE_ENV=development nodemon --experimental-specifier-resolution=node index.js",
     "dev:docker": "docker compose up --build",
-    "test": "NODE_ENV=test jest --coverage",
+    "test": "NODE_ENV=test jest --coverage --runInBand",
     "test:docker": "chmod +x ./bin/test.sh && NODE_ENV=test ./bin/test.sh",
     "lint": "node_modules/.bin/eslint .",
     "db:migrate": "sequelize-cli db:migrate",
