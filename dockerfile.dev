@@ -1,4 +1,4 @@
-FROM node:18.16.0
+FROM node:18.20.1
 LABEL maintainer="jana.ru.sidorova@yandex.ru"
 ENV NODE_ENV=development PORT=1081
 
