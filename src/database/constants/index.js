@@ -52,7 +52,7 @@ const permissionsForbiddenToBeAdditional = [
 
 const DEFAULT_ROLE = 'USER';
 const DEFAULT_LIMIT = 15;
-const availableSortByNames = ['name', 'surname', 'phone'];
+const availableSortByNames = ['name', 'surname', 'phone', 'createdAt'];
 const availableOrder = ['asc', 'desc'];
 
 export {
