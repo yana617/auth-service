@@ -23,8 +23,8 @@ export default checkSchema({
     in: ['body'],
     isLength: {
       errorMessage: ERRORS.AFT_ICON_ERROR,
-      options: { min: 10, max: 150 },
+      options: { min: 1, max: 10 },
     },
-    optional: { options: { nullable: true } },
+    exists: true,
   },
 });

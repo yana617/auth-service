@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 import { v4 } from 'uuid';
-import faker from 'faker';
+import { faker } from '@faker-js/faker';
 
 import db from '#database';
 import { DEFAULT_ROLE } from '#database/constants';
@@ -28,7 +28,7 @@ const generateAft = () => ({
   id: v4(),
   label: faker.lorem.words(2),
   description: faker.lorem.words(15),
-  icon: faker.image.imageUrl(),
+  icon: faker.string.sample(5),
 });
 
 const generateUaf = (user_id, additional_field_template_id) => ({
