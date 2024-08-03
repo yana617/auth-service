@@ -56,4 +56,4 @@ jobs:
           POSTGRES_PASSWORD: postgres
           POSTGRES_TEST_HOST: localhost
           POSTGRES_PORT: 5432
-          EVENTS_SERVICE_URL: fake.url
+          EVENTS_SERVICE_URL: https://fake.url
