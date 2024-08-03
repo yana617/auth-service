@@ -3,11 +3,7 @@ const bcrypt = require('bcrypt');
 
 const { NODE_ENV } = process.env;
 
-const roles = [
-  'USER',
-  'VOLUNTEER',
-  'ADMIN',
-];
+const roles = ['USER', 'VOLUNTEER', 'ADMIN'];
 const rolesTranslates = {
   USER: 'Пользователь',
   VOLUNTEER: 'Волонтер',
@@ -31,10 +27,7 @@ const permissions = [
   'CREATE_CLAIM_FOR_UNREGISTERED_USERS',
 ];
 const rolePermissions = {
-  USER: [
-    'VIEW_PROFILE',
-    'EDIT_PROFILE',
-  ],
+  USER: ['VIEW_PROFILE', 'EDIT_PROFILE'],
   VOLUNTEER: [
     'VIEW_PROFILE',
     'EDIT_PROFILE',
@@ -61,31 +54,34 @@ const rolesToInsert = roles.map((role) => {
 const salt = bcrypt.genSaltSync(10);
 const salt2 = bcrypt.genSaltSync(10);
 const password = '111111';
-const users = [{
-  id: v4(),
-  name: 'Admin',
-  surname: 'Administrator',
-  phone: '375291111111',
-  email: 'test@example.com',
-  birthday: new Date('1980'),
-  hash: bcrypt.hashSync(password, salt),
-  salt,
-  role_id: rolesInDb.ADMIN,
-  createdAt: new Date(),
-  updatedAt: new Date(),
-}, {
-  id: v4(),
-  name: 'User',
-  surname: 'Userski',
-  phone: '375291111112',
-  email: 'test2@example.com',
-  birthday: new Date('1999'),
-  hash: bcrypt.hashSync(password, salt2),
-  salt: salt2,
-  role_id: rolesInDb.USER,
-  createdAt: new Date(),
-  updatedAt: new Date(),
-}];
+const users = [
+  {
+    id: v4(),
+    name: 'Admin',
+    surname: 'Administrator',
+    phone: '375291111111',
+    email: 'test@example.com',
+    birthday: new Date('1980'),
+    hash: bcrypt.hashSync(password, salt),
+    salt,
+    role_id: rolesInDb.ADMIN,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: v4(),
+    name: 'User',
+    surname: 'Userski',
+    phone: '375291111112',
+    email: 'test2@example.com',
+    birthday: new Date('1999'),
+    hash: bcrypt.hashSync(password, salt2),
+    salt: salt2,
+    role_id: rolesInDb.USER,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+];
 
 const usersToInsert = NODE_ENV === 'development' ? users : [];
 
@@ -101,19 +97,42 @@ const permissionsToInsert = permissions.map((permission) => {
 });
 
 module.exports = {
-  up: async (queryInterface) => Promise.all([
-    queryInterface.bulkInsert('roles', rolesToInsert),
-    queryInterface.bulkInsert('permissions', permissionsToInsert),
-    ...Object.keys(rolePermissions).map((role) => queryInterface
-      .bulkInsert('role_permissions', rolePermissions[role].map((permission) => ({
-        id: v4(),
-        role_id: rolesInDb[role],
-        permission_id: permissionsInDb[permission],
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      })))),
-    ...(NODE_ENV === 'development' ? [
-      queryInterface.bulkInsert('users', usersToInsert),
-    ] : []),
-  ]),
+  up: async (queryInterface) => {
+    // await queryInterface.bulkDelete('roles', null, {
+    //   truncate: true,
+    //   cascade: true,
+    // });
+    // await queryInterface.bulkDelete('permissions', null, {
+    //   truncate: true,
+    //   cascade: true,
+    // });
+    // await queryInterface.bulkDelete('users', null, {
+    //   truncate: true,
+    //   cascade: true,
+    // });
+    // await queryInterface.bulkDelete('role_permissions', null, {
+    //   truncate: true,
+    //   cascade: true,
+    // });
+
+    await queryInterface.bulkInsert('roles', rolesToInsert);
+    await queryInterface.bulkInsert('permissions', permissionsToInsert);
+
+    const queries = Object.keys(rolePermissions).map((role) =>
+      queryInterface.bulkInsert(
+        'role_permissions',
+        rolePermissions[role].map((permission) => ({
+          id: v4(),
+          role_id: rolesInDb[role],
+          permission_id: permissionsInDb[permission],
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        }))
+      )
+    );
+    await Promise.all(queries);
+    if (NODE_ENV === 'development') {
+      await queryInterface.bulkInsert('users', usersToInsert);
+    }
+  },
 };

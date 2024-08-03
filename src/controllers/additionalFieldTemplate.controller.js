@@ -9,7 +9,7 @@ const getAllAft = async (req, res) => {
 };
 
 const createAft = async (req, res) => {
-  const { label, description, icon = '' } = req.body;
+  const { label, description, icon } = req.body;
   const newAft = await aftRepository.create({ label, description, icon });
 
   const users = await userRepository.getAll();
