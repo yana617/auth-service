@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 import { v4 } from 'uuid';
-import faker from 'faker';
+import { faker } from '@faker-js/faker';
 
 import db from '#database';
 import { DEFAULT_ROLE } from '#database/constants';
