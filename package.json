@@ -37,7 +37,7 @@
   "author": "Yana Sidorova",
   "license": "ISC",
   "dependencies": {
-    "@babel/preset-env": "7.22.9",
+    "@babel/preset-env": "7.24.8",
     "axios": "1.4.0",
     "babel-register": "6.26.0",
     "bcrypt": "5.1.0",
