@@ -10,7 +10,7 @@ const generateUser = () => ({
   id: v4(),
   name: faker.internet.userName(),
   surname: faker.internet.userName(),
-  phone: `37529${faker.datatype.number({ min: 1111111, max: 9999999 })}`,
+  phone: `37529${faker.number.int({ min: 1111111, max: 9999999 })}`,
   email: faker.internet.email(),
   birthday: new Date(),
   password: faker.internet.password(),
@@ -21,7 +21,7 @@ const generateGuest = () => ({
   id: v4(),
   name: faker.internet.userName(),
   surname: faker.internet.userName(),
-  phone: `37529${faker.datatype.number({ min: 1111111, max: 9999999 })}`,
+  phone: `37529${faker.number.int({ min: 1111111, max: 9999999 })}`,
 });
 
 const generateAft = () => ({

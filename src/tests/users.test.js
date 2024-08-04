@@ -367,7 +367,8 @@ describe('GET /users', () => {
     expectedUsersCount: 0,
   }];
 
-  test.each(testCases)('Should filter by roles correctly',
+  test.each(testCases)(
+    'Should filter by roles correctly',
     async ({ tokenRole, rolesFilter, expectedUsersCount }) => {
       const token = await createUserAndGetToken(generateUser(), tokenRole);
 
@@ -378,7 +379,8 @@ describe('GET /users', () => {
 
       const { data: { users } } = response.body;
       expect(users.length).toBe(expectedUsersCount);
-    });
+    },
+  );
 
   test('pagination should work correctly', async () => {
     const token = await createUserAndGetToken(generateUser(), 'ADMIN');
