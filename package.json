@@ -52,7 +52,7 @@
     "sequelize": "6.37.3",
     "sequelize-replace-enum-postgres": "1.6.0",
     "swagger-ui-express": "4.3.0",
-    "uuid": "9.0.0"
+    "uuid": "9.0.1"
   },
   "devDependencies": {
     "@babel/eslint-parser": "7.25.1",
