@@ -20,12 +20,18 @@ app.use((req, res, next) => {
 });
 
 const {
+  PORT,
   UI_LOCAL_URL,
   UI_PROD_URL,
   DOCKER_AUTH_SERVICE_URL,
 } = process.env;
 
 const whitelist = [UI_LOCAL_URL, UI_PROD_URL, DOCKER_AUTH_SERVICE_URL];
+if (process.env.NODE_ENV !== 'production') {
+  const POSTMAN_URL = `localhost:${PORT}`;
+  whitelist.push(POSTMAN_URL);
+}
+
 const corsOptions = {
   origin: (origin, callback) => {
     if (whitelist.indexOf(origin) !== -1) {
