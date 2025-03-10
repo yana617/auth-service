@@ -26,6 +26,10 @@ const permissions = [
   'EDIT_PERMISSIONS',
   'CREATE_CLAIM_FOR_UNREGISTERED_USERS',
   'VIEW_RATING',
+  'VIEW_ANIMALS',
+  'EDIT_ANIMAL',
+  'CREATE_ANIMAL',
+  'DELETE_ANIMAL',
 ];
 
 const rolePermissions = {
@@ -41,6 +45,7 @@ const rolePermissions = {
     'DELETE_CLAIM',
     'VIEW_USERS',
     'VIEW_RATING',
+    'VIEW_ANIMALS',
   ],
   ADMIN: permissions,
 };
@@ -48,6 +53,7 @@ const rolePermissions = {
 const permissionsForbiddenToBeAdditional = [
   'DELETE_ADDITIONAL_FIELD_TEMPLATE',
   'EDIT_PERMISSIONS',
+  'DELETE_ANIMAL',
 ];
 
 const DEFAULT_ROLE = 'USER';
