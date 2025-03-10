@@ -1,7 +1,7 @@
-docker-compose up -d postgres-db-test
+docker compose up -d postgres-db-test
 
 WAIT_FOR_PG_ISREADY="while ! pg_isready --quiet; do sleep 1; done;"
-docker-compose exec postgres-db-test bash -c "$WAIT_FOR_PG_ISREADY"
+docker compose exec postgres-db-test bash -c "$WAIT_FOR_PG_ISREADY"
 
 export POSTGRES_USERNAME=postgres
 export POSTGRES_PASSWORD=postgres
@@ -16,4 +16,4 @@ echo "start running tests"
 jest --coverage --runInBand
 echo "tearing down all containers"
 
-docker-compose stop
+docker compose stop

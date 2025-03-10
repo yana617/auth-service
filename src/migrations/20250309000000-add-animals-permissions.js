@@ -1,5 +1,5 @@
 "use strict";
-const { v4 } = require('uuid');
+const { v4 } = require("uuid");
 
 const previousPermissions = [
   "VIEW_PROFILE",
@@ -97,46 +97,48 @@ module.exports = {
       ["id"]
     );
 
-    await queryInterface.bulkInsert("role_permissions", [
-      {
-        id: v4(),
-        role_id: volunteerRoleId,
-        permission_id: newViewPermissionId,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      {
-        id: v4(),
-        role_id: adminRoleId,
-        permission_id: newViewPermissionId,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      {
-        id: v4(),
-        role_id: adminRoleId,
-        permission_id: newEditPermissionId,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      {
-        id: v4(),
-        role_id: adminRoleId,
-        permission_id: newCreatePermissionId,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      {
-        id: v4(),
-        role_id: adminRoleId,
-        permission_id: newDeletePermissionId,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-    ]);
+    if (!!volunteerRoleId && !!adminRoleId) {
+      await queryInterface.bulkInsert("role_permissions", [
+        {
+          id: v4(),
+          role_id: volunteerRoleId,
+          permission_id: newViewPermissionId,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          id: v4(),
+          role_id: adminRoleId,
+          permission_id: newViewPermissionId,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          id: v4(),
+          role_id: adminRoleId,
+          permission_id: newEditPermissionId,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          id: v4(),
+          role_id: adminRoleId,
+          permission_id: newCreatePermissionId,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          id: v4(),
+          role_id: adminRoleId,
+          permission_id: newDeletePermissionId,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      ]);
+    }
   },
 
-  async down({ sequelize: { query } }, Sequelize) {
+  async down(queryInterface, Sequelize) {
     await queryInterface.changeColumn("permissions", "name", {
       type: Sequelize.TEXT,
     });
