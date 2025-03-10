@@ -15,6 +15,10 @@ export default {
     EDIT_PERMISSIONS: 'Edit permissions',
     CREATE_CLAIM_FOR_UNREGISTERED_USERS: 'Create claim for unregistered users',
     VIEW_RATING: 'View rating',
+    VIEW_ANIMALS: 'View animals',
+    EDIT_ANIMAL: 'Edit animal',
+    CREATE_ANIMAL: 'Create animal',
+    DELETE_ANIMAL: 'Delete animal',
   },
   RU: {
     VIEW_PROFILE: 'Просматривать профиль',
@@ -32,5 +36,9 @@ export default {
     EDIT_PERMISSIONS: 'Редактировать права доступа',
     CREATE_CLAIM_FOR_UNREGISTERED_USERS: 'Записывать в график незарегистрированных пользователей',
     VIEW_RATING: 'Просматривать рейтинг',
+    VIEW_ANIMALS: 'Просматривать животных',
+    EDIT_ANIMAL: 'Редактировать карточку животного',
+    CREATE_ANIMAL: 'Добавлять новых животных',
+    DELETE_ANIMAL: 'Удалять карточки животных',
   },
 };
