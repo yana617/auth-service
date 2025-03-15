@@ -101,6 +101,10 @@ describe('PUT /permissions', () => {
       DELETE_CLAIM: true,
       VIEW_USERS: true,
       VIEW_RATING: true,
+      VIEW_ANIMALS: true,
+      EDIT_ANIMAL: true,
+      CREATE_ANIMAL: true,
+      DELETE_ANIMAL: true,
     };
 
     const response = await request(app)
